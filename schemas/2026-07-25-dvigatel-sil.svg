@@ -1,0 +1,69 @@
+<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif" role="img">
+  <title>Двигатель сил опричнины (2026-07-25)</title>
+  <desc>Слева силы (страх, нужда, благочестие-покров, милость царя, круговая порука, сепарация) питают центральный самоподдерживающийся мотор «донос → передел» (обвинение передаёт землю обвинителю); справа из него растут эмерджентные события. Внизу разрыв: во что верят (Бог, судьба, царь) против того, что на деле движет (страх, донос, нужда) — тайна.</desc>
+  <defs>
+    <marker id="m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888780"/></marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="520" fill="#ffffff"/>
+  <text x="20" y="26" font-size="13" fill="#888780">Двигатель сил — из принципов растёт мир · опричнина · 2026-07-25</text>
+
+  <text x="30" y="60" font-size="12" font-weight="600" fill="#2c2c2a">СИЛЫ (сеем их)</text>
+  <g font-size="11.5">
+    <g fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.2">
+      <rect x="30" y="72" width="150" height="30" rx="6"/><rect x="30" y="110" width="150" height="30" rx="6"/>
+      <rect x="30" y="148" width="150" height="30" rx="6"/><rect x="30" y="186" width="150" height="30" rx="6"/>
+      <rect x="30" y="224" width="150" height="30" rx="6"/><rect x="30" y="262" width="150" height="30" rx="6"/>
+    </g>
+    <g fill="#3C3489">
+      <text x="40" y="91">страх доноса</text><text x="40" y="129">нужда</text>
+      <text x="40" y="167">благочестие-покров</text><text x="40" y="205">милость Царя</text>
+      <text x="40" y="243">круговая порука</text><text x="40" y="281">сепарация / братство</text>
+    </g>
+  </g>
+  <g stroke="#b4b2a9" stroke-width="1.1" fill="none" marker-end="url(#m)">
+    <path d="M182,87 C300,110 330,170 372,200"/><path d="M182,125 C290,150 320,185 372,208"/>
+    <path d="M182,163 C280,185 330,200 372,214"/><path d="M182,201 L372,214"/>
+    <path d="M182,239 C280,235 330,225 372,220"/><path d="M182,277 C300,265 330,240 372,226"/>
+  </g>
+
+  <circle cx="450" cy="214" r="58" fill="#FAECE7" stroke="#D85A30" stroke-width="2"/>
+  <text x="450" y="205" font-size="13" font-weight="600" fill="#993C1D" text-anchor="middle">ДОНОС →</text>
+  <text x="450" y="223" font-size="13" font-weight="600" fill="#993C1D" text-anchor="middle">ПЕРЕДЕЛ</text>
+  <text x="450" y="292" font-size="10.5" fill="#5f5e5a" text-anchor="middle">обвинение передаёт землю обвинителю</text>
+  <text x="450" y="306" font-size="10.5" fill="#888780" text-anchor="middle">— мотор, не событие; питает сам себя</text>
+  <path d="M450,150 A70,70 0 1 1 448,150" fill="none" stroke="#D85A30" stroke-width="1.3" stroke-dasharray="4 4" marker-end="url(#m)"/>
+
+  <text x="660" y="60" font-size="12" font-weight="600" fill="#2c2c2a">ЭМЕРДЖЕНТНЫЕ СОБЫТИЯ</text>
+  <g font-size="11.5">
+    <g fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2">
+      <rect x="640" y="72" width="235" height="30" rx="6"/><rect x="640" y="110" width="235" height="30" rx="6"/>
+      <rect x="640" y="148" width="235" height="30" rx="6"/><rect x="640" y="186" width="235" height="30" rx="6"/>
+      <rect x="640" y="224" width="235" height="30" rx="6"/><rect x="640" y="262" width="235" height="30" rx="6"/>
+    </g>
+    <g fill="#0F6E56">
+      <text x="650" y="91">цепной оговор растёт сам</text>
+      <text x="650" y="129">передел двора → мотив следующему</text>
+      <text x="650" y="167">бегство → запустение → рост тягла</text>
+      <text x="650" y="205">литургия и казнь в один день</text>
+      <text x="650" y="243">община выдаёт «своего»</text>
+      <text x="650" y="281">перекрут → падение обороны (1571/72)</text>
+    </g>
+  </g>
+  <g stroke="#b4b2a9" stroke-width="1.1" fill="none" marker-end="url(#m)">
+    <path d="M508,200 C580,150 600,100 638,87"/><path d="M508,208 C580,170 600,135 638,125"/>
+    <path d="M508,214 L638,163"/><path d="M508,220 L638,201"/>
+    <path d="M508,222 C580,250 600,245 638,239"/><path d="M508,228 C580,270 600,272 638,277"/>
+  </g>
+
+  <rect x="30" y="330" width="845" height="150" rx="10" fill="#f7f5ee" stroke="#b4b2a9" stroke-width="1.1"/>
+  <text x="46" y="356" font-size="12" font-weight="600" fill="#26215C">во что ВЕРЯТ жители</text>
+  <text x="46" y="378" font-size="12.5" fill="#534AB7">Бог · судьба · государев гнев · «кара за грех» · «чист — не бойся»</text>
+  <line x1="46" y1="398" x2="859" y2="398" stroke="#D85A30" stroke-width="1.3" stroke-dasharray="5 5"/>
+  <text x="450" y="414" font-size="11.5" font-weight="600" fill="#993C1D" text-anchor="middle">↕ тайна = разрыв (виден только внимательному игроку)</text>
+  <text x="46" y="440" font-size="12" font-weight="600" fill="#2c2c2a">что на ДЕЛЕ движет</text>
+  <text x="46" y="462" font-size="12.5" fill="#5f5e5a">страх · донос · нужда · передел земли · сведение счётов</text>
+
+  <g stroke="#ba7517" fill="none" stroke-width="1.8"><path d="M812,44 Q832,30 852,44 Q832,58 812,44 z"/></g>
+  <circle cx="832" cy="44" r="5" fill="#ba7517"/>
+  <text x="806" y="48" font-size="10.5" fill="#888780" text-anchor="end">взгляд</text>
+</svg>

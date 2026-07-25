@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Посад — ломоть (Живите как хотите)</title>
+<style>
+  :root{
+    --ink:#2b2622; --ink2:#5f574e; --mut:#8a8177; --line:#ddd4c4; --line2:#b7ab95;
+    --paper:#f5efe2; --card:#fbf7ee; --pale:#efe7d6;
+    --acc:#9c6b1e; --dnos:#a33a2d; --riv:#7d9bb0; --wood:#7f8a4f; --gold:#b8891f;
+  }
+  *{box-sizing:border-box; margin:0}
+  body{background:var(--paper); color:var(--ink); font:15px/1.55 Georgia,'Times New Roman',serif; padding:14px 16px 26px}
+  header{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:12px}
+  h1{font-size:20px; font-weight:600; letter-spacing:.3px}
+  .sub{color:var(--mut); font-size:13px; font-family:Helvetica,Arial,sans-serif}
+  .spacer{flex:1}
+  button{font:13px Helvetica,Arial,sans-serif; color:var(--ink); background:var(--card);
+    border:1px solid var(--line2); border-radius:7px; padding:6px 12px; cursor:pointer}
+  button:hover{background:var(--pale)}
+  button:disabled{opacity:.5; cursor:default}
+  button.primary{border-color:var(--acc); color:var(--acc); font-weight:600}
+  main{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:14px; align-items:start}
+  @media (max-width:900px){ main{grid-template-columns:1fr} }
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:11px}
+  #mapWrap{padding:6px}
+  svg{display:block; width:100%; height:auto}
+  aside{display:flex; flex-direction:column; gap:12px; min-width:0}
+  .panel h2{font-size:12.5px; font-weight:600; color:var(--ink2); padding:10px 14px 0; font-family:Helvetica,Arial,sans-serif}
+  .panel .body{padding:8px 14px 12px}
+  .note{color:var(--mut); font-size:12px; font-family:Helvetica,Arial,sans-serif}
+  .intent{font-size:13px; color:var(--ink2); padding:2px 0}
+  .intent b{color:var(--ink)}
+  .gazehint{font-size:12px; color:var(--acc); font-family:Helvetica,Arial,sans-serif; margin-top:6px}
+  #people{display:flex; flex-wrap:wrap; gap:8px}
+  .pcard{border:1px solid var(--line); border-radius:9px; padding:6px 10px; cursor:pointer; background:var(--card); min-width:120px; font-family:Helvetica,Arial,sans-serif}
+  .pcard.gaze{border-color:var(--acc); background:var(--pale); box-shadow:0 0 0 1px var(--acc)}
+  .pcard.dead{opacity:.5; cursor:default}
+  .pcard.sworn{border-left:3px solid var(--dnos)}
+  .pcard .nm{font-weight:600; font-size:13.5px}
+  .pcard .rl{color:var(--mut); font-size:11px}
+  .pcard .bars{display:flex; gap:5px; margin-top:4px}
+  .pcard .bar{flex:1; height:4px; border-radius:2px; background:var(--pale); overflow:hidden}
+  .pcard .bar i{display:block; height:100%}
+  .pcard .bar.n i{background:var(--wood)}
+  .pcard .bar.s i{background:var(--dnos)}
+  #chron{max-height:360px; overflow-y:auto; font-size:14px}
+  .chday{color:var(--mut); font-size:12px; margin:9px 0 3px; font-family:Helvetica,Arial,sans-serif; border-top:1px solid var(--line); padding-top:6px}
+  .seen{padding:2px 0}
+  .seen .tag{font-size:10.5px; font-family:Helvetica,Arial,sans-serif; color:var(--wood); margin-right:5px}
+  .rumor{padding:2px 0; color:var(--ink2); font-style:italic}
+  .rumor .tag{font-size:10.5px; font-family:Helvetica,Arial,sans-serif; color:var(--mut); margin-right:5px; font-style:normal}
+  .sys{padding:2px 0; color:var(--acc)}
+  .legend{color:var(--ink2); font-style:italic; padding:0 0 3px 14px; font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Посад</h1>
+  <span class="sub" id="hdr">Москва · XVI век · день —</span>
+  <span class="sub" id="scene"></span>
+  <span class="spacer"></span>
+  <button class="primary" id="btnDay">прожить день ▸</button>
+  <button id="btnReseed">новый посев</button>
+</header>
+
+<main>
+  <div class="panel" id="mapWrap">
+    <svg id="map" viewBox="0 0 460 430" role="img" aria-label="Посад"></svg>
+    <div class="note" style="padding:0 8px 6px">Кликни жителя или место — туда ляжет твой взгляд. Что увидишь — узнаешь как есть; чего не увидел — дойдёт слухом.</div>
+  </div>
+  <aside>
+    <div class="panel">
+      <h2 id="intentHdr">утро — кто куда</h2>
+      <div class="body">
+        <div id="intents"></div>
+        <div class="gazehint" id="gazehint"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>жители <span class="note">(нужда · страх)</span></h2>
+      <div class="body"><div id="people"></div></div>
+    </div>
+    <div class="panel">
+      <h2>летопись <span class="note">— <span style="color:var(--wood)">видел</span> · <span style="color:var(--mut)">слух</span></span></h2>
+      <div class="body"><div id="chron"></div></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+'use strict';
+/* Посад — МВП-ломоть. Мир по силам (страх · донос · нужда), игрок — взгляд.
+   Мотор: донос → передел (обвинение передаёт двор обвинителю), самоподдерживается.
+   Живой ИИ-сказитель (опционально) — тот же воркер, setting:'posad'. Без него — шаблоны. */
+const BACKEND=""; // МВП: офлайн-шаблоны (московский тон). Живая проза — позже: posad-воркер + сюда его URL.
+let scenesAlive=null, pending=0;
+
+let seed=(new URLSearchParams(location.search).get('seed')|0)||(Math.floor(Math.random()*9000)+100);
+let rnd; const mulberry32=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const ri=(a,b)=>a+Math.floor(rnd()*(b-a+1)), pick=a=>a[Math.floor(rnd()*a.length)], clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+let W=null, gaze=null;
+
+/* ---------- посев ---------- */
+function makeWorld(){
+  rnd=mulberry32(seed);
+  const pois={
+    kolodec:{x:150,y:120,label:'колодец'},
+    torg:{x:250,y:230,label:'торг'},
+    hram:{x:340,y:110,label:'храм'},
+    dvorA:{x:120,y:300,label:'двор Гриши'},
+    dvorB:{x:210,y:330,label:'двор Фёклы'},
+    dvorC:{x:300,y:320,label:'двор Силы'},
+    dvorD:{x:210,y:170,label:'двор Овдокима'},
+    oprich:{x:420,y:250,label:'опричный двор'},
+  };
+  const P=(id,name,g,role,dvor,nuzhda,strah,extra)=>Object.assign(
+    {id,name,g,role,dvor,nuzhda,strah,rel:{},standing:20,alive:true,sworn:false,scars:[],x:0,y:0,plan:null,taken:false},extra||{});
+  const people=[
+    P('p0','Гриша','m','посадский · до клятвы','dvorA',55,25,{focal:true}),
+    P('p1','Фёкла','f','вдова, торгует','dvorB',45,20),
+    P('p2','отец Сергий','m','поп · ведёт синодик','hram',35,15,{priest:true}),
+    P('p3','Сила','m','староста · круговая порука','dvorC',40,25,{elder:true}),
+    P('p4','Овдоким','m','зажиточный сосед','dvorD',22,12,{standing:70,coveted:true}),
+    P('p5','Третьяк','m','опричник со Слободы','oprich',20,10,{sworn:true,oprichnik:true}),
+    P('p6','Марья','f','соседка · разносит слух','dvorB',48,25,{gossip:true}),
+  ];
+  people.forEach(p=>{ const h=pois[p.dvor]||pois.torg; p.x=h.x+ri(-10,10); p.y=h.y+ri(-8,8); });
+  W={seed, day:1, pois, people, log:[], over:false, pereldel:0, groza:0, peakDay:ri(11,17), weather:pick(['ясно','ясно','дождь','стужа'])};
+  gaze={type:'person', id:'p0'};
+  logSys(`Посев #${seed}. На посаде — семеро. Опричный двор на краю.`);
+  plan(); renderAll();
+}
+
+/* ---------- утро: намерения по силам ---------- */
+function plan(){
+  // гроза всходит к пику, потом убывает — террор приходит и проходит
+  if(W.day>=2){ const rise=W.day<=W.peakDay; W.groza=clamp(W.groza + (rise?ri(4,7):-ri(4,7)), 0, 100); }
+  const alive=W.people.filter(p=>p.alive&&!p.taken);
+  alive.forEach(p=>{
+    if(!p.oprichnik) p.strah=clamp(p.strah + Math.round((W.groza-p.strah)*0.4) - (p.priest?4:0), 0, 100); // страх течёт к грозе В ОБЕ стороны — гроза прошла, страх спал
+    p.nuzhda=clamp(p.nuzhda+ri(3,8),0,100);
+    let ch;
+    if(p.oprichnik){ ch={to:'torg', why:'дозором по посаду'}; }
+    else if(p.priest){ ch={to:'hram', why:'к службе'}; }
+    else {
+      // порыв доноса: страх высок + нужда + есть завидный/обиженный сосед + опричник рядом
+      const target=coveted(p);
+      const donosDrive = p.strah*0.6 + p.nuzhda*0.4 + (target?25:0) + (p.focal? p.strah*0.3:0) - p.standing*0.2 + ri(-15,15);
+      if(target && p.strah>50 && W.day>=4 && donosDrive>80 && rnd()<0.5){ ch={to:'oprich', why:'идёт к опричному двору', donos:target.id}; }
+      else if(p.focal && (p.strah+p.nuzhda)>150 && rnd()<0.5){ ch={to:'oprich', why:'тянет к опричному двору'}; }
+      else if(p.nuzhda>65){ ch=pick([{to:'torg',why:'на торг за хлебом'},{to:p.dvor,why:'работать во дворе'}]); }
+      else ch=pick([{to:'kolodec',why:'по воду'},{to:'hram',why:'помолиться'},{to:'torg',why:'на торг'},{to:'kolodec',why:'к колодцу — потолковать'}]);
+    }
+    const poi=W.pois[ch.to]||W.pois.torg;
+    p.plan={choice:ch, target:{x:poi.x+ri(-12,12), y:poi.y+ri(-10,10)}, to:ch.to};
+  });
+}
+function coveted(p){
+  // завидный двор (богаче меня), либо обида — цель ширится, и разбогатевший доносчик сам станет мишенью
+  const cands=W.people.filter(o=>o.alive&&!o.taken&&o.id!==p.id&&!o.oprichnik&&
+    (o.coveted || o.standing>p.standing+15 || (p.rel[o.id]||0)<=-10));
+  return cands.length?pick(cands):null;
+}
+
+/* ---------- прожить день ---------- */
+function liveDay(){
+  if(W.over||pending>0) return;
+  const day=W.day, seen=isGazed;
+  const events=[];
+  const alive=W.people.filter(p=>p.alive&&!p.taken);
+  alive.forEach(p=>{ p.x=p.plan.target.x; p.y=p.plan.target.y; });
+
+  // 1) донос → передел (мотор) — опричный двор берёт НЕ БОЛЕЕ одного двора в день
+  const donosers=alive.filter(p=>p.plan.choice.donos).sort((a,b)=>b.strah-a.strah);
+  if(donosers.length){
+    const acc=donosers[0], victim=W.people.find(o=>o.id===acc.plan.choice.donos);
+    if(victim && victim.alive && !victim.taken) doPeredel(acc, victim, events);
+  }
+  // фокальный Гриша: у опричного двора под страхом/нуждой — клятва (сползание)
+  const grisha=W.people.find(p=>p.id==='p0');
+  if(grisha.alive && !grisha.sworn && grisha.plan.to==='oprich' && (grisha.strah+grisha.nuzhda)>150 && rnd()<0.6){
+    grisha.sworn=true; grisha.role='опричник (новоприводный)'; grisha.strah=clamp(grisha.strah-20,0,100); grisha.standing+=15;
+    events.push(ev('oath',[grisha],'oprich', `${grisha.name} целовал крест у опричного двора — отрёкся от земщины и родни, приведён в братство.`,
+      `Сказывают, ${grisha.name} ныне в чёрном платье — государев человек.`, [grisha.id]));
+  }
+
+  // 2) обычные встречи у мест (будни впереди)
+  const byPoi={};
+  alive.forEach(p=>{ if(p.plan.choice.donos) return; (byPoi[p.plan.to]=byPoi[p.plan.to]||[]).push(p); });
+  Object.keys(byPoi).forEach(k=>{
+    const grp=byPoi[k]; if(grp.length<1) return;
+    if(grp.length>=2){ ordinaryMeet(grp[0],grp[1],k,events); }
+    else if(rnd()<0.4){ ordinarySolo(grp[0],k,events); }
+  });
+
+  // 3) нужда/страх после дня
+  alive.forEach(p=>{
+    if(p.plan.to==='torg'||p.plan.to===p.dvor) p.nuzhda=clamp(p.nuzhda-30,0,100);
+    if(p.plan.to==='hram') p.strah=clamp(p.strah-12,0,100);
+    if(p.plan.to==='kolodec') p.strah=clamp(p.strah-4,0,100);
+  });
+
+  // запись в летопись: видел (правда) / слух (пропаганда) по взгляду
+  logDay(day, events, seen);
+
+  W.day++; if(W.day>60) W.over=true;
+  plan(); renderAll();
+}
+
+function doPeredel(acc, victim, events){
+  const dvor=victim.dvor;
+  if(dvor && W.pois[dvor]) W.pois[dvor].label='двор '+acc.name+' (взят)';
+  if(dvor) acc.dvor=dvor;
+  victim.taken=true; victim.alive=false; victim.deathDay=W.day;
+  acc.standing+=15; acc.nuzhda=clamp(acc.nuzhda-25,0,100); acc.strah=clamp(acc.strah-8,0,100);
+  W.pereldel++;
+  W.people.forEach(o=>{ if(o.alive&&!o.oprichnik) o.strah=clamp(o.strah+8,0,100); });
+  addScar(acc, victim, 'выдал');
+  const honest = `${acc.name} со страху да на добрый двор указал Третьяку на ${dat(victim.name)}. ${victim.name}${victim.g==='f'?'у увели':'а увели'}, двор отошёл ${dat(acc.name)}.`;
+  const rumor = pick([
+    `Сказывают, на ${dat(victim.name)} пал государев гнев — за измену.`,
+    `Молва: ${victim.name} ссылал${victim.g==='f'?'ась':'ся'} с Литвою, оттого и взяли.`,
+    `Люди шепчут — ${victim.name} наказан${victim.g==='f'?'а':''} по правде, было за что.`,
+  ]);
+  events.push(ev('donos',[acc,victim],victim.dvor||'oprich',honest,rumor,[acc.id,victim.id]));
+  // поп впишет в синодик
+  const pop=W.people.find(p=>p.priest&&p.alive);
+  if(pop) events.push(ev('synod',[pop,victim],'hram',
+    `Отец Сергий вписал ${dat(victim.name)} в синодик — молиться о душе того, кого вчера выдали рядом.`,
+    `В храме поминают ${dat(victim.name)} — упокой, Господи.`,[pop.id,victim.id]));
+}
+
+function ordinaryMeet(a,b,k,events){
+  const place=W.pois[k]?W.pois[k].label:'на улице';
+  const warm=(a.rel[b.id]||0)+ri(-20,20) - (a.strah+b.strah)*0.05;
+  let honest, rumor;
+  if(k==='torg'){ honest=pick([`${a.name} торговал${a.g==='f'?'ась':'ся'} с ${tvor(b.name)} на торгу — рожь да соль, квас на запивку.`,`${a.name} и ${b.name} рядились о цене на торгу.`]); }
+  else if(k==='kolodec'){ honest=pick([`${a.name} и ${b.name} сошлись у колодца — потолковали о дожде да о недоимке.`,`У колодца ${a.name} шепнул${a.g==='f'?'а':''} ${dat(b.name)} новость с посада.`]); }
+  else if(k==='hram'){ honest=`${a.name} и ${b.name} стояли обедню в храме.`; }
+  else honest=`${a.name} и ${b.name} повстречались у ${gde(place)}.`;
+  if(warm<-15){ bump(a,b,-8); bump(b,a,-8); honest=`${a.name} и ${b.name} повздорили у ${gde(place)} — слово за слово.`; }
+  else { bump(a,b,3); bump(b,a,3); }
+  if(a.gossip||b.gossip) rumor=`Марья разнесла по посаду, что ${a.name} и ${b.name} шептались о недобром.`;
+  events.push(ev('ord',[a,b],k,honest,rumor||honest,[a.id,b.id]));
+}
+function ordinarySolo(p,k,events){
+  const place=W.pois[k]?W.pois[k].label:'дома';
+  const h=pick([`${p.name} набрал${p.g==='f'?'а':''} воды у колодца.`,`${p.name} правил${p.g==='f'?'а':''} тягло — работал${p.g==='f'?'а':''} во дворе.`,`${p.name} клал${p.g==='f'?'а':''} поклоны в храме.`,`${p.name} сидел${p.g==='f'?'а':''} на торгу без прибытка.`]);
+  events.push(ev('ord',[p],k,h,h,[p.id]));
+}
+
+/* ---------- взгляд: видел vs слух ---------- */
+function isGazed(ev){
+  if(!gaze) return false;
+  if(gaze.type==='poi') return ev.place===gaze.id;
+  return (ev.who||[]).includes(gaze.id);
+}
+function logDay(day, events, seenFn){
+  const seen=[], rumors=[];
+  events.forEach(e=>{
+    if(e.kind==='oath'||e.kind==='synod'){ (seenFn(e)?seen:rumors).push(e); return; }
+    if(seenFn(e)){ if(e.kind!=='ord' || rnd()<0.9) seen.push(e); }
+    else { if(e.kind==='donos') rumors.push(e); else if(rnd()<0.35) rumors.push(e); }
+  });
+  W.log.push({day, seen, rumors});
+  // живой сказитель — только на виденных сценах (внимание = бюджет ИИ)
+  seen.forEach(e=>sceneCall(e));
+}
+
+/* ---------- воркер (опц.) ---------- */
+async function sceneCall(e){
+  if(!BACKEND || e.kind==='synod') return;
+  pending++; sceneChip();
+  try{
+    const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),9000);
+    const a=W.people.find(p=>p.id===e.who[0])||{}, b=W.people.find(p=>p.id===e.who[1])||{};
+    const body={ setting:'posad', day:Math.min(e._day||W.day,60), place:(W.pois[e.place]||{}).label||'посад',
+      weather:W.weather, outcome:e.kind==='donos'?'quarrel':(e.kind==='oath'?'quarrel':'neutral'),
+      a:{name:a.name,g:a.g,trait:a.role,sat:Math.round(100-(a.nuzhda||0))},
+      b:{name:b.name,g:b.g,trait:b.role,sat:Math.round(100-(b.nuzhda||0))},
+      relAB:a.rel?(a.rel[b.id]||0):0, relBA:b.rel?(b.rel[a.id]||0):0,
+      scars:[], memory:[e.honest],
+      flags:{ setting:'posad', kind:e.kind } };
+    const res=await fetch(BACKEND,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:ctl.signal});
+    clearTimeout(tm); if(!res.ok) throw 0; const s=await res.json(); if(s.error) throw 0;
+    if(s.chronicle) e.honest=s.chronicle;
+    if(s.legend) e.legend=s.legend;
+    scenesAlive=true;
+  }catch(_){ scenesAlive=(scenesAlive===true); }
+  pending--; sceneChip(); renderChron();
+}
+function sceneChip(){ document.getElementById('scene').textContent = pending>0?'· сказитель пишет…':(scenesAlive?'· сцены: живые':(scenesAlive===false?'· сцены: немые':'')); }
+
+/* ---------- утиль ---------- */
+function ev(kind,people,place,honest,rumor,who){ return {kind,people,place,honest,rumor,who:who||[],_day:W.day}; }
+function bump(p,o,d){ p.rel[o.id]=clamp((p.rel[o.id]||0)+d,-100,100); }
+function addScar(p,o,t){ p.scars.push({who:o.name,type:t,day:W.day}); }
+function dat(n){ if(n.endsWith('а'))return n.slice(0,-1)+'е'; if(n.endsWith('й'))return n.slice(0,-1)+'ю'; return n+'у'; }
+function tvor(n){ if(n.endsWith('а'))return n.slice(0,-1)+'ой'; if(n.endsWith('й'))return n.slice(0,-1)+'ем'; return n+'ом'; }
+function gde(pl){ return pl.replace(/^двор/,'двора'); }
+
+/* ---------- летопись ---------- */
+function logSys(t){ W.log.push({sys:t}); }
+
+/* ---------- отрисовка ---------- */
+const S='http://www.w3.org/2000/svg';
+function el(t,a){const e=document.createElementNS(S,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function renderMap(){
+  const svg=document.getElementById('map'); svg.innerHTML='';
+  svg.appendChild(el('rect',{x:0,y:0,width:460,height:430,rx:10,fill:'#f0e8d7'}));
+  svg.appendChild(el('path',{d:'M40,0 C60,120 30,240 55,430',fill:'none',stroke:'var(--riv)','stroke-width':7,opacity:.7,'stroke-linecap':'round'}));
+  // край / Слобода
+  svg.appendChild(el('line',{x1:452,y1:8,x2:452,y2:422,stroke:'var(--mut)','stroke-width':1,'stroke-dasharray':'2 6'}));
+  const kt=el('text',{x:459,y:210,'font-size':10.5,fill:'var(--mut)','text-anchor':'middle',transform:'rotate(90 459 210)'}); kt.textContent='Слобода · край'; svg.appendChild(kt);
+  for(const k in W.pois){
+    const p=W.pois[k], taken=/взят/.test(p.label);
+    if(k==='hram'){ svg.appendChild(el('path',{d:`M${p.x-7},${p.y+6} L${p.x},${p.y-9} L${p.x+7},${p.y+6} Z`,fill:'none',stroke:'var(--gold)','stroke-width':1.6})); svg.appendChild(el('line',{x1:p.x,y1:p.y-12,x2:p.x,y2:p.y-6,stroke:'var(--gold)','stroke-width':1.6})); }
+    else if(k==='oprich'){ svg.appendChild(el('rect',{x:p.x-9,y:p.y-9,width:18,height:18,rx:2,fill:'#efe0dc',stroke:'var(--dnos)','stroke-width':1.6})); }
+    else if(k==='kolodec'){ svg.appendChild(el('circle',{cx:p.x,cy:p.y,r:5,fill:'none',stroke:'var(--riv)','stroke-width':1.6})); }
+    else if(k==='torg'){ [[-6,0],[0,-5],[6,0]].forEach(o=>svg.appendChild(el('rect',{x:p.x+o[0]-2,y:p.y+o[1]-2,width:4,height:4,fill:'var(--wood)'}))); }
+    else { svg.appendChild(el('rect',{x:p.x-8,y:p.y-6,width:16,height:12,rx:1.5,fill:taken?'#efe0dc':'var(--pale)',stroke:taken?'var(--dnos)':'var(--line2)','stroke-width':1.3})); svg.appendChild(el('path',{d:`M${p.x-9},${p.y-6} L${p.x},${p.y-13} L${p.x+9},${p.y-6}`,fill:'none',stroke:taken?'var(--dnos)':'var(--line2)','stroke-width':1.3})); }
+    const isG=gaze&&gaze.type==='poi'&&gaze.id===k;
+    const t=el('text',{x:p.x,y:p.y+20,'font-size':10,fill:isG?'var(--acc)':'var(--mut)','text-anchor':'middle','font-family':'Helvetica,Arial,sans-serif'}); t.textContent=p.label; svg.appendChild(t);
+    const hit=el('rect',{x:p.x-16,y:p.y-16,width:32,height:34,fill:'transparent',style:'cursor:pointer'}); hit.addEventListener('click',()=>{gaze={type:'poi',id:k};renderAll();}); svg.appendChild(hit);
+  }
+  // пунктиры намерений
+  W.people.filter(p=>p.alive&&!p.taken&&p.plan).forEach(p=>{
+    svg.appendChild(el('line',{x1:p.x,y1:p.y,x2:p.plan.target.x,y2:p.plan.target.y,stroke:'var(--mut)','stroke-width':1,'stroke-dasharray':'3 4',opacity:.7}));
+  });
+  // люди
+  W.people.forEach(p=>{
+    if(p.taken) return;
+    const isG=gaze&&gaze.type==='person'&&gaze.id===p.id;
+    const c=el('circle',{cx:p.x,cy:p.y,r:8,fill: p.oprichnik||p.sworn?'#efe0dc':'#fff', stroke:isG?'var(--acc)':(p.sworn?'var(--dnos)':'var(--ink2)'),'stroke-width':isG?2.4:1.5,style:'cursor:pointer'});
+    c.addEventListener('click',()=>{gaze={type:'person',id:p.id};renderAll();}); svg.appendChild(c);
+    const t=el('text',{x:p.x,y:p.y-13,'font-size':10,fill:isG?'var(--acc)':'var(--ink2)','text-anchor':'middle','font-family':'Helvetica,Arial,sans-serif'}); t.textContent=p.name; svg.appendChild(t);
+  });
+}
+function renderIntents(){
+  document.getElementById('hdr').textContent=`Москва · XVI век · день ${Math.min(W.day,60)}`+(W.weather!=='ясно'?' · '+W.weather:'');
+  const box=document.getElementById('intents'); box.innerHTML='';
+  W.people.filter(p=>p.alive&&!p.taken&&p.plan).forEach(p=>{
+    const d=document.createElement('div'); d.className='intent';
+    d.innerHTML=`<b>${p.name}</b> <span class="note">— ${p.plan.choice.why}${p.plan.choice.donos?' · <span style="color:var(--dnos)">донос</span>':''}</span>`;
+    box.appendChild(d);
+  });
+  const g=gaze&&gaze.type==='person'?W.people.find(p=>p.id===gaze.id):null;
+  document.getElementById('gazehint').textContent = gaze? ('взгляд: '+(g?g.name:(W.pois[gaze.id]||{}).label)+' — за этим увидишь как есть, прочее дойдёт слухом') : 'выбери, за кем смотреть';
+}
+function renderPeople(){
+  const box=document.getElementById('people'); box.innerHTML='';
+  W.people.forEach(p=>{
+    const c=document.createElement('div');
+    c.className='pcard'+(gaze&&gaze.type==='person'&&gaze.id===p.id?' gaze':'')+(p.taken?' dead':'')+(p.sworn?' sworn':'');
+    c.innerHTML=`<div class="nm">${p.name}${p.taken?' †':''}${p.sworn&&!p.oprichnik?' ⚑':''}</div>
+      <div class="rl">${p.role}</div>`+
+      (p.taken?`<div class="rl">увели · день ${p.deathDay}</div>`:
+      `<div class="bars"><div class="bar n" title="нужда"><i style="width:${Math.round(p.nuzhda)}%"></i></div><div class="bar s" title="страх"><i style="width:${Math.round(p.strah)}%"></i></div></div>`);
+    if(!p.taken) c.addEventListener('click',()=>{gaze={type:'person',id:p.id};renderAll();});
+    box.appendChild(c);
+  });
+}
+function renderChron(){
+  const box=document.getElementById('chron'); box.innerHTML='';
+  W.log.forEach(entry=>{
+    if(entry.sys){ const d=document.createElement('div'); d.className='sys'; d.textContent=entry.sys; box.appendChild(d); return; }
+    const h=document.createElement('div'); h.className='chday'; h.textContent=`— день ${entry.day} —`; box.appendChild(h);
+    (entry.seen||[]).forEach(e=>{
+      const d=document.createElement('div'); d.className='seen'; d.innerHTML=`<span class="tag">видел</span>${e.honest}`; box.appendChild(d);
+      if(e.legend){ const g=document.createElement('div'); g.className='legend'; g.textContent='«'+e.legend+'»'; box.appendChild(g); }
+    });
+    (entry.rumors||[]).forEach(e=>{
+      const d=document.createElement('div'); d.className='rumor'; d.innerHTML=`<span class="tag">слух</span>${e.rumor}`; box.appendChild(d);
+    });
+    if(!(entry.seen||[]).length && !(entry.rumors||[]).length){ const d=document.createElement('div'); d.className='rumor'; d.textContent='тихий день — ты смотрел, да ничего не приметил'; box.appendChild(d); }
+  });
+  box.scrollTop=box.scrollHeight;
+}
+function renderAll(){ renderMap(); renderIntents(); renderPeople(); renderChron(); sceneChip();
+  document.getElementById('btnDay').disabled=W.over||pending>0;
+  document.getElementById('btnDay').textContent=pending>0?'…':(W.over?'посад дожил':'прожить день ▸'); }
+
+document.getElementById('btnDay').onclick=()=>liveDay();
+document.getElementById('btnReseed').onclick=()=>{ seed=Math.floor(Math.random()*9000)+100; makeWorld(); };
+makeWorld();
+</script>
+</body>
+</html>

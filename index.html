@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Долина — Живите как хотите</title>
+<style>
+  :root{
+    --ink:#2c2c2a; --ink2:#5f5e5a; --mut:#888780; --line:#d9d6cc; --line2:#b4b2a9;
+    --paper:#faf9f5; --card:#ffffff; --pale:#f1efe8;
+    --acc:#ba7517; --meet:#d85a30; --riv:#6b9bc3; --wood:#7d9c5b;
+  }
+  *{box-sizing:border-box; margin:0}
+  body{background:var(--paper); color:var(--ink); font:15px/1.55 Helvetica,Arial,sans-serif; padding:14px 16px 24px}
+  header{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:12px}
+  h1{font-size:20px; font-weight:600}
+  .sub{color:var(--mut); font-size:13px}
+  .spacer{flex:1}
+  button{font:13px Helvetica,Arial,sans-serif; color:var(--ink); background:var(--card);
+    border:1px solid var(--line2); border-radius:8px; padding:6px 12px; cursor:pointer}
+  button:hover{background:var(--pale)}
+  button:disabled{opacity:.45; cursor:default}
+  button.primary{border-color:var(--acc); color:var(--acc); font-weight:600}
+  main{display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:14px; align-items:start}
+  @media (max-width:900px){ main{grid-template-columns:1fr} }
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:12px}
+  #mapWrap{padding:6px}
+  svg{display:block; width:100%; height:auto}
+  aside{display:flex; flex-direction:column; gap:12px; min-width:0}
+  .panel h2{font-size:13px; font-weight:600; color:var(--ink2); padding:10px 14px 0}
+  .panel .body{padding:8px 14px 12px}
+  .note{color:var(--mut); font-size:12px}
+  .intent{font-size:13px; color:var(--ink2); padding:3px 0}
+  .intent b{color:var(--ink); font-weight:600}
+  .meetrow{display:flex; align-items:center; gap:8px; font-size:13px; padding:4px 0}
+  .meetrow .dia{color:var(--meet)}
+  .meetrow button{font-size:12px; padding:3px 9px}
+  .hands{display:flex; align-items:center; gap:10px; margin-top:8px; font-size:12.5px; color:var(--mut)}
+  #chronList{max-height:340px; overflow-y:auto; font-size:13.5px}
+  .chday{color:var(--mut); font-size:12px; margin:8px 0 2px}
+  .chline{padding:1px 0}
+  .chline.sys{color:var(--acc)}
+  .chline.env{color:var(--ink2); font-style:italic}
+  .chline .pend{color:var(--mut)}
+  .legend{font-family:Georgia,'Times New Roman',serif; font-style:italic; color:var(--ink2);
+    padding:0 0 3px 12px; font-size:13px}
+  .dice{font-size:11.5px; padding:2px 7px}
+  .dice.on{border-color:var(--acc); color:var(--acc); font-weight:600}
+  .tense{color:var(--meet); font-size:12px}
+  .whisp{font-size:12px; padding:2px 8px; margin-top:4px}
+  #whispPanel{margin-top:8px; padding:8px 10px; border:1px solid var(--line2); border-radius:8px;
+    background:var(--pale); font-size:13px; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  #whispPanel select{font:12.5px Helvetica,Arial,sans-serif; padding:4px 6px; border:1px solid var(--line2);
+    border-radius:6px; background:var(--card); color:var(--ink)}
+  .resist{color:var(--meet); font-size:11px; margin-top:2px}
+  #peopleRow{display:flex; flex-wrap:wrap; gap:8px}
+  .pcard{border:1px solid var(--line); border-radius:9px; padding:6px 10px; cursor:pointer; background:var(--card); min-width:104px}
+  .pcard.sel{border-color:var(--acc); background:var(--pale)}
+  .pcard.dead{opacity:.45; cursor:default}
+  .pcard .nm{font-weight:600; font-size:13.5px}
+  .pcard .tr{color:var(--mut); font-size:11.5px}
+  .pcard .st{margin-top:3px; height:4px; border-radius:2px; background:var(--pale); overflow:hidden}
+  .pcard .st i{display:block; height:100%; background:var(--wood)}
+  .pcard .scars{font-size:11px; color:var(--ink2); margin-top:2px}
+  #finale{margin-bottom:12px; border-color:var(--acc)}
+  #finale .body{font-size:14px}
+  #finale ul{margin:6px 0 6px 20px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Долина</h1>
+  <span class="sub" id="hdrInfo">мир #— · день —</span>
+  <span class="sub" id="sceneMode"></span>
+  <span class="spacer"></span>
+  <button class="primary" id="btnDay">прожить день ▸</button>
+  <button id="btnAuto">убрать руку</button>
+  <button id="btnSave" title="сохранить мир файлом">мир → файл</button>
+  <button id="btnReseed" title="новый посев">новый посев</button>
+</header>
+
+<div class="panel" id="finale" hidden>
+  <h2>день 30 — что выросло</h2>
+  <div class="body" id="finaleBody"></div>
+</div>
+
+<main>
+  <div class="panel" id="mapWrap">
+    <svg id="map" viewBox="0 0 460 430" role="img" aria-label="Карта долины"></svg>
+  </div>
+  <aside>
+    <div class="panel">
+      <h2 id="intentHdr">утро — намерения</h2>
+      <div class="body">
+        <div id="intentList"></div>
+        <div id="meetList"></div>
+        <div class="hands">
+          <span id="handsLeft"></span>
+          <button id="btnPair" disabled>свести выбранных</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>жители <span class="note">(клик — выбрать двоих, чтобы свести)</span></h2>
+      <div class="body"><div id="peopleRow"></div></div>
+    </div>
+    <div class="panel">
+      <h2>летопись <span class="note">— предания оживут, когда встречи станут сценами</span></h2>
+      <div class="body"><div id="chronList"></div></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+'use strict';
+
+/* ---------- сцены: воркер-сказитель ---------- */
+/* Игра живёт и без него (шаблонные встречи). Деплой: backend/DEPLOY.md */
+const BACKEND="https://dolina-backend.panarin2005.workers.dev";
+let scenesAlive=null, pendingScenes=0;
+
+/* ---------- зерно и случай ---------- */
+let seed = (new URLSearchParams(location.search).get('seed')|0) ||
+           (Math.floor(Math.random()*9000)+100);
+let rnd;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
+const pick=arr=>arr[Math.floor(rnd()*arr.length)];
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+
+/* ---------- черты ---------- */
+/* оси: social тянет к людям · courage не боится дали · wander любопытство ·
+   greed еда/запасы · industrious усердие в сборе · stubborn держит план · temper вспыльчивость */
+const TRAITS=[
+  {m:'Добрый',    f:'Добрая',      mod:{social: 2, greed:-1}},
+  {m:'Упрямый',   f:'Упрямая',     mod:{stubborn: 2}},
+  {m:'Пугливый',  f:'Пугливая',    mod:{courage:-2, social:-1}},
+  {m:'Любопытный',f:'Любопытная',  mod:{wander: 2, courage:1}},
+  {m:'Хитрый',    f:'Хитрая',      mod:{greed: 1, wander:1}},
+  {m:'Гневливый', f:'Гневливая',   mod:{temper: 2}},
+  {m:'Тихий',     f:'Тихая',       mod:{social:-2}},
+  {m:'Работящий', f:'Работящая',   mod:{industrious: 2}},
+  {m:'Ленивый',   f:'Ленивая',     mod:{industrious:-2, wander:-1}},
+  {m:'Смелый',    f:'Смелая',      mod:{courage: 2}},
+  {m:'Жадный',    f:'Жадная',      mod:{greed: 2, social:-1}},
+  {m:'Мечтательный',f:'Мечтательная',mod:{wander: 1, industrious:-1}},
+];
+const AXES=['social','courage','wander','greed','industrious','stubborn','temper'];
+
+/* ---------- мир ---------- */
+let W=null, autoOn=false, selected=[], whisperFor=null;
+
+function makeWorld(){
+  rnd=mulberry32(seed);
+  const riverX=ri(80,130), pts=[];
+  let x=riverX;
+  for(let y=0;y<=430;y+=48){ pts.push({x:x,y:y}); x+=ri(-16,16); x=Math.max(60,Math.min(150,x)); }
+  const brodI=ri(3,5);
+  const brod={x:(pts[brodI].x+pts[brodI+1].x)/2, y:(pts[brodI].y+pts[brodI+1].y)/2};
+
+  const forest=[]; const fx=ri(320,350), fy=ri(60,120);
+  for(let i=0;i<9;i++) forest.push({x:fx+ri(-30,70), y:fy+ri(-35,95), r:ri(10,17)});
+
+  const pois={
+    kostyor:{x:ri(200,250), y:ri(280,330), label:'костёр'},
+    brod:   {x:brod.x, y:brod.y,           label:'брод'},
+    yagodnik:{x:fx-ri(35,50), y:fy+ri(20,60), label:'ягодник'},
+    rodnik: {x:ri(170,230), y:ri(60,110),  label:'родник'},
+    opushka:{x:fx+ri(0,20),  y:fy+ri(100,130), label:'опушка'},
+  };
+
+  const idx=[...TRAITS.keys()];
+  const chosen=[];
+  for(let i=0;i<5;i++) chosen.push(idx.splice(Math.floor(rnd()*idx.length),1)[0]);
+  const people=chosen.map((ti,i)=>makePerson('p'+i, TRAITS[ti]));
+
+  const weather=[];
+  for(let d=1;d<=30;d++){
+    let w='ясно';
+    if(d>3){ const r=rnd(); if(r<0.12) w='дождь'; else if(r<0.20) w='холод'; }
+    weather.push(w);
+  }
+
+  W={seed, day:1, weather, pts, pois, forest, people, log:[], meetings:[], hands:2, over:false, pairMem:{}};
+  people.forEach(p=>{
+    p.x=Math.max(24,Math.min(436, W.pois.kostyor.x+ri(-46,46)));
+    p.y=Math.max(24,Math.min(410, W.pois.kostyor.y+ri(-38,38)));
+  });
+  logSys(`Мир #${seed}. Пятеро проснулись в безымянной долине.`);
+  plan();
+  renderAll();
+}
+
+function makePerson(id, tr){
+  const g=rnd()<0.5?'f':'m';
+  const p={id, g, name: g==='f'?tr.f:tr.m, mod:{}, satiety:ri(60,80), social:ri(40,60),
+           rel:{}, scars:[], alive:true, starving:0, x:0, y:0, plan:null};
+  AXES.forEach(a=>p.mod[a]=(tr.mod[a]||0));
+  return p;
+}
+
+/* ---------- утро: намерения ---------- */
+function plan(){
+  const cold=W.weather[W.day-1]==='холод', rain=W.weather[W.day-1]==='дождь';
+  const alive=W.people.filter(p=>p.alive);
+  alive.forEach(p=>{ p.whispered=false; p.whisperResisted=false; });
+  whisperFor=null;
+
+  alive.forEach(p=>{
+    const hunger=100-p.satiety, lonely=100-p.social;
+    const hdrive = hunger>45 ? hunger : hunger*0.35;
+    const c=[];
+    const wf=rain?0.55:1;
+    c.push({kind:'poi', id:'yagodnik', score: wf*(hdrive*0.9 + p.mod.greed*8 + p.mod.industrious*3 - dist(p,W.pois.yagodnik)*0.12 + rnd()*12), why:'голод'});
+    c.push({kind:'poi', id:'brod',     score: wf*(hdrive*0.8 + p.mod.industrious*8 - dist(p,W.pois.brod)*0.12 + rnd()*12), why:'рыба'});
+    c.push({kind:'poi', id:'rodnik',   score: wf*(14 + rnd()*10), why:'за водой'});
+    c.push({kind:'poi', id:'opushka',  score: wf*(p.mod.wander*9 + p.mod.courage*4 + rnd()*16), why:'любопытство'});
+    c.push({kind:'poi', id:'kostyor',  score: (cold?68:8) + (100-p.social)*0.12 + (rain?18:0) + rnd()*8, why: cold?'холод':'к огню'});
+    alive.forEach(o=>{ if(o===p) return;
+      const rel=p.rel[o.id]||0;
+      if(rel<-25 && p.mod.temper<1) return;
+      c.push({kind:'person', id:o.id, score: lonely*0.7 + rel*0.45 + p.mod.social*7 + rnd()*14, why:'к '+dat(o.name)});
+    });
+    c.sort((a,b)=>b.score-a.score);
+    p.plan={choice:c[0], forced:false};
+  });
+
+  alive.forEach(p=>{
+    const ch=p.plan.choice; let t;
+    if(ch.kind==='poi'){ const poi=W.pois[ch.id]; t={x:poi.x+ri(-14,14), y:poi.y+ri(-12,12)}; }
+    else { const o=W.people.find(q=>q.id===ch.id);
+           const oc=o.plan.choice;
+           t = oc.kind==='poi' ? {x:W.pois[oc.id].x+ri(-14,14), y:W.pois[oc.id].y+ri(-12,12)}
+                               : {x:o.x+ri(-18,18), y:o.y+ri(-16,16)}; }
+    t.x=Math.max(24,Math.min(436,t.x)); t.y=Math.max(24,Math.min(410,t.y));
+    const mid={x:(p.x+t.x)/2+ri(-22,22), y:(p.y+t.y)/2+ri(-22,22)};
+    p.plan.path=[{x:p.x,y:p.y},mid,t]; p.plan.target=t;
+  });
+
+  W.hands=2;
+  findMeetings();
+}
+
+function findMeetings(){
+  const oldDice={};
+  (W.meetings||[]).forEach(m=>{ if(m.diceSpent) oldDice[m.a+'+'+m.b]={dice:m.dice, diceSpent:true}; });
+  W.meetings=[];
+  const alive=W.people.filter(p=>p.alive && p.plan);
+  for(let i=0;i<alive.length;i++) for(let j=i+1;j<alive.length;j++){
+    const a=alive[i], b=alive[j];
+    let pt=null;
+    if(dist(a.plan.target,b.plan.target)<26)
+      pt={x:(a.plan.target.x+b.plan.target.x)/2, y:(a.plan.target.y+b.plan.target.y)/2};
+    else {
+      outer:
+      for(let s=0;s<2;s++) for(let q=0;q<2;q++){
+        const p1=a.plan.path[s], p2=a.plan.path[s+1], p3=b.plan.path[q], p4=b.plan.path[q+1];
+        const r={x:p2.x-p1.x,y:p2.y-p1.y}, s2={x:p4.x-p3.x,y:p4.y-p3.y};
+        const den=r.x*s2.y-r.y*s2.x; if(Math.abs(den)<1e-9) continue;
+        const t=((p3.x-p1.x)*s2.y-(p3.y-p1.y)*s2.x)/den, u=((p3.x-p1.x)*r.y-(p3.y-p1.y)*r.x)/den;
+        if(t>0.12&&t<0.88&&u>0.12&&u<0.88){ pt={x:p1.x+t*r.x,y:p1.y+t*r.y}; break outer; }
+      }
+    }
+    if(pt){
+      const forced=(a.plan.choice.why==='рука свела' && b.plan.choice.why==='рука свела');
+      const relAvg=((a.rel[b.id]||0)+(b.rel[a.id]||0))/2;
+      const shared=a.scars.filter(s=>s.who===b.name).length + b.scars.filter(s=>s.who===a.name).length;
+      const tense=relAvg<=-20 || shared>=2;
+      const keep=oldDice[a.id+'+'+b.id]||{};
+      W.meetings.push({a:a.id, b:b.id, x:pt.x, y:pt.y, place:placeName(pt), forced, tense,
+                       dice:keep.dice||null, diceSpent:!!keep.diceSpent});
+    }
+  }
+  W.meetings.sort((m,n)=>(n.forced?1:0)-(m.forced?1:0));
+  const busy=new Set(), kept=[];
+  W.meetings.forEach(m=>{
+    if(busy.has(m.a)||busy.has(m.b)) return;
+    busy.add(m.a); busy.add(m.b); kept.push(m);
+  });
+  W.meetings=kept;
+}
+
+function placeName(pt){
+  let best=null, bd=48;
+  for(const k in W.pois){ const d=dist(pt,W.pois[k]); if(d<bd){bd=d; best=W.pois[k].label;} }
+  return best||'на тропе';
+}
+
+/* ---------- руки игрока ---------- */
+function splitPair(mi){
+  if(W.hands<=0||W.over) return;
+  const m=W.meetings[mi]; if(!m) return;
+  const a=W.people.find(p=>p.id===m.a), b=W.people.find(p=>p.id===m.b);
+  const mover=(a.mod.stubborn<=b.mod.stubborn)?a:b;
+  const others=['rodnik','kostyor','opushka','brod','yagodnik']
+    .filter(k=>W.pois[k].label!==m.place);
+  const key=pick(others), poi=W.pois[key];
+  const t={x:poi.x+ri(-14,14), y:poi.y+ri(-12,12)};
+  mover.plan.choice={kind:'poi', id:key, why:'рука увела'}; mover.plan.forced=true;
+  const mid={x:(mover.x+t.x)/2+ri(-20,20), y:(mover.y+t.y)/2+ri(-20,20)};
+  mover.plan.path=[{x:mover.x,y:mover.y},mid,t]; mover.plan.target=t;
+  W.hands--; findMeetings(); renderAll();
+}
+
+function setDice(mi,val){
+  if(W.over) return;
+  const m=W.meetings[mi]; if(!m) return;
+  if(!m.diceSpent){
+    if(W.hands<=0) return;
+    W.hands--; m.diceSpent=true;
+  }
+  m.dice=(m.dice===val)?null:val;
+  renderAll();
+}
+
+function whisper(personId, targetKey){
+  if(W.hands<=0||W.over) return;
+  const p=W.people.find(q=>q.id===personId);
+  if(!p||!p.alive) return;
+  W.hands--;
+  const chance=Math.max(0.15, Math.min(0.95, 0.78 - 0.18*p.mod.stubborn));
+  if(rnd()<chance){
+    let t, choice;
+    if(targetKey.startsWith('poi:')){
+      const k=targetKey.slice(4), poi=W.pois[k];
+      t={x:poi.x+ri(-14,14), y:poi.y+ri(-12,12)};
+      choice={kind:'poi', id:k, why:'голос позвал'};
+    } else {
+      const o=W.people.find(q=>q.id===targetKey.slice(4));
+      if(!o||!o.alive){ renderAll(); return; }
+      const ot=o.plan&&o.plan.target?o.plan.target:o;
+      t={x:ot.x+ri(-16,16), y:ot.y+ri(-14,14)};
+      choice={kind:'person', id:o.id, why:'голос позвал — к '+dat(o.name)};
+    }
+    t.x=Math.max(24,Math.min(436,t.x)); t.y=Math.max(24,Math.min(410,t.y));
+    const mid={x:(p.x+t.x)/2+ri(-20,20), y:(p.y+t.y)/2+ri(-20,20)};
+    p.plan.choice=choice; p.plan.forced=true; p.whispered=true;
+    p.plan.path=[{x:p.x,y:p.y},mid,t]; p.plan.target=t;
+    findMeetings();
+  } else {
+    p.whisperResisted=true;
+  }
+  whisperFor=null;
+  renderAll();
+}
+
+function joinPair(){
+  if(W.hands<=0||selected.length!==2||W.over) return;
+  const [a,b]=selected.map(id=>W.people.find(p=>p.id===id));
+  if(!a.alive||!b.alive) return;
+  const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+  let bestK='opushka', bd=1e9;
+  for(const k in W.pois){ const d=dist({x:mx,y:my},W.pois[k]); if(d<bd){bd=d;bestK=k;} }
+  const poi=W.pois[bestK];
+  [a,b].forEach(p=>{
+    const t={x:poi.x+ri(-12,12), y:poi.y+ri(-10,10)};
+    p.plan.choice={kind:'poi', id:bestK, why:'рука свела'}; p.plan.forced=true;
+    const mid={x:(p.x+t.x)/2+ri(-20,20), y:(p.y+t.y)/2+ri(-20,20)};
+    p.plan.path=[{x:p.x,y:p.y},mid,t]; p.plan.target=t;
+  });
+  W.hands--; selected=[]; findMeetings(); renderAll();
+}
+
+/* ---------- прожить день ---------- */
+function liveDay(){
+  if(W.over) return Promise.resolve();
+  const cold=W.weather[W.day-1]==='холод', rain=W.weather[W.day-1]==='дождь';
+  const alive=W.people.filter(p=>p.alive);
+
+  if(cold) logEnv('Пришёл холод — ветер с полуночи.');
+  if(rain) logEnv('Весь день шёл дождь.');
+
+  alive.forEach(p=>{ p.x=p.plan.target.x; p.y=p.plan.target.y; });
+
+  const met=new Set(), recs=[];
+  W.meetings.forEach(m=>{
+    const a=W.people.find(p=>p.id===m.a), b=W.people.find(p=>p.id===m.b);
+    if(!a.alive||!b.alive) return;
+    recs.push(resolveMeeting(a,b,m));
+    met.add(a.id); met.add(b.id);
+  });
+
+  alive.forEach(p=>{
+    const at=k=>dist(p,W.pois[k])<34;
+    if(at('yagodnik')||at('brod')){
+      if(!p.noFood) p.satiety=Math.min(100, p.satiety+34+p.mod.industrious*4);
+      else p.satiety=Math.min(100, p.satiety+12);
+    }
+    p.satiety-=18;
+    if(cold && !at('kostyor')) p.satiety-=8;
+    if(at('kostyor')) p.social=Math.min(100,p.social+14);
+    if(!met.has(p.id)) p.social=Math.max(0,p.social-15);
+    p.noFood=false;
+  });
+
+  const atFire=alive.filter(p=>dist(p,W.pois.kostyor)<36);
+  if(atFire.length>=3){
+    atFire.forEach(p=>p.social=Math.min(100,p.social+12));
+    for(let i=0;i<atFire.length;i++) for(let j=i+1;j<atFire.length;j++){
+      bumpRel(atFire[i],atFire[j],2); bumpRel(atFire[j],atFire[i],2);
+    }
+    if(atFire.length===alive.length && alive.length>=4) logEnv('Вечером вся долина сошлась у костра.');
+  }
+
+  alive.forEach(p=>{
+    if(p.satiety<=0){ p.satiety=0; p.starving++;
+      if(p.starving===1) logEnv(`${p.name} ${vb(p,'слёг','слегла')} от голода.`);
+      if(p.starving>=4){ p.alive=false; p.deathDay=Math.min(W.day,30);
+        logSys(`${p.name} ${vb(p,'умер','умерла')} от голода. Долина стала тише.`); }
+    } else p.starving=0;
+  });
+
+  if(W.day===20){
+    const idx=[...TRAITS.keys()];
+    const used=new Set(W.people.map(p=>p.name));
+    let tr=TRAITS[pick(idx)], guard=0;
+    while((used.has(tr.m)||used.has(tr.f)) && guard++<20) tr=TRAITS[pick(idx)];
+    const g=rnd()<0.5?'f':'m';
+    const s=makePerson('p'+W.people.length, tr);
+    s.name=(g==='f'?'Пришлая':'Пришлый'); s.g=g;
+    s.x=430; s.y=ri(80,320); s.satiety=45;
+    W.people.push(s);
+    W.people.filter(q=>q.alive&&q!==s).forEach(q=>{ q.rel[s.id]=-5; s.rel[q.id]=0; });
+    logSys('Из тумана на краю долины вышел человек. Никто не знает его языка бед.');
+  }
+
+  const dayNum=Math.min(W.day,30), wthr=W.weather[W.day-1]||'ясно';
+  recs.forEach(r=>{ r.day=dayNum; r.weather=wthr; });
+  W.day++;
+  const scenes=Promise.allSettled(recs.map(sceneCall));
+  if(W.day>30 || W.people.filter(p=>p.alive).length<2){ finale(); return scenes; }
+  plan();
+  renderAll();
+  return scenes;
+}
+
+function resolveMeeting(a,b,m){
+  const place=m.place;
+  const relAB=a.rel[b.id]||0, relBA=b.rel[a.id]||0;
+  let warm=(a.mod.social+b.mod.social)*4 + (relAB+relBA)*0.3
+           + (rnd()*44-22) - (a.mod.temper+b.mod.temper)*6;
+  const foodPlace=(place==='ягодник'||place==='брод');
+  const hungry=(100-a.satiety>55)||(100-b.satiety>55);
+  if(foodPlace && hungry && (a.mod.greed+b.mod.greed)>0) warm-=20;
+  if(m.dice==='good') warm+=25;
+  if(m.dice==='bad') warm-=25;
+
+  const soc=(d)=>{ a.social=Math.min(100,a.social+d); b.social=Math.min(100,b.social+d); };
+  const scarObjs=[]; let outcome, scarType=null, tmpl;
+  const extra={};
+
+  if(warm>12){
+    outcome='friendly'; soc(26);
+    const d=ri(8,16); bumpRel(a,b,d); bumpRel(b,a,d);
+    if(warm>30){ scarType='приязнь'; scarObjs.push(addScar(a,b,'приязнь'), addScar(b,a,'приязнь')); }
+    if(foodPlace) extra.foodShared=true;
+    tmpl=pick([
+      `${a.name} и ${b.name} поладили у ${gde(place)}.`,
+      foodPlace?`${a.name} ${vb(a,'поделился','поделилась')} едой ${so(tvor(b.name))} у ${gde(place)}.`:
+                `${a.name} и ${b.name} проговорили до сумерек у ${gde(place)}.`,
+    ]);
+  } else if(warm<-12){
+    outcome='quarrel'; soc(6);
+    const d=ri(10,20); bumpRel(a,b,-d); bumpRel(b,a,-d);
+    const loser=(a.mod.temper+a.mod.greed)<=(b.mod.temper+b.mod.greed)?a:b;
+    if(foodPlace){ loser.noFood=true; extra.noFoodName=loser.name; extra.noFoodG=loser.g; }
+    if(warm<-26){ scarType='обида'; scarObjs.push(addScar(a,b,'обида'), addScar(b,a,'обида')); }
+    tmpl=pick([
+      `${a.name} и ${b.name} повздорили у ${gde(place)}.`,
+      foodPlace?`${a.name} и ${b.name} не поделили еду у ${gde(place)}.`:
+                `Слово за слово — ${a.name} и ${b.name} разошлись врозь у ${gde(place)}.`,
+    ]);
+  } else {
+    outcome='neutral'; soc(16);
+    bumpRel(a,b,2); bumpRel(b,a,2);
+    tmpl=pick([
+      `${a.name} и ${b.name} разминулись парой слов у ${gde(place)}.`,
+      `${a.name} ${vb(a,'кивнул','кивнула')} ${dat(b.name)} у ${gde(place)} — и только.`,
+    ]);
+  }
+
+  if(m.dice) extra.dice=m.dice;
+  const wh=a.whispered?a:(b.whispered?b:null);
+  if(wh) extra.whisperName=wh.name;
+  const st=[a,b].find(p=>p.name.startsWith('Пришл'));
+  if(st) extra.strangerName=st.name;
+
+  const entry=logMeet(tmpl);
+  entry.pending=!!BACKEND;
+  return {a,b,m,outcome,scarType,scarObjs,entry,extra};
+}
+
+function bumpRel(p,o,d){ p.rel[o.id]=Math.max(-100,Math.min(100,(p.rel[o.id]||0)+d)); }
+function addScar(p,o,type){ const s={who:o.name,type,label:type,day:Math.min(W.day,30)}; p.scars.push(s); return s; }
+
+/* ---------- сцены ---------- */
+function pairKey(a,b){ return [a.id,b.id].sort().join('+'); }
+function setScenes(v){
+  scenesAlive=v;
+  document.getElementById('sceneMode').textContent = v===null?'':(v?'· сцены: живые':'· сцены: немые (шаблоны)');
+}
+function updateDayBtn(){
+  const btn=document.getElementById('btnDay');
+  if(W.over){ btn.disabled=true; return; }
+  btn.disabled=pendingScenes>0;
+  btn.textContent=pendingScenes>0?'мир живёт…':'прожить день ▸';
+}
+function namePlace(m, name, day){
+  if(!name || m.place==='на тропе') return;
+  for(const k in W.pois){
+    const poi=W.pois[k];
+    if(poi.label===m.place && !poi.named){
+      poi.label=String(name).slice(0,24); poi.named=true;
+      const e=logSys(`С того дня место зовут «${poi.label}».`);
+      if(day) e.day=day;
+      renderMap(); renderChron();
+      return;
+    }
+  }
+}
+async function sceneCall(rec){
+  if(!BACKEND){ rec.entry.pending=false; return; }
+  pendingScenes++; updateDayBtn();
+  const {a,b}=rec;
+  const packP=p=>({name:p.name, g:p.g, trait:p.name, sat:Math.round(p.satiety)});
+  const body={
+    day:rec.day||1, place:rec.m.place, weather:rec.weather||'ясно',
+    outcome:rec.outcome, scarType:rec.scarType,
+    a:packP(a), b:packP(b),
+    relAB:a.rel[b.id]||0, relBA:b.rel[a.id]||0,
+    scars:[...a.scars.filter(s=>s.who===b.name),...b.scars.filter(s=>s.who===a.name)]
+      .slice(-4).map(s=>s.label+(s.label===s.type?'':' ('+s.type+')')),
+    memory:(W.pairMem[pairKey(a,b)]||[]).slice(-3),
+    flags:rec.extra,
+  };
+  try{
+    const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),9000);
+    const res=await fetch(BACKEND,{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify(body), signal:ctl.signal});
+    clearTimeout(tm);
+    if(!res.ok) throw new Error('http '+res.status);
+    const s=await res.json();
+    if(s.error) throw new Error(s.error);
+    if(s.chronicle) rec.entry.text=s.chronicle;
+    if(s.legend) rec.entry.legend=s.legend;
+    if(s.detail){ const k=pairKey(a,b); (W.pairMem[k]=W.pairMem[k]||[]).push(String(s.detail).slice(0,90)); }
+    if(s.scar_text) rec.scarObjs.forEach(sc=>sc.label=sc.type+': '+String(s.scar_text).slice(0,40));
+    if(s.place_name) namePlace(rec.m, s.place_name, rec.day);
+    setScenes(true);
+  }catch(e){ setScenes(false); }
+  rec.entry.pending=false;
+  pendingScenes--; updateDayBtn(); renderChron();
+}
+
+/* ---------- склонения (минимум) ---------- */
+function vb(p,m,f){ return p.g==='f'?f:m; }
+function so(name){ return (/^С[бвгджзйклмнпрстфхцчшщ]/.test(name)?'со ':'с ')+name; }
+function dat(name){
+  if(name.endsWith('ая')) return name.slice(0,-2)+'ой';
+  if(name.endsWith('ый')) return name.slice(0,-2)+'ому';
+  if(name.endsWith('ий')) return name.slice(0,-2)+'ему';
+  return name;
+}
+function tvor(name){
+  if(name.endsWith('ая')) return name.slice(0,-2)+'ой';
+  if(name.endsWith('ый')) return name.slice(0,-2)+'ым';
+  if(name.endsWith('ий')) return name.slice(0,-2)+'им';
+  return name;
+}
+function gde(place){
+  const m={'костёр':'костра','брод':'брода','ягодник':'ягодника','родник':'родника','опушка':'опушки','на тропе':'тропы'};
+  return m[place]||place;
+}
+
+/* ---------- летопись ---------- */
+function logLine(text,kind){ const e={day:Math.min(W.day,30), text, kind}; W.log.push(e); return e; }
+function logMeet(t){ return logLine(t,'meet'); }
+function logEnv(t){ return logLine(t,'env'); }
+function logSys(t){ return logLine(t,'sys'); }
+
+/* ---------- финал ---------- */
+function finale(){
+  W.over=true;
+  const alive=W.people.filter(p=>p.alive);
+  const meets=W.log.filter(l=>l.kind==='meet').length;
+  const pairs=[];
+  for(let i=0;i<W.people.length;i++) for(let j=i+1;j<W.people.length;j++){
+    const a=W.people[i], b=W.people[j];
+    const r=((a.rel[b.id]||0)+(b.rel[a.id]||0))/2;
+    pairs.push({a,b,r});
+  }
+  const friends=pairs.filter(p=>p.r>=30).map(p=>`${p.a.name} и ${p.b.name}`);
+  const foes=pairs.filter(p=>p.r<=-30).map(p=>`${p.a.name} и ${p.b.name}`);
+  const scars=W.people.reduce((s,p)=>s+p.scars.length,0);
+  const dead=W.people.filter(p=>!p.alive).map(p=>p.name);
+  const named=Object.values(W.pois).filter(p=>p.named).map(p=>'«'+p.label+'»');
+  const legends=W.log.filter(l=>l.legend).length;
+  const el=document.getElementById('finaleBody');
+  el.innerHTML=`
+    <p>Мир #${W.seed} прожил ${Math.min(W.day-1,30)} дней. Встреч: ${meets}${legends?`, преданий: ${legends}`:''}. Рубцов: ${scars}.</p>
+    <ul>
+      <li>дружбы: ${friends.length?friends.join(' · '):'не завязались'}</li>
+      <li>вражды: ${foes.length?foes.join(' · '):'не вспыхнули'}</li>
+      <li>имена, которые родились: ${named.length?named.join(' · '):'мир остался безымянным'}</li>
+      <li>ушли: ${dead.length?dead.join(' · '):'все живы'}</li>
+    </ul>
+    <p class="note">${legends?'Летопись выше — двумя голосами: хроника мира и предания племени.':'Встречи прошли немыми — сцены оживут с воркером (backend/DEPLOY.md).'}</p>`;
+  document.getElementById('finale').hidden=false;
+  document.getElementById('btnDay').disabled=true;
+  stopAuto();
+  logSys('Тридцатый закат. Долина замерла — что выросло, то выросло.');
+  renderAll();
+}
+
+/* ---------- отрисовка ---------- */
+const S='http://www.w3.org/2000/svg';
+function el(tag,attrs){ const e=document.createElementNS(S,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function renderMap(){
+  const svg=document.getElementById('map');
+  svg.innerHTML='';
+  svg.appendChild(el('rect',{x:0,y:0,width:460,height:430,rx:10,fill:'#f7f5ee'}));
+
+  let d='M'+W.pts.map(p=>p.x+','+p.y).join(' L');
+  svg.appendChild(el('path',{d,fill:'none',stroke:'var(--riv)','stroke-width':7,'stroke-linecap':'round',opacity:.8}));
+
+  W.forest.forEach(c=>svg.appendChild(el('circle',{cx:c.x,cy:c.y,r:c.r,fill:'none',stroke:'var(--wood)','stroke-width':1.4})));
+
+  svg.appendChild(el('line',{x1:445,y1:8,x2:445,y2:422,stroke:'var(--mut)','stroke-width':1,'stroke-dasharray':'2 6'}));
+  const fog=el('text',{x:452,y:215,'font-size':11,fill:'var(--mut)',transform:'rotate(90 452 215)','text-anchor':'middle'});
+  fog.textContent='туман'; svg.appendChild(fog);
+
+  for(const k in W.pois){
+    const p=W.pois[k];
+    if(k==='kostyor'){
+      svg.appendChild(el('path',{d:`M${p.x-6},${p.y+5} L${p.x},${p.y-8} L${p.x+6},${p.y+5} Z`,fill:'none',stroke:'var(--meet)','stroke-width':1.6}));
+    } else if(k==='brod'){
+      svg.appendChild(el('line',{x1:p.x-8,y1:p.y-4,x2:p.x+8,y2:p.y-4,stroke:'var(--ink2)','stroke-width':1.6}));
+      svg.appendChild(el('line',{x1:p.x-8,y1:p.y+3,x2:p.x+8,y2:p.y+3,stroke:'var(--ink2)','stroke-width':1.6}));
+    } else if(k==='yagodnik'){
+      [[-5,-2],[3,-6],[1,4]].forEach(o=>svg.appendChild(el('circle',{cx:p.x+o[0],cy:p.y+o[1],r:2.6,fill:'none',stroke:'var(--meet)','stroke-width':1.3})));
+    } else if(k==='rodnik'){
+      svg.appendChild(el('circle',{cx:p.x,cy:p.y,r:5,fill:'none',stroke:'var(--riv)','stroke-width':1.6}));
+    } else {
+      svg.appendChild(el('circle',{cx:p.x,cy:p.y,r:3,fill:'var(--wood)'}));
+    }
+    const t=el('text',{x:p.x,y:p.y+20,'font-size':10.5,fill:'var(--mut)','text-anchor':'middle'});
+    t.textContent=p.label; svg.appendChild(t);
+  }
+
+  if(!W.over) W.people.filter(p=>p.alive&&p.plan).forEach(p=>{
+    const [a,m,b]=p.plan.path;
+    svg.appendChild(el('path',{d:`M${a.x},${a.y} L${m.x},${m.y} L${b.x},${b.y}`,fill:'none',
+      stroke: p.plan.forced?'var(--acc)':'var(--mut)','stroke-width':1.3,'stroke-dasharray':'4 4'}));
+  });
+
+  if(!W.over) W.meetings.forEach(m=>{
+    svg.appendChild(el('path',{d:`M${m.x},${m.y-6} l6,6 -6,6 -6,-6 z`,fill:'var(--meet)'}));
+  });
+
+  W.people.filter(p=>p.alive).forEach(p=>{
+    svg.appendChild(el('circle',{cx:p.x,cy:p.y,r:9,fill:'#fff',stroke:selected.includes(p.id)?'var(--acc)':'var(--ink2)','stroke-width':selected.includes(p.id)?2.2:1.5}));
+    const t=el('text',{x:p.x,y:p.y-14,'font-size':10.5,fill:'var(--ink2)','text-anchor':'middle'});
+    t.textContent=p.name; svg.appendChild(t);
+  });
+}
+
+function renderIntents(){
+  const cold=W.weather[W.day-1]==='холод', rain=W.weather[W.day-1]==='дождь';
+  document.getElementById('intentHdr').textContent=
+    `утро дня ${Math.min(W.day,30)} — намерения` + (cold?' · холод':'') + (rain?' · дождь':'');
+  const list=document.getElementById('intentList');
+  list.innerHTML='';
+  if(W.over){ list.innerHTML='<div class="note">мир дожил свои дни</div>'; }
+  else W.people.filter(p=>p.alive).forEach(p=>{
+    const d=document.createElement('div'); d.className='intent';
+    const ch=p.plan.choice;
+    const to = ch.kind==='poi' && W.pois[ch.id] ? W.pois[ch.id].label : ch.why;
+    d.innerHTML=`<b>${p.name}</b> → ${ch.kind==='poi'&&W.pois[ch.id]?to+' <span class="note">('+ch.why+')</span>':'<span>'+ch.why+'</span>'}`;
+    list.appendChild(d);
+  });
+
+  const ml=document.getElementById('meetList');
+  ml.innerHTML='';
+  if(!W.over) W.meetings.forEach((m,i)=>{
+    const a=W.people.find(p=>p.id===m.a), b=W.people.find(p=>p.id===m.b);
+    const row=document.createElement('div'); row.className='meetrow';
+    row.innerHTML=`<span class="dia">◆</span> <span>${a.name} × ${b.name} — ${m.place}${m.tense?' <span class="tense" title="встреча на изломе">⚡</span>':''}</span>`;
+    const btn=document.createElement('button'); btn.textContent='развести';
+    btn.disabled=W.hands<=0; btn.onclick=()=>splitPair(i);
+    row.appendChild(btn);
+    if(m.tense){
+      [['good','к добру'],['bad','к худу']].forEach(([v,label])=>{
+        const db=document.createElement('button');
+        db.className='dice'+(m.dice===v?' on':'');
+        db.textContent=label;
+        db.title='кость: клонить исход';
+        db.disabled=(!m.diceSpent && W.hands<=0);
+        db.onclick=()=>setDice(i,v);
+        row.appendChild(db);
+      });
+    }
+    ml.appendChild(row);
+  });
+  if(!W.over && !W.meetings.length){
+    const d=document.createElement('div'); d.className='note'; d.textContent='пути сегодня не пересекаются';
+    ml.appendChild(d);
+  }
+
+  document.getElementById('handsLeft').textContent=`вмешательства: ${W.hands} из 2`;
+  document.getElementById('btnPair').disabled=(W.hands<=0||selected.length!==2||W.over);
+}
+
+function renderPeople(){
+  const row=document.getElementById('peopleRow');
+  row.innerHTML='';
+  W.people.forEach(p=>{
+    const c=document.createElement('div');
+    c.className='pcard'+(selected.includes(p.id)?' sel':'')+(p.alive?'':' dead');
+    const scars=p.scars.length?`<div class="scars">рубцы: ${p.scars.length}</div>`:'';
+    const marks=(p.whispered?'<div class="resist" style="color:var(--acc)">слушает голос</div>':'')+
+                (p.whisperResisted?`<div class="resist">${vb(p,'упёрся','упёрлась')} — голос не взял</div>`:'');
+    c.innerHTML=`<div class="nm">${p.name}${p.alive?'':' †'}</div>`+
+      (p.alive
+        ?`<div class="tr">сытость ${Math.round(p.satiety)} · душа ${Math.round(p.social)}</div>
+          <div class="st"><i style="width:${Math.max(0,Math.round(p.satiety))}%"></i></div>${scars}${marks}`
+        :`<div class="tr">${vb(p,'умер','умерла')} · день ${p.deathDay||'?'}</div>${scars}`);
+    if(p.alive){
+      c.onclick=()=>{
+        if(selected.includes(p.id)) selected=selected.filter(x=>x!==p.id);
+        else { selected.push(p.id); if(selected.length>2) selected.shift(); }
+        renderAll();
+      };
+      if(!W.over && W.hands>0 && !p.whispered && !p.whisperResisted){
+        const wb=document.createElement('button'); wb.className='whisp'; wb.textContent='шепнуть';
+        wb.onclick=(ev)=>{ ev.stopPropagation(); whisperFor=(whisperFor===p.id?null:p.id); renderAll(); };
+        c.appendChild(wb);
+      }
+    }
+    row.appendChild(c);
+  });
+
+  const old=document.getElementById('whispPanel'); if(old) old.remove();
+  if(whisperFor && !W.over){
+    const p=W.people.find(q=>q.id===whisperFor);
+    if(p&&p.alive){
+      const panel=document.createElement('div'); panel.id='whispPanel';
+      const lbl=document.createElement('span');
+      lbl.innerHTML=`шепнуть ${dat(p.name)} — куда потянуть:`;
+      const sel=document.createElement('select');
+      for(const k in W.pois){
+        const o=document.createElement('option'); o.value='poi:'+k; o.textContent=W.pois[k].label;
+        sel.appendChild(o);
+      }
+      W.people.filter(q=>q.alive&&q.id!==p.id).forEach(q=>{
+        const o=document.createElement('option'); o.value='per:'+q.id; o.textContent='к '+dat(q.name);
+        sel.appendChild(o);
+      });
+      const ok=document.createElement('button'); ok.textContent='шепнуть';
+      ok.onclick=()=>whisper(p.id, sel.value);
+      const no=document.createElement('button'); no.textContent='отмена';
+      no.onclick=()=>{ whisperFor=null; renderAll(); };
+      const note=document.createElement('span'); note.className='note';
+      note.textContent='натура может упереться — вмешательство уйдёт всё равно';
+      panel.append(lbl, sel, ok, no, note);
+      row.parentElement.appendChild(panel);
+    }
+  }
+}
+
+function renderChron(){
+  const box=document.getElementById('chronList');
+  box.innerHTML='';
+  let curDay=null;
+  W.log.forEach(l=>{
+    if(l.day!==curDay){ curDay=l.day;
+      const h=document.createElement('div'); h.className='chday'; h.textContent=`— день ${Math.min(l.day,30)} —`;
+      box.appendChild(h);
+    }
+    const d=document.createElement('div'); d.className='chline '+l.kind; d.textContent=l.text;
+    if(l.pending){ const s=document.createElement('span'); s.className='pend'; s.textContent=' ⋯'; d.appendChild(s); }
+    box.appendChild(d);
+    if(l.legend){
+      const g=document.createElement('div'); g.className='legend'; g.textContent='«'+l.legend+'»';
+      box.appendChild(g);
+    }
+  });
+  box.scrollTop=box.scrollHeight;
+}
+
+function renderAll(){
+  document.getElementById('hdrInfo').textContent=`мир #${W.seed} · день ${Math.min(W.day,30)} из 30`;
+  renderMap(); renderIntents(); renderPeople(); renderChron(); updateDayBtn();
+}
+
+/* ---------- управление ---------- */
+function stopAuto(){ autoOn=false; document.getElementById('btnAuto').textContent='убрать руку'; }
+async function autoLoop(){
+  while(autoOn && !W.over){
+    await liveDay();
+    await new Promise(r=>setTimeout(r, scenesAlive?350:600));
+  }
+  stopAuto();
+}
+
+document.getElementById('btnDay').onclick=()=>{ if(pendingScenes>0) return; stopAuto(); liveDay(); };
+document.getElementById('btnAuto').onclick=()=>{
+  if(autoOn){ stopAuto(); return; }
+  if(W.over) return;
+  autoOn=true;
+  document.getElementById('btnAuto').textContent='вернуть руку';
+  autoLoop();
+};
+document.getElementById('btnPair').onclick=joinPair;
+document.getElementById('btnSave').onclick=()=>{
+  const blob=new Blob([JSON.stringify(W,null,1)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=`mir-${W.seed}-den-${Math.min(W.day,30)}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById('btnReseed').onclick=()=>{
+  stopAuto(); seed=Math.floor(Math.random()*9000)+100;
+  document.getElementById('finale').hidden=true;
+  document.getElementById('btnDay').disabled=false;
+  selected=[]; makeWorld();
+};
+
+makeWorld();
+</script>
+</body>
+</html>
