@@ -1,0 +1,118 @@
+<svg viewBox="0 0 900 590" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Атом — момент выбора, прожитый с двух сторон (2026-07-26)</title>
+  <desc>Носитель (правитель и воин одной природы, разный лишь радиус последствий) несёт силы: страх/нужду, веру, рубцы. Под давлением он попадает на развилку, где нет доброго варианта, а порой и честного. Физика власти — модификатор: чем сильнее власть сходится в одной точке, тем шире радиус, одиноче и бесповоротнее выбор (структура, не приговор). Выбор метит задетых рубцом и доходит до других искажённой вестью, из чего сама растёт установка «нас все хотят захватить». Взгляд игрока вселяется в один и тот же миг с двух сторон: изнутри правителя «выбора не было», изнутри воина «будь он проклят» — оттого нет простого выбора. Внизу тайна: во что верят против того, что движет на деле.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888780"/></marker>
+    <marker id="arp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7F77DD"/></marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="590" fill="#ffffff"/>
+  <text x="20" y="26" font-size="13" fill="#888780">Атом — момент выбора, прожитый с двух сторон · живите как хотите · 2026-07-26</text>
+
+  <!-- A. НОСИТЕЛЬ -->
+  <text x="30" y="58" font-size="12" font-weight="600" fill="#2c2c2a">НОСИТЕЛЬ · сеем силы внутрь</text>
+  <text x="30" y="74" font-size="10.5" fill="#888780">правитель ≡ воин — разный лишь радиус</text>
+  <g font-size="11.5">
+    <g fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.2">
+      <rect x="30" y="84" width="180" height="27" rx="6"/>
+      <rect x="30" y="117" width="180" height="27" rx="6"/>
+      <rect x="30" y="150" width="180" height="27" rx="6"/>
+    </g>
+    <g fill="#3C3489">
+      <text x="40" y="102">страх · нужда</text>
+      <text x="40" y="135">вера</text>
+      <text x="40" y="168">рубцы — память встреч</text>
+    </g>
+  </g>
+  <text x="30" y="204" font-size="10.5" fill="#5f5e5a">радиус = сколько задевает выбор</text>
+  <circle cx="66" cy="248" r="24" fill="none" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 4"/>
+  <circle cx="66" cy="248" r="8" fill="#faf9f5" stroke="#888780" stroke-width="1.5"/>
+  <text x="66" y="290" font-size="11" fill="#5f5e5a" text-anchor="middle">воин</text>
+  <circle cx="165" cy="248" r="45" fill="none" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 4"/>
+  <circle cx="165" cy="248" r="8" fill="#faf9f5" stroke="#888780" stroke-width="1.5"/>
+  <text x="165" y="308" font-size="11" fill="#5f5e5a" text-anchor="middle">правитель</text>
+
+  <!-- B. ФИЗИКА ВЛАСТИ -->
+  <text x="268" y="96" font-size="11" font-weight="600" fill="#2c2c2a">ФИЗИКА ВЛАСТИ</text>
+  <line x1="300" y1="110" x2="300" y2="198" stroke="#7F77DD" stroke-width="1.8" marker-end="url(#arp)"/>
+  <text x="312" y="116" font-size="9.5" fill="#5f5e5a">груз разделён</text>
+  <text x="312" y="200" font-size="9.5" font-weight="600" fill="#3C3489">власть в одной точке</text>
+  <text x="268" y="224" font-size="9.5" fill="#5f5e5a">ниже — выбор шире,</text>
+  <text x="268" y="237" font-size="9.5" fill="#5f5e5a">одиноче, бесповоротнее</text>
+  <text x="268" y="255" font-size="9.5" font-weight="600" fill="#993C1D">структура, не приговор</text>
+
+  <!-- связи носитель/физика → развилка -->
+  <g stroke="#b4b2a9" stroke-width="1.1" fill="none" marker-end="url(#ar)">
+    <path d="M210,98 C300,116 360,132 421,140"/>
+    <path d="M210,131 C300,150 360,148 421,150"/>
+    <path d="M210,164 C300,180 360,164 421,158"/>
+    <path d="M318,168 C370,170 398,162 423,158"/>
+  </g>
+
+  <!-- C. РАЗВИЛКА -->
+  <text x="476" y="50" font-size="10.5" fill="#5f5e5a" text-anchor="middle">ДАВЛЕНИЕ: опасность · нужда · чужой выбор дотянулся</text>
+  <line x1="476" y1="58" x2="476" y2="92" stroke="#888780" stroke-width="1.3" marker-end="url(#ar)"/>
+  <circle cx="476" cy="150" r="55" fill="#FAECE7" stroke="#D85A30" stroke-width="2"/>
+  <text x="476" y="146" font-size="13" font-weight="600" fill="#993C1D" text-anchor="middle">РАЗВИЛКА</text>
+  <text x="476" y="164" font-size="10.5" fill="#993C1D" text-anchor="middle">выбор под давлением</text>
+  <g stroke="#D85A30" stroke-width="1.4" fill="none" marker-end="url(#ar)">
+    <path d="M462,202 L440,232"/>
+    <path d="M490,202 L512,232"/>
+  </g>
+  <text x="476" y="250" font-size="9.8" fill="#5f5e5a" text-anchor="middle">нет доброго; порой нет и честного — пленник своей веры</text>
+
+  <!-- C → D -->
+  <g stroke="#b4b2a9" stroke-width="1.1" fill="none" marker-end="url(#ar)">
+    <path d="M528,135 C575,100 600,90 626,88"/>
+    <path d="M531,148 C575,124 600,122 626,122"/>
+    <path d="M531,160 C575,152 600,154 626,156"/>
+  </g>
+
+  <!-- D. РАСТЁТ САМО -->
+  <text x="628" y="58" font-size="12" font-weight="600" fill="#0F6E56">растёт САМО — никто не кодил</text>
+  <g font-size="11.5">
+    <g fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2">
+      <rect x="628" y="72" width="250" height="27" rx="6"/>
+      <rect x="628" y="105" width="250" height="27" rx="6"/>
+      <rect x="628" y="138" width="250" height="27" rx="6"/>
+    </g>
+    <g fill="#0F6E56">
+      <text x="638" y="90">рубец — на задетых</text>
+      <text x="638" y="123">весть искажается через веру</text>
+      <text x="638" y="156">⟳ установка растёт сама</text>
+    </g>
+  </g>
+  <text x="638" y="185" font-size="11.5" font-style="italic" fill="#ba7517" font-family="Georgia, serif">«нас все хотят захватить»</text>
+  <path d="M846,138 A26,26 0 1 1 844,138" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#ar)"/>
+
+  <!-- E. ДВЕ ЛИНЗЫ -->
+  <text x="450" y="300" font-size="12" font-weight="600" fill="#2c2c2a" text-anchor="middle">ДВЕ ЛИНЗЫ — один момент, два конца</text>
+  <line x1="476" y1="205" x2="476" y2="318" stroke="#ba7517" stroke-width="1.3" fill="none" stroke-dasharray="3 4"/>
+  <g stroke="#ba7517" fill="none" stroke-width="2"><path d="M447,332 Q476,312 505,332 Q476,352 447,332 z"/></g>
+  <circle cx="476" cy="332" r="6.5" fill="#ba7517"/>
+  <text x="476" y="372" font-size="10" fill="#888780" text-anchor="middle">вселяешься по очереди</text>
+  <g stroke="#ba7517" stroke-width="1.3" fill="none" marker-end="url(#ar)" stroke-dasharray="4 4">
+    <path d="M458,338 C420,346 405,344 392,344"/>
+    <path d="M494,338 C532,346 547,344 560,344"/>
+  </g>
+  <rect x="120" y="322" width="272" height="46" rx="9" fill="#f1efe8" stroke="#b4b2a9" stroke-width="1.3"/>
+  <text x="134" y="342" font-size="11" font-weight="600" fill="#2c2c2a">изнутри правителя</text>
+  <text x="134" y="360" font-size="11.5" font-style="italic" fill="#5f5e5a" font-family="Georgia, serif">«а был ли выбор?» — не знаем</text>
+  <rect x="560" y="322" width="272" height="46" rx="9" fill="#f1efe8" stroke="#b4b2a9" stroke-width="1.3"/>
+  <text x="574" y="342" font-size="11" font-weight="600" fill="#2c2c2a">изнутри воина</text>
+  <text x="574" y="360" font-size="11.5" font-style="italic" fill="#ba7517" font-family="Georgia, serif">«будь он проклят»</text>
+
+  <!-- F. ТАЙНА = РАЗРЫВ -->
+  <rect x="30" y="398" width="845" height="96" rx="10" fill="#f7f5ee" stroke="#b4b2a9" stroke-width="1.1"/>
+  <text x="46" y="422" font-size="12" font-weight="600" fill="#26215C">во что ВЕРЯТ</text>
+  <text x="150" y="422" font-size="12" fill="#534AB7">посягнули на суверенитет · так надо · государь защитит</text>
+  <line x1="46" y1="442" x2="859" y2="442" stroke="#D85A30" stroke-width="1.3" stroke-dasharray="5 5"/>
+  <text x="452" y="458" font-size="11.5" font-weight="600" fill="#993C1D" text-anchor="middle">↕ тайна = разрыв — виден только внимательному игроку</text>
+  <text x="46" y="480" font-size="12" font-weight="600" fill="#2c2c2a">что на ДЕЛЕ движет</text>
+  <text x="200" y="480" font-size="12" fill="#5f5e5a">страх · униженность · неуважение к личности · рубец</text>
+
+  <!-- G. девиз -->
+  <text x="450" y="536" font-size="15" text-anchor="middle" fill="#2c2c2a">
+    <tspan font-weight="600">один атом</tspan><tspan> — прожит с </tspan><tspan fill="#ba7517" font-weight="600">двух сторон</tspan><tspan> — оттого нет простого выбора</tspan>
+  </text>
+  <text x="450" y="558" font-size="10.5" text-anchor="middle" fill="#888780">правитель ≡ житель · выбор = давление × радиус</text>
+</svg>

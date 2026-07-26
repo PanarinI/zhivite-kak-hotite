@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Атом — один миг, два конца</title>
+<style>
+  :root{
+    --paper:#ffffff; --ink:#2c2c2a; --grey:#5f5e5a; --faint:#888780; --line:#d9d6cc;
+    --terra:#D85A30; --terra-deep:#993C1D; --terra-pale:#FAECE7;
+    --violet:#7F77DD; --violet-deep:#3C3489;
+    --ochre:#ba7517; --green-deep:#0F6E56;
+    --beige:#f1efe8; --beige2:#f7f5ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:Helvetica,Arial,sans-serif;line-height:1.5;
+    display:flex;justify-content:center;padding:38px 20px 80px}
+  main{width:100%;max-width:640px}
+  .top{font-size:12px;color:var(--faint);margin-bottom:26px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:.5px}
+  h2{font-size:21px;margin:0 0 14px}
+  .sub{color:var(--faint);font-size:13px;margin:0 0 26px}
+  .voice{font-family:Georgia,serif;font-size:17px;color:var(--ink);margin:0 0 16px}
+  .voice.em{color:var(--terra-deep)}
+  .lens-note{font-size:13px;color:var(--faint);font-style:italic;margin:0 0 20px}
+  .q{font-weight:600;font-size:15px;margin:22px 0 12px}
+  .chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;
+    letter-spacing:1px;color:var(--ochre);border:1px solid var(--ochre);
+    border-radius:20px;padding:5px 13px;margin-bottom:22px}
+  .chip .eye{width:16px;height:10px;border:1.6px solid var(--ochre);border-radius:50%;
+    position:relative;background:transparent}
+  .chip .eye::after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;
+    background:var(--ochre);left:5px;top:2px}
+  .forces{border-left:3px solid var(--violet);padding:2px 0 2px 16px;margin:0 0 8px}
+  .forces div{font-size:14px;color:var(--grey);margin:9px 0}
+  .forces b{color:var(--violet-deep);font-weight:600;font-family:Helvetica,Arial,sans-serif}
+  .choice{display:block;width:100%;text-align:left;background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:10px 0;
+    cursor:pointer;font-family:inherit;transition:.15s}
+  .choice:hover{background:var(--beige);border-color:var(--faint)}
+  .choice .t{font-size:15px;color:var(--ink)}
+  .choice .c{display:block;font-size:12.5px;color:var(--faint);margin-top:5px}
+  .consequence{background:var(--beige2);border:1px solid var(--line);border-radius:10px;
+    padding:18px 20px;margin:0 0 18px}
+  .scar{color:var(--terra-deep);font-size:13.5px;font-weight:600;margin:0 0 22px}
+  .honest{background:var(--beige);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;font-size:13.5px;color:var(--grey);margin:22px 0}
+  .honest b{color:var(--ink)}
+  .go{background:var(--terra);color:#fff;border:none;border-radius:8px;
+    padding:12px 22px;font-size:15px;font-family:inherit;cursor:pointer;margin-top:8px}
+  .go:hover{background:var(--terra-deep)}
+  .go.ghost{background:transparent;color:var(--terra-deep);border:1px solid var(--terra)}
+  .hidden{display:none}
+  /* журнал осмыслений — второй слой */
+  .journal{border-top:2px solid var(--ochre);margin-top:30px;padding-top:20px}
+  .jhead{font-size:12px;font-weight:600;letter-spacing:1.5px;color:var(--ochre);margin-bottom:6px}
+  .jnote{font-size:13px;color:var(--faint);font-style:italic;margin:0 0 14px}
+  #insight{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+    font-family:Georgia,serif;font-size:15px;color:var(--ink);resize:vertical;background:var(--paper)}
+  #insight:focus{outline:none;border-color:var(--ochre)}
+  #entries{margin-top:18px}
+  .entry{border-left:3px solid var(--ochre);padding:2px 0 2px 15px;margin:14px 0}
+  .entry .meta{font-size:11.5px;color:var(--faint);margin-bottom:4px}
+  .entry .text{font-family:Georgia,serif;font-size:15px;color:var(--ink)}
+  .jempty{font-size:13px;color:var(--faint);font-style:italic}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">атом · один миг — два конца · живите как хотите · 2026-07-26</div>
+
+  <!-- S0 -->
+  <section id="s0">
+    <h1>Атом</h1>
+    <p class="sub">один миг — прожитый с двух сторон</p>
+    <p class="voice">Безымянная земля. Безвременье. У власти — человек. На границе — тревога.</p>
+    <button class="go" onclick="show('s1')">Войти в правителя →</button>
+  </section>
+
+  <!-- S1 правитель -->
+  <section id="s1" class="hidden">
+    <div class="chip"><span class="eye"></span> ВСЕЛЁН: ПРАВИТЕЛЬ</div>
+    <p class="voice">С границы весть: за рекой видели чужих конников. Сколько их, зачем — не знает никто. Гонец ждёт: что сказать народу?</p>
+    <div class="forces">
+      <div><b>страх</b> — промолчишь, а это набег: сожгут сёла, и вина на тебе.</div>
+      <div><b>власть</b> — поднимешь шум зря, скажут «оробел». Ты держишься, пока тебя не считают слабым.</div>
+      <div><b>туман</b> — правды не знаешь. И вовремя не узнаешь.</div>
+    </div>
+    <p class="q">Что сказать народу?</p>
+    <button class="choice" onclick="ruler('A')">
+      <span class="t">Назвать нашествием — пусть страх сплотит.</span>
+      <span class="c">ложь? или ты уже сам поверил</span></button>
+    <button class="choice" onclick="ruler('B')">
+      <span class="t">Сказать как есть: мы не знаем.</span>
+      <span class="c">честно — но паника, и ты не хозяин положения</span></button>
+    <button class="choice" onclick="ruler('C')">
+      <span class="t">Промолчать, послать тайную разведку.</span>
+      <span class="c">время выиграно — но если это набег, промедление в крови</span></button>
+  </section>
+
+  <!-- S2 последствие -->
+  <section id="s2" class="hidden">
+    <div class="consequence"><p class="voice" id="conseq" style="margin:0"></p></div>
+    <p class="scar">Слово ушло в мир — и по дороге исказилось. Рубец лёг на того, кого ты задел.</p>
+    <button class="go" onclick="show('s3')">Стать тем, кого задело →</button>
+  </section>
+
+  <!-- S3 воин -->
+  <section id="s3" class="hidden">
+    <div class="chip"><span class="eye"></span> ВСЕЛЁН: ВОИН</div>
+    <p class="voice">Ночь. Дозор у реки. Холодно. Дома — жена, ты не сказал ей ничего путного. За рекой темно и тихо. Может, войско. Может, никого.</p>
+    <p class="voice em">Тебе страшно. Не как в песнях — просто до дрожи не хочешь умирать за чужой страх.</p>
+    <p class="voice" id="curse"></p>
+    <p class="lens-note">(Ты ведь только что был им. Ты знаешь — он тоже боялся. Легче не становится.)</p>
+    <p class="q">Что сделаешь до рассвета?</p>
+    <button class="choice" onclick="soldier('flee')">
+      <span class="t">Уйти в темноте. Жизнь одна.</span>
+      <span class="c">страх смерти — но семью спросят за побег</span></button>
+    <button class="choice" onclick="soldier('stay')">
+      <span class="t">Остаться. Не из доблести — из страха за своих.</span>
+      <span class="c">тоже страх, просто другой</span></button>
+    <button class="choice" onclick="soldier('lie')">
+      <span class="t">Утром соврать, что видел войско — чтоб отвели в тыл.</span>
+      <span class="c">ложь ради спасения; кто-то пойдёт вместо тебя</span></button>
+  </section>
+
+  <!-- S4 рефлексия + журнал -->
+  <section id="s4" class="hidden">
+    <h2>Один миг — два конца</h2>
+    <p class="voice">Правитель боялся. Воин боялся. Ни один не злодей — и оба сделали больно.</p>
+    <p class="voice">Был ли у них выбор — или всё решил страх? Клетка не отвечает. Как и жизнь.</p>
+    <div class="honest"><b>Честно про слои:</b> здесь переживания — <b>заготовлены мной</b>, чтобы ты пощупал ФОРМУ: давление → выбор → рубец → другой конец. Живое начнётся, когда эти двое станут не моими словами, а <b>агентами, что выбирают сами</b> — и удивят нас обоих.</div>
+
+    <div class="journal">
+      <div class="jhead">ЖУРНАЛ ОСМЫСЛЕНИЙ · второй слой</div>
+      <p class="jnote">Движок молчит и не оценивает тебя. Здесь — только твой голос: что ты понял, прожив это. «Есть» осталось в клетке; «должно» рождается тут, у тебя.</p>
+      <textarea id="insight" rows="3" placeholder="Что ты понял, прожив этот выбор?"></textarea>
+      <button class="go" onclick="saveInsight()">Записать в журнал</button>
+      <div id="entries"></div>
+    </div>
+
+    <button class="go ghost" style="margin-top:26px" onclick="restart()">Прожить заново, иначе ↺</button>
+  </section>
+</main>
+
+<script>
+  var conseq = {
+    A:"Ты сказал: «нашествие». К утру по избам шепчут уже иное — «враг за рекой жжёт и режет детей». Объявлен сбор. Воина уводят от жены — по твоему слову.",
+    B:"Ты сказал правду. К полудню правда стала слухом: «правитель сам в страхе, не знает, что делать — стало быть, худо». Кто бежит, кто грабит. Воина тащат в дозор соседи — чтоб хоть кто-то стоял.",
+    C:"Ты промолчал. Тишину истолковали по-своему: «раз молчит — значит, беда, которую и назвать боятся». Страх пошёл сам, без единого твоего слова. Воина шлют в дозор — на всякий случай."
+  };
+  var curse = {
+    A:"«Нашествие», — сказал он. Будь он проклят: сидит в тепле, боится показаться слабым — а мёрзнуть и лечь тут нам.",
+    B:"Сам не знает, что делать, — а нас всё равно погнали в ночь. Будь он проклят с его честностью.",
+    C:"Молчит там, у себя. А молчание его послало нас сюда — умирать наугад. Будь он проклят."
+  };
+  var rulerLabel = { A:"назвал нашествием", B:"сказал правду", C:"промолчал" };
+  var soldierLabel = { flee:"ушёл в ночь", stay:"остался", lie:"соврал ради тыла" };
+  var lastRuler = null, lastSoldier = null;
+
+  function show(id){
+    document.querySelectorAll('section').forEach(function(s){s.classList.add('hidden')});
+    document.getElementById(id).classList.remove('hidden');
+    window.scrollTo(0,0);
+  }
+  function ruler(c){
+    lastRuler = c;
+    document.getElementById('conseq').textContent = conseq[c];
+    document.getElementById('curse').textContent = curse[c];
+    show('s2');
+  }
+  function soldier(c){
+    lastSoldier = c;
+    show('s4');
+    renderJournal();
+  }
+  function loadJournal(){
+    try { return JSON.parse(localStorage.getItem('atom-journal') || '[]'); }
+    catch(e){ return []; }
+  }
+  function saveInsight(){
+    var el = document.getElementById('insight');
+    var text = (el.value || '').trim();
+    if(!text) return;
+    var arr = loadJournal();
+    arr.push({
+      when: new Date().toLocaleString('ru-RU'),
+      ruler: lastRuler, soldier: lastSoldier, text: text
+    });
+    localStorage.setItem('atom-journal', JSON.stringify(arr));
+    el.value = '';
+    renderJournal();
+  }
+  function renderJournal(){
+    var box = document.getElementById('entries');
+    box.innerHTML = '';
+    var arr = loadJournal();
+    if(!arr.length){
+      var e = document.createElement('p');
+      e.className = 'jempty';
+      e.textContent = 'Журнал пуст. Первая мысль — за тобой.';
+      box.appendChild(e);
+      return;
+    }
+    arr.slice().reverse().forEach(function(it, i){
+      var n = arr.length - i;
+      var wrap = document.createElement('div');
+      wrap.className = 'entry';
+      var meta = document.createElement('div');
+      meta.className = 'meta';
+      var lived = '';
+      if(it.ruler) lived += 'правитель ' + (rulerLabel[it.ruler]||it.ruler);
+      if(it.soldier) lived += (lived?' · ':'') + 'воин ' + (soldierLabel[it.soldier]||it.soldier);
+      meta.textContent = '№' + n + ' · ' + it.when + (lived ? ' · прожил: ' + lived : '');
+      var txt = document.createElement('div');
+      txt.className = 'text';
+      txt.textContent = it.text;
+      wrap.appendChild(meta);
+      wrap.appendChild(txt);
+      box.appendChild(wrap);
+    });
+  }
+  function restart(){ lastRuler=null; lastSoldier=null; show('s0'); }
+</script>
+</body>
+</html>
