@@ -32,6 +32,7 @@
     position:relative;background:transparent}
   .chip .eye::after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;
     background:var(--ochre);left:5px;top:2px}
+  .chip.time{color:var(--faint);border-color:var(--line);letter-spacing:1.5px}
   .forces{border-left:3px solid var(--violet);padding:2px 0 2px 16px;margin:0 0 8px}
   .forces div{font-size:14px;color:var(--grey);margin:9px 0}
   .forces b{color:var(--violet-deep);font-weight:600;font-family:Helvetica,Arial,sans-serif}
@@ -44,6 +45,9 @@
   .consequence{background:var(--beige2);border:1px solid var(--line);border-radius:10px;
     padding:18px 20px;margin:0 0 18px}
   .scar{color:var(--terra-deep);font-size:13.5px;font-weight:600;margin:0 0 22px}
+  .behind{font-family:Georgia,serif;font-size:15px;font-style:italic;color:var(--grey);
+    border-left:3px solid var(--line);padding-left:15px;margin:0 0 16px}
+  .mystery{font-size:13.5px;font-weight:600;color:var(--terra-deep);margin:0 0 24px}
   .honest{background:var(--beige);border:1px solid var(--line);border-radius:10px;
     padding:16px 18px;font-size:13.5px;color:var(--grey);margin:22px 0}
   .honest b{color:var(--ink)}
@@ -125,17 +129,25 @@
       <span class="c">ложь ради спасения; кто-то пойдёт вместо тебя</span></button>
   </section>
 
+  <!-- S_lenta: лента последствий -->
+  <section id="slenta" class="hidden">
+    <div class="chip time">⟶ ЛЕНТА ВРЕМЕНИ</div>
+    <p class="voice" id="outcome"></p>
+    <p class="behind" id="behind"></p>
+    <p class="mystery">— Рок это был или чей-то дальний выбор? Отсюда не разделить: часть — чужая рука, часть — слепой случай, и границы тебе не покажут. Всю сеть не увидеть.</p>
+    <button class="go" onclick="toJournal()">Что ты понял → в журнал</button>
+  </section>
+
   <!-- S4 рефлексия + журнал -->
   <section id="s4" class="hidden">
-    <h2>Один миг — два конца</h2>
-    <p class="voice">Правитель боялся. Воин боялся. Ни один не злодей — и оба сделали больно.</p>
-    <p class="voice">Был ли у них выбор — или всё решил страх? Клетка не отвечает. Как и жизнь.</p>
-    <div class="honest"><b>Честно про слои:</b> здесь переживания — <b>заготовлены мной</b>, чтобы ты пощупал ФОРМУ: давление → выбор → рубец → другой конец. Живое начнётся, когда эти двое станут не моими словами, а <b>агентами, что выбирают сами</b> — и удивят нас обоих.</div>
+    <h2>Один миг — и лента, что из него ушла</h2>
+    <p class="voice">Правитель боялся. Воин боялся. Ни один не злодей — и оба сделали больно. А дальше жизнь пошла своей дорогой, не спросив ни одного из них.</p>
+    <div class="honest"><b>Честно про слои:</b> переживания и исходы здесь — <b>заготовлены мной</b>, чтобы ты пощупал ФОРМУ: давление → выбор → рубец → лента последствий, где твой рок есть чей-то дальний выбор. Живое начнётся, когда эти люди станут <b>агентами, что выбирают сами</b>.</div>
 
     <div class="journal">
       <div class="jhead">ЖУРНАЛ ОСМЫСЛЕНИЙ · второй слой</div>
       <p class="jnote">Движок молчит и не оценивает тебя. Здесь — только твой голос: что ты понял, прожив это. «Есть» осталось в клетке; «должно» рождается тут, у тебя.</p>
-      <textarea id="insight" rows="3" placeholder="Что ты понял, прожив этот выбор?"></textarea>
+      <textarea id="insight" rows="3" placeholder="Что ты понял, прожив этот выбор и его ленту?"></textarea>
       <button class="go" onclick="saveInsight()">Записать в журнал</button>
       <div id="entries"></div>
     </div>
@@ -155,9 +167,45 @@
     B:"Сам не знает, что делать, — а нас всё равно погнали в ночь. Будь он проклят с его честностью.",
     C:"Молчит там, у себя. А молчание его послало нас сюда — умирать наугад. Будь он проклят."
   };
+  // Лента: исход НЕ воздаёт по заслугам. t = изнутри (рок/случай), b = изнанка (чужой выбор ИЛИ слепой случай), s = метка для журнала.
+  var outcomes = {
+    stay: [
+      {t:"Набег не пришёл. Ты замёрз в дозоре впустую — и остался жив.",
+       b:"За рекой чужой правитель той же ночью убоялся и увёл конницу. Ты выжил не за то, что остался, — за чужой страх, о котором никогда не узнаешь.",
+       s:"выжил — за чужой страх"},
+      {t:"Набег пришёл на рассвете. Ты стоял — и лёг там, где стоял. Не за идею. Просто не ушёл.",
+       b:"Тот же чужой правитель решил идти. Твоя смерть — обратная сторона его выбора; он не запомнит эту переправу.",
+       s:"погиб на посту"},
+      {t:"Через месяц война кончилась — где-то в столицах о чём-то договорились. Ты вернулся домой; ту ночь никто не вспомнил.",
+       b:"Твой мучительный выбор не решил ничего. Решали далеко, люди, которых ты не видел.",
+       s:"война кончилась сама"}
+    ],
+    flee: [
+      {t:"Ты дошёл до дома. Набега не было вовсе — тревога оказалась ложной.",
+       b:"Тебя судили за побег с поста, который и держать было незачем. Слепой случай — и чужая рука, что теперь судит.",
+       s:"ложная тревога, судим"},
+      {t:"Ты ушёл — а на рассвете пришёл набег. Тех, кто остался, не стало. Ты жив.",
+       b:"Ты спасся не по заслуге — по выбору чужого правителя за рекой. С этим тебе теперь жить.",
+       s:"спасся, другие — нет"},
+      {t:"Тебя поймали в первую же ночь. Дезертир. Всё быстро.",
+       b:"Просто патруль, просто не та тропа. Ни героизма, ни смысла — слепой случай.",
+       s:"пойман сразу"}
+    ],
+    lie: [
+      {t:"Тебе поверили. Отвели в тыл. Вместо тебя послали мальчишку — он не вернулся.",
+       b:"Твой выбор спастись стал его роком. Он не знал, почему оказался там. Для него это была судьба; на деле — твой шёпот.",
+       s:"спасся, вместо — мальчишка"},
+      {t:"Тебе не поверили. Оставили. К утру пришёл набег.",
+       b:"Ложь не спасла. Пришло то, что пришло бы и так, — вне тебя.",
+       s:"не поверили, набег"},
+      {t:"Твоя ложь про войско дошла до правителя искажённой — и он объявил всеобщий сбор. Из-за пары твоих слов подняли тысячи.",
+       b:"Ты хотел лишь уцелеть. Твой малый выбор стал дальним радиусом для тысяч чужих судеб — чёрным лебедем, которого они никогда не свяжут с тобой.",
+       s:"ложь подняла тысячи"}
+    ]
+  };
   var rulerLabel = { A:"назвал нашествием", B:"сказал правду", C:"промолчал" };
   var soldierLabel = { flee:"ушёл в ночь", stay:"остался", lie:"соврал ради тыла" };
-  var lastRuler = null, lastSoldier = null;
+  var lastRuler = null, lastSoldier = null, lastOutcome = null;
 
   function show(id){
     document.querySelectorAll('section').forEach(function(s){s.classList.add('hidden')});
@@ -172,6 +220,14 @@
   }
   function soldier(c){
     lastSoldier = c;
+    var list = outcomes[c];
+    var o = list[Math.floor(Math.random() * list.length)];
+    lastOutcome = o;
+    document.getElementById('outcome').textContent = o.t;
+    document.getElementById('behind').textContent = o.b;
+    show('slenta');
+  }
+  function toJournal(){
     show('s4');
     renderJournal();
   }
@@ -186,7 +242,9 @@
     var arr = loadJournal();
     arr.push({
       when: new Date().toLocaleString('ru-RU'),
-      ruler: lastRuler, soldier: lastSoldier, text: text
+      ruler: lastRuler, soldier: lastSoldier,
+      outcome: lastOutcome ? lastOutcome.s : null,
+      text: text
     });
     localStorage.setItem('atom-journal', JSON.stringify(arr));
     el.value = '';
@@ -212,6 +270,7 @@
       var lived = '';
       if(it.ruler) lived += 'правитель ' + (rulerLabel[it.ruler]||it.ruler);
       if(it.soldier) lived += (lived?' · ':'') + 'воин ' + (soldierLabel[it.soldier]||it.soldier);
+      if(it.outcome) lived += (lived?' · ':'') + 'исход: ' + it.outcome;
       meta.textContent = '№' + n + ' · ' + it.when + (lived ? ' · прожил: ' + lived : '');
       var txt = document.createElement('div');
       txt.className = 'text';
@@ -221,7 +280,7 @@
       box.appendChild(wrap);
     });
   }
-  function restart(){ lastRuler=null; lastSoldier=null; show('s0'); }
+  function restart(){ lastRuler=null; lastSoldier=null; lastOutcome=null; show('s0'); }
 </script>
 </body>
 </html>
