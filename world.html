@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Долина — мир живёт сам</title>
+<style>
+  :root{
+    --paper:#faf9f5; --ink:#2c2c2a; --grey:#5f5e5a; --faint:#888780; --line:#d9d6cc;
+    --terra:#D85A30; --ochre:#ba7517; --green:#1D9E75; --teal:#5a9e8f; --beige:#f1efe8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:var(--ink);font-family:Helvetica,Arial,sans-serif;
+    line-height:1.5;display:flex;justify-content:center;padding:32px 20px 70px}
+  main{width:100%;max-width:960px}
+  .top{font-size:12px;color:var(--faint);margin-bottom:16px}
+  h1{font-size:26px;margin:0 0 6px}
+  .sub{color:var(--faint);font-size:13px;margin:0 0 18px}
+  .stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+  canvas{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    max-width:100%;touch-action:none;cursor:crosshair}
+  .side{flex:1;min-width:260px;display:flex;flex-direction:column;gap:14px}
+  .box{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff}
+  .box h3{margin:0 0 8px;font-size:13px;letter-spacing:.5px;color:var(--faint);font-weight:600}
+  #log{font-size:13px;height:170px;overflow:hidden;display:flex;flex-direction:column-reverse}
+  #log .ev{padding:3px 0;border-bottom:1px solid #f0eee7;color:var(--grey)}
+  #log .ev.warm{color:var(--ochre)} #log .ev.cold{color:var(--terra)}
+  #log .ev.die{color:#8a2f18;font-weight:600} #log .ev.come{color:var(--teal)}
+  #log .ev.scene{color:var(--ink);font-weight:600}
+  #log .ev b{color:var(--ink);font-weight:600}
+  #right .cap{font-size:11.5px;color:var(--faint);font-style:italic;margin:0 0 8px}
+  .bar{height:7px;border-radius:5px;background:var(--beige);overflow:hidden;margin:4px 0 10px}
+  .bar>i{display:block;height:100%;background:var(--terra)}
+  .view{margin:2px 0;font-size:13px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+  .sent{float:right}
+  .line{margin:8px 0;font-family:Georgia,serif;font-size:14.5px;color:var(--ink)}
+  .line .nm{font-family:Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:600;color:var(--faint);display:block}
+  .line.think .txt{color:var(--faint);font-style:italic}
+  .flag{font-size:11px;color:var(--faint);margin-top:6px}
+  .flag.live{color:var(--green)} .flag.stub{color:var(--terra)}
+  .outcome{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px;color:#993C1D;font-weight:600}
+  #right > button{margin-top:14px;background:var(--terra);color:#fff;border:none}
+  #right > button:hover{background:#993C1D}
+  .legend{font-size:12px;color:var(--grey);display:flex;gap:16px;flex-wrap:wrap;margin-top:2px}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .sw{width:16px;height:3px;border-radius:2px;display:inline-block}
+  .controls{margin:16px 0 6px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 15px;
+    font-family:inherit;font-size:13.5px;color:var(--ink);cursor:pointer}
+  button:hover{background:var(--beige)}
+  #clock{font-size:12px;color:var(--faint);margin-left:6px}
+  .note{margin-top:16px;background:var(--beige);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;font-size:13px;color:var(--grey)}
+  .note b{color:var(--ink)}
+  #soulList{display:flex;flex-wrap:wrap;gap:6px}
+  .soul{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 10px;
+    border:1px solid var(--line);border-radius:16px;cursor:pointer;background:#fff;user-select:none}
+  .soul:hover{background:var(--beige)}
+  .soul.on{border-color:var(--ochre);background:#fdf6e9;font-weight:600}
+  .soul .d{width:10px;height:10px;border-radius:50%}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">почва + фокус · мир живёт сам, а в фокусе — оживает через ИИ · 2026-07-26</div>
+  <h1>Долина</h1>
+  <p class="sub"><b>Кликни по человеку — встань ему за плечо (фокус).</b> Когда он кого-то встретит, в фокусе разыграется живая сцена. Вне фокуса мир идёт дёшево, правилами.</p>
+
+  <div class="stage">
+    <canvas id="c" width="560" height="420"></canvas>
+    <div class="side">
+      <div class="box" id="souls"><h3>ДУШИ — кликни, чтобы встать за плечо</h3><div id="soulList"></div></div>
+      <div class="box"><h3>ЛЕТОПИСЬ — пишется сама</h3><div id="log"></div></div>
+      <div class="box" id="right"><h3>ФОКУС</h3><p class="cap">Кликни по человеку — за ним будешь следить, его встречи оживут.</p></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw" style="background:var(--ochre)"></span> тёплая нить — благодарность</span>
+    <span><span class="sw" style="background:var(--terra)"></span> красная нить — обида</span>
+    <span><span class="sw" style="background:var(--ochre);height:11px;width:11px;border-radius:50%;border:2px solid var(--ochre);background:transparent"></span> в фокусе</span>
+    <span>💧 вода</span>
+  </div>
+
+  <div class="controls">
+    <button id="pp">Пауза</button>
+    <button id="sp">Быстрее ×1</button>
+    <button id="rs">Заново</button>
+    <span id="clock"></span>
+  </div>
+
+  <div class="note"><b>Честно:</b> вне фокуса — <b>почва</b>, дешёвые правила без ИИ. В <b>фокусе</b> встреча оживает: двое думают по-настоящему через твой воркер (<i>core</i>-режим, haiku — центы за сцену). Исход пока кладётся правилом (живой — диалог). Если воркер недоступен (CORS ещё не открыт) — покажу <b>заготовку</b>, помечу честно. Соучастие-вселение (прожить одного от первого лица) — следующий слой.</div>
+</main>
+
+<script>
+(function(){
+  var BACKEND="https://ai-arena-backend.panarin2005.workers.dev";
+  var canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
+  var W=canvas.width, H=canvas.height;
+  var NAMES=["Добрый","Упрямая","Пугливый","Любопытная","Тихий","Резкая","Кроткий","Странник","Незваная"];
+  var people, sources, focusP, tick, day, paused=false, speed=1, seed, flashes, scene, soulsSig='';
+
+  function rnd(a,b){ return a+Math.random()*(b-a); }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+  function person(name,x,y){ return {name:name,x:x,y:y,vx:0,vy:0,hue:(seed*57)%360,need:rnd(0.1,0.35),esteem:rnd(0.4,0.6),emo:null,emoTtl:0,temper:rnd(0.15,0.85),roots:rnd(0.15,0.85),grudge:null,leaving:false,mind:{},starve:0,dead:false,fade:1,cool:0}; }
+
+  function reset(){
+    people=[]; sources=[]; focusP=null; tick=0; day=0; seed=0; flashes=[]; scene=null; paused=false;
+    for(var s=0;s<1;s++) sources.push({x:rnd(90,W-90),y:rnd(80,H-80),r:11});
+    for(var i=0;i<5;i++){ seed=i; people.push(person(NAMES[i], rnd(60,W-60), rnd(50,H-50))); }
+    seed=5;
+    document.getElementById('log').innerHTML='';
+    setRight('<h3>ФОКУС</h3><p class="cap">Кликни по человеку — за ним будешь следить, его встречи оживут.</p>');
+    addLog('В долине поселились пятеро. Начинается жизнь.','');
+    soulsSig=''; renderSouls();
+    paint();
+  }
+  function setRight(html){ document.getElementById('right').innerHTML=html; }
+  function addLog(text, cls){
+    var box=document.getElementById('log'); var el=document.createElement('div');
+    el.className='ev '+(cls||''); el.innerHTML='<b>д.'+day+'</b> · '+text;
+    box.insertBefore(el, box.firstChild);
+    while(box.children.length>12) box.removeChild(box.lastChild);
+  }
+  function nearSrc(p){ var b=null,bd=1e9; for(var i=0;i<sources.length;i++){var s=sources[i],d=(s.x-p.x)*(s.x-p.x)+(s.y-p.y)*(s.y-p.y); if(d<bd){bd=d;b=s;}} return b; }
+  function clamp(v){ return Math.max(-1,Math.min(1,v)); }
+  function idx(p){ return people.indexOf(p); }
+
+  // --- ДУША: признание (нужда) + эмоция как ДАТЧИК её движения (производная, не примитив) ---
+  function shiftEsteem(p, d, byName){
+    var before=p.esteem; p.esteem=Math.max(0,Math.min(1,p.esteem+d)); var real=p.esteem-before;
+    if(real<=-0.06){
+      var kind = p.esteem<0.3 ? 'стыд' : 'гнев';   // втоптан → внутрь; ещё держится → на обидчика
+      p.emo=kind; p.emoTtl=200;
+      flashes.push({x:p.x,y:p.y,text:kind,warm:false,ttl:70});
+      addLog('<b>'+p.name+'</b> — '+kind+(kind==='стыд'?' (втоптан)':' на '+(byName||'обидчика')),'cold');
+    } else if(real>=0.06){
+      p.emo='радость'; p.emoTtl=150;
+      flashes.push({x:p.x,y:p.y,text:'признан',warm:true,ttl:60});
+    }
+  }
+
+  // унижение → поступок ПО ХАРАКТЕРУ (замыкает контур: признание → последствие для мира)
+  function humbled(v, offender){
+    if(v.esteem>0.4 || v.grudge || v.leaving || v.dead) return;   // не растоптан или уже определился
+    if(v.temper>0.6){ v.grudge=offender; addLog('<b>'+v.name+'</b> затаил(а) обиду на <b>'+offender.name+'</b> — не простит','cold'); }
+    else if(v.roots<0.4 || v.esteem<0.2){ v.leaving=true; addLog('<b>'+v.name+'</b> не снёс(ла) позора — уходит из долины','die'); }
+    // иначе стерпел(а): стыд и рубец уже легли, остаётся с низким признанием
+  }
+  function revenge(av, tg){
+    av.cool=tg.cool=120; av.grudge=null;
+    tg.need=Math.min(1,tg.need+0.12); tg.mind[idx(av)]=clamp((tg.mind[idx(av)]||0)-0.3);
+    shiftEsteem(tg,-0.14,av.name); humbled(tg, av);
+    flashes.push({x:(av.x+tg.x)/2,y:(av.y+tg.y)/2,text:'месть',warm:false,ttl:80});
+    addLog('<b>'+av.name+'</b> отомстил(а) <b>'+tg.name+'</b> — круг обиды замкнулся','die');
+  }
+
+  // --- состояние человека → текст для LLM ("нутро", секрет) ---
+  function stateText(p, other){
+    var parts=[];
+    if(p.need>0.6) parts.push("Ты измучен голодом.");
+    else if(p.need>0.35) parts.push("Ты немного проголодался.");
+    else parts.push("Ты сыт и спокоен.");
+    if(p.esteem>0.7) parts.push("Тебя в долине ценят, и ты это чувствуешь.");
+    else if(p.esteem<0.3) parts.push("Ты чувствуешь себя никем — тебя ни во что не ставят.");
+    if(p.emo==='стыд') parts.push("Тебе сейчас стыдно, хочется стать невидимым.");
+    else if(p.emo==='гнев') parts.push("В тебе кипит обида за унижение.");
+    else if(p.emo==='радость') parts.push("На душе тепло — тебя только что приняли.");
+    var oi=idx(other), s=p.mind[oi]||0;
+    if(s>0.2) parts.push("К тому, кто перед тобой ("+other.name+"), ты тёплый — он делился с тобой.");
+    else if(s<-0.2) parts.push("На того, кто перед тобой ("+other.name+"), ты держишь обиду — он однажды отнял у тебя.");
+    else parts.push("Того, кто перед тобой ("+other.name+"), ты толком не знаешь.");
+    var warm=[],cold=[];
+    for(var j=0;j<people.length;j++){ if(people[j]===p||people[j]===other||people[j].dead) continue;
+      var m=p.mind[j]||0; if(m>0.3) warm.push(people[j].name); else if(m<-0.3) cold.push(people[j].name); }
+    if(warm.length) parts.push("Ты дорожишь: "+warm.join(", ")+".");
+    if(cold.length) parts.push("Ты в обиде на: "+cold.join(", ")+".");
+    parts.push("Ты живёшь в маленькой безымянной долине, где еду берут у воды.");
+    return parts.join(" ");
+  }
+  function stubLine(p, other){
+    if(p.need>0.6){ return pick(["Дай… мне бы сейчас хоть глоток.","Мне сейчас нужнее, отойди.","Я не ел уже долго, слышишь?"]); }
+    var oi=idx(other), s=p.mind[oi]||0;
+    if(s<-0.2) return pick(["Опять ты. Я помню, что ты сделал.","От тебя добра не жду.","Держись от меня подальше."]);
+    if(s>0.2) return pick(["Ты снова здесь — садись, вода есть.","Рад тебе. Бери сколько нужно.","С тобой спокойно."]);
+    return pick(["Ты кто? Тут хватает на двоих.","Мир тебе. Вода вон там.","Постоим, отдохнём."]);
+  }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  async function callCore(shared, A, B, history, turn){
+    try{
+      var res=await fetch(BACKEND,{ method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({ mode:"core", shared:shared, a:A, b:B, history:history, turn:turn }) });
+      if(!res.ok) throw 0;
+      var data=await res.json(); if(data.error||!data.text) throw 0;
+      return { text:data.text, live:true };
+    }catch(e){ return { live:false }; }
+  }
+
+  async function runScene(pa, pb){
+    scene={a:pa,pb:pb}; pa.cool=pb.cool=160;
+    var atWater = Math.hypot(nearSrc(pa).x-pa.x, nearSrc(pa).y-pa.y) < 40;
+    var place = atWater? "у воды" : "в поле";
+    var shared = "Вы встретились "+place+" в маленькой долине." + ((pa.need>0.6||pb.need>0.6)? " Кто-то из вас голоден, еды на всех может не хватить." : " Оба относительно спокойны.");
+    var A={ name:pa.name, secret: stateText(pa,pb) }, B={ name:pb.name, secret: stateText(pb,pa) };
+    var history=[], anyStub=false;
+    setRight('<h3>СЦЕНА · '+place+'</h3><p class="cap">'+pa.name+' встретил(а) '+pb.name+' — они думают сами</p><div id="dlg"></div><div id="flag" class="flag"></div>');
+    for(var k=0;k<4;k++){
+      var turn = k%2===0? "A":"B", speaker = turn==="A"? pa:pb;
+      addLine(speaker.name, '…думает…', 'think');
+      var r = await callCore(shared, A, B, history, turn);
+      var text = r.live? r.text : stubLine(speaker, turn==="A"?pb:pa);
+      if(!r.live) anyStub=true;
+      replaceLine(speaker.name, text);
+      history.push({ who:turn, text:text });
+      await sleep(r.live?400:700);
+      if(!scene) return; // сброшено (Заново)
+    }
+    var f=document.getElementById('flag');
+    if(f){ f.textContent = anyStub? "⚠ заготовка — воркер недоступен (в обычном браузере открой CORS)" : "● живые реплики — твой воркер"; f.className='flag '+(anyStub?'stub':'live'); }
+    var out = applyOutcome(pa,pb,place,anyStub);
+    var d=document.getElementById('dlg');
+    if(d){ var oe=document.createElement('div'); oe.className='outcome'; oe.innerHTML='↳ '+out; d.appendChild(oe); }
+    var rp=document.getElementById('right');
+    if(rp){ var btn=document.createElement('button'); btn.textContent='▸ долина течёт дальше';
+      btn.onclick=function(){ scene=null; if(focusP&&!focusP.dead) renderFocus(); };
+      rp.appendChild(btn); }
+    // мир стоит (scene активен), диалог висит на экране, пока не нажали «дальше»
+  }
+  function addLine(name, text, cls){
+    var d=document.getElementById('dlg'); if(!d) return;
+    var el=document.createElement('div'); el.className='line '+(cls||''); el.dataset.nm=name;
+    el.innerHTML='<span class="nm">'+name+'</span><span class="txt">'+text+'</span>'; d.appendChild(el);
+  }
+  function replaceLine(name, text){
+    var d=document.getElementById('dlg'); if(!d) return;
+    var els=d.querySelectorAll('.line'); var el=els[els.length-1];
+    if(el){ el.className='line'; el.querySelector('.txt').textContent=text; }
+  }
+  function applyOutcome(pa,pb,place,stub){
+    var ia=idx(pa), ib=idx(pb), out;
+    if(pa.need<0.5 && pb.need<0.5){
+      pa.need=Math.max(0,pa.need-0.05); pb.need=Math.max(0,pb.need-0.05);
+      pa.mind[ib]=clamp((pa.mind[ib]||0)+0.18); pb.mind[ia]=clamp((pb.mind[ia]||0)+0.18);
+      shiftEsteem(pa,0.08,pb.name); shiftEsteem(pb,0.08,pa.name);   // с тобой поделились — тебя приняли
+      flashes.push({x:(pa.x+pb.x)/2,y:(pa.y+pb.y)/2,text:'поделились',warm:true,ttl:70});
+      out='<b>'+pa.name+'</b> и <b>'+pb.name+'</b> поделились — теплее друг к другу';
+    } else {
+      var t=pa.need>pb.need?{t:pa,ti:ia,v:pb,vi:ib}:{t:pb,ti:ib,v:pa,vi:ia};
+      t.t.need=Math.max(0,t.t.need-0.2); t.v.need=Math.min(1,t.v.need+0.14);
+      t.v.mind[t.ti]=clamp((t.v.mind[t.ti]||0)-0.36); t.t.mind[t.vi]=clamp((t.t.mind[t.vi]||0)-0.12);
+      shiftEsteem(t.v,-0.15,t.t.name);   // у тебя отняли — унижение
+      humbled(t.v, t.t);                 // по характеру: месть / уход / стерпел
+      out='<b>'+t.t.name+'</b> отнял у <b>'+t.v.name+'</b> — обида';
+    }
+    addLog('Сцена '+place+': '+out+(stub?' <i>(заготовка)</i>':''),'scene');
+    return out;
+  }
+
+  // дешёвая встреча (вне фокуса)
+  function cheapMeet(ia,ib,pa,pb){
+    pa.cool=pb.cool=40;
+    if(pa.need<0.5 && pb.need<0.5){
+      pa.need=Math.max(0,pa.need-0.05); pb.need=Math.max(0,pb.need-0.05);
+      pa.mind[ib]=clamp((pa.mind[ib]||0)+0.18); pb.mind[ia]=clamp((pb.mind[ia]||0)+0.18);
+      shiftEsteem(pa,0.08,pb.name); shiftEsteem(pb,0.08,pa.name);
+      flashes.push({x:(pa.x+pb.x)/2,y:(pa.y+pb.y)/2,text:'поделились',warm:true,ttl:60});
+      addLog('<b>'+pa.name+'</b> и <b>'+pb.name+'</b> поделились','warm');
+    } else {
+      var t=pa.need>pb.need?{t:pa,ti:ia,v:pb,vi:ib}:{t:pb,ti:ib,v:pa,vi:ia};
+      t.t.need=Math.max(0,t.t.need-0.2); t.v.need=Math.min(1,t.v.need+0.14);
+      t.v.mind[t.ti]=clamp((t.v.mind[t.ti]||0)-0.36); t.t.mind[t.vi]=clamp((t.t.mind[t.vi]||0)-0.12);
+      shiftEsteem(t.v,-0.15,t.t.name); humbled(t.v, t.t);
+      flashes.push({x:(pa.x+pb.x)/2,y:(pa.y+pb.y)/2,text:'отнял',warm:false,ttl:60});
+      addLog('<b>'+t.t.name+'</b> отнял у <b>'+t.v.name+'</b> — обида','cold');
+    }
+  }
+
+  function step(){
+    tick++; if(tick%60===0) day++;
+    for(var i=0;i<people.length;i++){
+      var p=people[i]; if(p.dead){ p.fade-=0.02; continue; }
+      if(p.cool>0) p.cool--;
+      p.need=Math.min(1,p.need+0.0011);
+      var tx,ty;
+      if(p.leaving){ tx=(p.x<W/2)? -40 : W+40; ty=p.y;
+        if(p.x<6 || p.x>W-6){ p.dead=true; if(p===focusP) focusP=null; addLog('<b>'+p.name+'</b> покинул(а) долину — с него довольно.','come'); continue; } }
+      else if(p.need>0.5){ var s=nearSrc(p); tx=s.x; ty=s.y; }
+      else{ var ax=0,ay=0;
+        for(var j=0;j<people.length;j++){ if(j===i||people[j].dead) continue;
+          var q=people[j],sent=p.mind[j]||0,dx=q.x-p.x,dy=q.y-p.y,dist=Math.hypot(dx,dy)+1;
+          var w=sent/(dist*0.03); ax+=dx/dist*w; ay+=dy/dist*w; }
+        tx=p.x+ax+rnd(-10,10); ty=p.y+ay+rnd(-10,10); }
+      var dx=tx-p.x,dy=ty-p.y,dl=Math.hypot(dx,dy)+0.001,spd=0.55;
+      p.vx=p.vx*0.85+(dx/dl)*spd; p.vy=p.vy*0.85+(dy/dl)*spd;
+      p.x=Math.max(16,Math.min(W-16,p.x+p.vx)); p.y=Math.max(16,Math.min(H-26,p.y+p.vy));
+      var s2=nearSrc(p); if(Math.hypot(s2.x-p.x,s2.y-p.y)<s2.r+8) p.need=Math.max(0,p.need-0.018);
+      if(p.need>0.96){ p.starve++; if(p.starve>420 && !p.dead){ p.dead=true; if(p===focusP) focusP=null; addLog('<b>'+p.name+'</b> умер от голода.','die'); } } else p.starve=Math.max(0,p.starve-3);
+      // ДУША: признание медленно тянется к социальному зеркалу — как меня видят другие (читает граф)
+      var mir=0,cnt=0; for(var jj=0;jj<people.length;jj++){ if(jj===i||people[jj].dead) continue; mir+=(people[jj].mind[i]||0); cnt++; }
+      var mirror = cnt? 0.5+(mir/cnt)*0.5 : 0.5;
+      p.esteem += (mirror-p.esteem)*0.002;
+      if(p.emoTtl>0){ p.emoTtl--; if(p.emoTtl<=0) p.emo=null; }
+    }
+    for(var a=0;a<people.length;a++){ for(var b=a+1;b<people.length;b++){
+      var pa=people[a],pb=people[b]; if(pa.dead||pb.dead||pa.cool>0||pb.cool>0) continue;
+      if(Math.hypot(pa.x-pb.x,pa.y-pb.y)<17 && Math.random()<0.06){
+        if(pa.grudge===pb){ revenge(pa,pb); continue; }                       // затаённая месть срабатывает
+        if(pb.grudge===pa){ revenge(pb,pa); continue; }
+        if((pa===focusP||pb===focusP) && !scene && Math.random()<0.45){ runScene(pa,pb); return; }  // в фокусе → иногда живая сцена
+        else cheapMeet(a,b,pa,pb);                                            // вне фокуса → дёшево
+      }
+    }}
+    for(var k=people.length-1;k>=0;k--){ if(people[k].dead&&people[k].fade<=0) people.splice(k,1); }
+    if(people.length<5 && Math.random()<0.003){
+      var nm=NAMES[seed++ % NAMES.length]; var e=Math.random()<0.5?16:W-16;
+      people.push(person(nm,e,rnd(40,H-40))); addLog('С края пришёл(ла) <b>'+nm+'</b>.','come');
+    }
+    for(var f=flashes.length-1;f>=0;f--){ flashes[f].ttl--; if(flashes[f].ttl<=0) flashes.splice(f,1); }
+  }
+
+  function paint(){
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#faf9f5'; ctx.fillRect(0,0,W,H);
+    for(var i=0;i<sources.length;i++){ var s=sources[i];
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,7); ctx.fillStyle='rgba(90,158,143,.20)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(s.x,s.y,3.5,0,7); ctx.fillStyle='#5a9e8f'; ctx.fill();
+      ctx.fillStyle='#5a9e8f'; ctx.font='11px Helvetica'; ctx.textAlign='center'; ctx.fillText('💧 вода',s.x,s.y+s.r+14);
+    }
+    for(var a=0;a<people.length;a++){ for(var b=a+1;b<people.length;b++){
+      var pa=people[a],pb=people[b]; if(pa.dead||pb.dead) continue;
+      var m=((pa.mind[b]||0)+(pb.mind[a]||0))/2; if(Math.abs(m)<0.2) continue;
+      ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
+      ctx.strokeStyle=m>0?'rgba(186,117,23,'+Math.min(.75,m)+')':'rgba(216,90,48,'+Math.min(.75,-m)+')';
+      ctx.lineWidth=0.6+Math.abs(m)*2.4; ctx.stroke();
+    }}
+    if(scene){ // соединить двоих в сцене
+      var pa=scene.a,pb=scene.pb; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
+      ctx.strokeStyle='rgba(186,117,23,.7)'; ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+    }
+    for(var i=0;i<people.length;i++){ var p=people[i];
+      var r=9+(1-p.need)*3; ctx.globalAlpha=p.dead?Math.max(0,p.fade):1;
+      if(p===focusP){ ctx.beginPath(); ctx.arc(p.x,p.y,r+6,0,7); ctx.strokeStyle='#ba7517'; ctx.lineWidth=2.5; ctx.stroke(); }
+      ctx.beginPath(); ctx.arc(p.x,p.y,r,0,7); ctx.fillStyle='hsl('+p.hue+',44%,55%)'; ctx.fill();
+      if(p.need>0.8&&!p.dead){ ctx.beginPath(); ctx.arc(p.x,p.y,r+4,0,7); ctx.strokeStyle='rgba(216,90,48,.85)'; ctx.lineWidth=2; ctx.stroke(); }
+      ctx.fillStyle='#5f5e5a'; ctx.font='12px Helvetica'; ctx.textAlign='center'; ctx.fillText(p.name,p.x,p.y+r+15);
+      ctx.globalAlpha=1;
+    }
+    for(var f=0;f<flashes.length;f++){ var fl=flashes[f], al=fl.ttl/70;
+      ctx.globalAlpha=al; ctx.fillStyle=fl.warm?'#ba7517':'#D85A30';
+      ctx.font='bold 13px Helvetica'; ctx.textAlign='center'; ctx.fillText(fl.text, fl.x, fl.y-16);
+      ctx.globalAlpha=1;
+    }
+  }
+
+  // список душ вне анимации — надёжный выбор фокуса (когда фигуры наложились)
+  function renderSouls(){
+    var el=document.getElementById('soulList'); if(!el) return;
+    var live=people.filter(function(p){return !p.dead;});
+    var sig=live.map(function(p){return p.name;}).join(',')+'|'+(focusP&&!focusP.dead?idx(focusP):'-');
+    if(sig===soulsSig) return; soulsSig=sig;
+    var html='';
+    for(var i=0;i<people.length;i++){ var p=people[i]; if(p.dead) continue;
+      html+='<button class="soul'+(p===focusP?' on':'')+'" data-i="'+i+'"><span class="d" style="background:hsl('+p.hue+',44%,55%)"></span>'+p.name+'</button>';
+    }
+    el.innerHTML=html;
+  }
+  function renderFocus(){
+    var p=focusP; if(!p||p.dead||scene){ return; }
+    var others=[]; for(var j=0;j<people.length;j++){ if(people[j]===p||people[j].dead) continue; others.push({q:people[j],j:j,s:p.mind[j]||0}); }
+    others.sort(function(a,b){ return Math.abs(b.s)-Math.abs(a.s); });
+    var views='';
+    for(var o=0;o<others.length;o++){ var it=others[o];
+      var col=it.s>0.1?'#ba7517':(it.s<-0.1?'#D85A30':'#c9c6bd'), mark=it.s>0.1?'тепло':(it.s<-0.1?'обида':'—');
+      views+='<div class="view"><span class="dot" style="background:hsl('+it.q.hue+',44%,55%)"></span>'+it.q.name+'<span class="sent" style="color:'+col+'">'+mark+'</span></div>'; }
+    setRight('<h3>ФОКУС · '+p.name+'</h3><p class="cap">следишь за ним — его встречи оживут. Ниже — его картина мира (его глазами)</p>'+
+      '<div style="font-size:12px;color:#888780">нужда тела — голод</div><div class="bar"><i style="width:'+Math.round(p.need*100)+'%"></i></div>'+
+      '<div style="font-size:12px;color:#888780">нужда души — признание</div><div class="bar"><i style="width:'+Math.round(p.esteem*100)+'%;background:var(--ochre)"></i></div>'+
+      (p.emo? '<div style="font-size:12.5px;margin:-4px 0 10px">чувство сейчас: <b style="color:'+(p.emo==='радость'?'var(--green)':'var(--terra)')+'">'+p.emo+'</b></div>':'')+
+      '<div style="font-size:12px;color:#888780;margin-bottom:4px">как он видит других:</div>'+(views||'<i>ещё никого толком не знает</i>'));
+  }
+
+  canvas.addEventListener('pointerdown',function(e){
+    if(scene) return;
+    var rect=canvas.getBoundingClientRect(),sx=W/rect.width,sy=H/rect.height;
+    var mx=(e.clientX-rect.left)*sx,my=(e.clientY-rect.top)*sy,best=null,bd=900;
+    for(var i=0;i<people.length;i++){ var p=people[i]; if(p.dead) continue; var d=(p.x-mx)*(p.x-mx)+(p.y-my)*(p.y-my); if(d<bd){bd=d;best=p;} }
+    if(best){ focusP=best; } else { focusP=null; }
+    soulsSig=''; renderSouls();
+    if(focusP){ renderFocus(); }
+    else setRight('<h3>ФОКУС</h3><p class="cap">Кликни по человеку — или по пустому месту, чтобы отойти.</p>');
+  });
+  document.getElementById('pp').onclick=function(){ paused=!paused; this.textContent=paused?'Играть':'Пауза'; };
+  document.getElementById('sp').onclick=function(){ speed=speed>=3?1:speed+1; this.textContent='Быстрее ×'+speed; };
+  document.getElementById('rs').onclick=reset;
+  document.getElementById('soulList').addEventListener('click',function(e){
+    var s=e.target.closest('.soul'); if(!s) return;
+    var p=people[+s.dataset.i]; if(p&&!p.dead){ focusP=(focusP===p?null:p); soulsSig=''; renderSouls();
+      if(focusP){ if(!scene) renderFocus(); }
+      else setRight('<h3>ФОКУС</h3><p class="cap">Кликни по человеку — за ним будешь следить. Клик по подсвеченному — отойти.</p>'); }
+  });
+
+  function loop(){
+    if(!paused && !scene){ for(var s=0;s<speed;s++) step(); }
+    paint();
+    renderSouls();
+    document.getElementById('clock').textContent='день '+day+' · живых '+people.filter(function(p){return !p.dead;}).length+(scene?' · сцена…':'');
+    requestAnimationFrame(loop);
+  }
+  reset(); loop();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1300" font-family="Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5f5e5a"/>
+    </marker>
+    <marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ba7517"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1D9E75"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1024" height="1300" fill="#faf9f5"/>
+
+  <!-- HEADER -->
+  <text x="512" y="52" text-anchor="middle" font-size="30" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">Модель души</text>
+  <text x="512" y="78" text-anchor="middle" font-size="14" fill="#888780">из чего растёт человек · каркас «Живите как хотите» · 2026-07-29</text>
+  <line x1="360" y1="94" x2="664" y2="94" stroke="#d9d6cc" stroke-width="1"/>
+
+  <!-- ============ BAND 1 · ДУША ============ -->
+  <rect x="28" y="112" width="968" height="368" rx="14" fill="#ffffff" stroke="#d9d6cc"/>
+  <text x="52" y="140" font-size="13" font-weight="700" fill="#888780" letter-spacing="1">ПРИМИТИВ · ДУША (узел) — ДВА ПОЛЮСА</text>
+
+  <!-- soul circle -->
+  <circle cx="512" cy="272" r="92" fill="#f1efe8" stroke="#ba7517" stroke-width="2"/>
+  <text x="512" y="258" text-anchor="middle" font-size="24" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">душа</text>
+  <!-- рубцы cracks inside -->
+  <path d="M470,300 l14,10 l-8,12 l16,8" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M534,232 l10,14 l-12,8" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="512" y="330" text-anchor="middle" font-size="12" fill="#993C1D" font-style="italic">рубцы искажают чтение мира</text>
+
+  <!-- НУЖДА (left, arrows IN) -->
+  <text x="60" y="176" font-size="19" font-weight="700" fill="#D85A30" font-family="Georgia,serif">НУЖДА</text>
+  <text x="60" y="196" font-size="12" fill="#888780">тянет к себе · дефицит, что ищет закрыть</text>
+  <text x="60" y="228" font-size="14.5" fill="#2c2c2a">• голод &#160;<tspan fill="#888780" font-size="12">(тело, фон)</tspan></text>
+  <text x="60" y="252" font-size="14.5" fill="#2c2c2a">• признание</text>
+  <text x="60" y="276" font-size="14.5" fill="#2c2c2a">• принадлежность</text>
+  <text x="60" y="300" font-size="14.5" fill="#2c2c2a">• смысл</text>
+  <text x="60" y="324" font-size="14.5" fill="#2c2c2a">• автономия &#160;<tspan fill="#8a2f18" font-size="11">← тут живёт зло</tspan></text>
+  <line x1="270" y1="272" x2="416" y2="272" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ДАР (right, arrows OUT) -->
+  <text x="820" y="176" text-anchor="end" font-size="19" font-weight="700" fill="#1D9E75" font-family="Georgia,serif">ДАР</text>
+  <text x="964" y="196" text-anchor="end" font-size="12" fill="#888780">излучает от себя · избыток, что ищет выразить</text>
+  <text x="964" y="228" text-anchor="end" font-size="14.5" fill="#2c2c2a">поделиться •</text>
+  <text x="964" y="252" text-anchor="end" font-size="14.5" fill="#2c2c2a">творить •</text>
+  <text x="964" y="276" text-anchor="end" font-size="14.5" fill="#2c2c2a">любить-отдавая •</text>
+  <text x="964" y="306" text-anchor="end" font-size="11.5" fill="#888780" font-style="italic">без этого полюса нет любви-как-дара (1 Кор 13)</text>
+  <line x1="608" y1="272" x2="754" y2="272" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arrG)"/>
+
+  <!-- ЭМОЦИЯ strip -->
+  <rect x="60" y="392" width="904" height="68" rx="10" fill="#faf9f5" stroke="#d9d6cc"/>
+  <text x="80" y="418" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">Эмоция = производная поля души по времени</text>
+  <text x="80" y="440" font-size="13" fill="#5f5e5a">сдвиг нужд-и-даров рождает чувство: нужда ↑ → <tspan fill="#1D9E75" font-weight="700">радость</tspan> · унижение → <tspan fill="#D85A30" font-weight="700">стыд/гнев</tspan> · насыщение → чувство гаснет (привыкание)</text>
+  <text x="820" y="418" font-size="12" fill="#888780" font-style="italic" text-anchor="start">датчик, НЕ примитив</text>
+
+  <!-- ============ BAND 2 · ГРАФ + ХАРАКТЕР ============ -->
+  <rect x="28" y="500" width="968" height="300" rx="14" fill="#ffffff" stroke="#d9d6cc"/>
+  <text x="52" y="528" font-size="13" font-weight="700" fill="#888780" letter-spacing="1">ГРАФ ДУШ &#160;·&#160; ЗЕРНО → ХАРАКТЕР → ИМЯ</text>
+
+  <!-- graph nodes -->
+  <circle cx="150" cy="612" r="26" fill="#5a9e8f"/><text x="150" y="616" text-anchor="middle" font-size="12" fill="#fff">душа</text>
+  <circle cx="330" cy="590" r="26" fill="#ba7517"/><text x="330" y="594" text-anchor="middle" font-size="12" fill="#fff">душа</text>
+  <circle cx="250" cy="712" r="26" fill="#D85A30"/><text x="250" y="716" text-anchor="middle" font-size="12" fill="#fff">душа</text>
+  <line x1="176" y1="606" x2="304" y2="596" stroke="#ba7517" stroke-width="4"/>
+  <line x1="168" y1="634" x2="232" y2="688" stroke="#5a9e8f" stroke-width="2.4"/>
+  <line x1="316" y1="614" x2="266" y2="688" stroke="#D85A30" stroke-width="3" stroke-dasharray="5,3"/>
+  <text x="60" y="762" font-size="12.5" fill="#5f5e5a">ребро = <tspan font-weight="700">вектор</tspan> (доверие · долг · страх · родство · тепло/обида)</text>
+  <text x="60" y="782" font-size="12.5" fill="#888780">связь не задана — <tspan font-style="italic">проступает</tspan> из накопленных встреч (явление)</text>
+
+  <!-- зерно → характер → имя -->
+  <line x1="470" y1="520" x2="470" y2="792" stroke="#d9d6cc" stroke-width="1"/>
+  <rect x="504" y="560" width="150" height="58" rx="9" fill="#f1efe8" stroke="#d9d6cc"/>
+  <text x="579" y="584" text-anchor="middle" font-size="13.5" font-weight="700" fill="#2c2c2a">зерно</text>
+  <text x="579" y="602" text-anchor="middle" font-size="11" fill="#888780">врождённое, ~½ гены</text>
+  <text x="700" y="595" font-size="20" fill="#888780">+</text>
+  <rect x="726" y="560" width="150" height="58" rx="9" fill="#f1efe8" stroke="#d9d6cc"/>
+  <text x="801" y="584" text-anchor="middle" font-size="13.5" font-weight="700" fill="#2c2c2a">жизнь</text>
+  <text x="801" y="602" text-anchor="middle" font-size="11" fill="#888780">рубцы · история</text>
+  <line x1="690" y1="648" x2="690" y2="672" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="560" y="678" width="260" height="52" rx="9" fill="#fdf6e9" stroke="#ba7517"/>
+  <text x="690" y="701" text-anchor="middle" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">характер</text>
+  <text x="690" y="719" text-anchor="middle" font-size="11" fill="#993C1D">эмерджентный — не ярлык, а позиция + нарост</text>
+  <text x="690" y="762" text-anchor="middle" font-size="12.5" fill="#5f5e5a"><tspan font-weight="700">имя</tspan> = кличка-молва по самой выраженной черте</text>
+  <text x="690" y="782" text-anchor="middle" font-size="11.5" fill="#888780" font-style="italic">(сейчас имя — плейсхолдер, влияет лишь на голос LLM)</text>
+
+  <!-- ============ BAND 3 · СЛОИ ============ -->
+  <rect x="28" y="820" width="968" height="252" rx="14" fill="#ffffff" stroke="#d9d6cc"/>
+  <text x="52" y="848" font-size="13" font-weight="700" fill="#888780" letter-spacing="1">СЛОИ — неизменное ядро под сменной одеждой</text>
+
+  <rect x="52" y="866" width="272" height="150" rx="10" fill="#f1efe8" stroke="#5a9e8f" stroke-width="1.5"/>
+  <text x="188" y="892" text-anchor="middle" font-size="16" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">КАРКАС</text>
+  <text x="188" y="912" text-anchor="middle" font-size="12" fill="#5f5e5a">физика — универсальна</text>
+  <text x="188" y="936" text-anchor="middle" font-size="12.5" fill="#2c2c2a">души · нужды · дары</text>
+  <text x="188" y="956" text-anchor="middle" font-size="12.5" fill="#2c2c2a">граф · глаголы · рубцы</text>
+  <text x="188" y="982" text-anchor="middle" font-size="11.5" fill="#888780" font-style="italic">не меняется</text>
+
+  <line x1="330" y1="941" x2="372" y2="941" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="378" y="866" width="272" height="150" rx="10" fill="#faf9f5" stroke="#ba7517" stroke-width="1.5"/>
+  <text x="514" y="892" text-anchor="middle" font-size="16" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">ЛИНЗА-СЕТТИНГ</text>
+  <text x="514" y="912" text-anchor="middle" font-size="12" fill="#5f5e5a">сменная одежда эпохи</text>
+  <text x="514" y="936" text-anchor="middle" font-size="12.5" fill="#2c2c2a">роли · нормы · силы</text>
+  <text x="514" y="958" text-anchor="middle" font-size="12" fill="#888780">Рай · Черниговщина XIX…</text>
+  <text x="514" y="982" text-anchor="middle" font-size="11.5" fill="#993C1D" font-style="italic">снимаем / меняем</text>
+
+  <line x1="656" y1="941" x2="698" y2="941" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="704" y="866" width="268" height="150" rx="10" fill="#faf9f5" stroke="#D85A30" stroke-width="1.5"/>
+  <text x="838" y="892" text-anchor="middle" font-size="16" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">СОБЫТИЙНЫЙ ПОТОК</text>
+  <text x="838" y="912" text-anchor="middle" font-size="12" fill="#5f5e5a">история врывается извне</text>
+  <text x="838" y="936" text-anchor="middle" font-size="12.5" fill="#2c2c2a">война · врач · реформа</text>
+  <text x="838" y="958" text-anchor="middle" font-size="12" fill="#888780">двигатель против застывания</text>
+  <text x="838" y="982" text-anchor="middle" font-size="11.5" fill="#993C1D" font-style="italic">лекарство «серого аквариума»</text>
+
+  <text x="512" y="1044" text-anchor="middle" font-size="13.5" fill="#2c2c2a"><tspan font-weight="700">Явление</tspan> (структура, немо, везде) &#160;≠&#160; <tspan font-weight="700">Осмысление</tspan> (голос и имя — LLM, только в фокусе)</text>
+
+  <!-- ============ FOOTER · ТЕСТ НА ХАРДКОД ============ -->
+  <text x="52" y="1108" font-size="13" font-weight="700" fill="#888780" letter-spacing="1">ТЕСТ НА ХАРДКОД — компас честности слоёв</text>
+  <g font-size="12.5">
+    <rect x="52" y="1122" width="222" height="58" rx="9" fill="#f1efe8" stroke="#d9d6cc"/>
+    <text x="163" y="1148" text-anchor="middle" font-weight="700" fill="#2c2c2a">поменяю — сломается?</text>
+    <text x="163" y="1168" text-anchor="middle" fill="#5f5e5a">→ ФИЗИКА (задаём)</text>
+
+    <rect x="290" y="1122" width="222" height="58" rx="9" fill="#f1efe8" stroke="#d9d6cc"/>
+    <text x="401" y="1148" text-anchor="middle" font-weight="700" fill="#2c2c2a">станет другим?</text>
+    <text x="401" y="1168" text-anchor="middle" fill="#5f5e5a">→ НАСТРОЙКА (число)</text>
+
+    <rect x="528" y="1122" width="222" height="58" rx="9" fill="#f1efe8" stroke="#d9d6cc"/>
+    <text x="639" y="1148" text-anchor="middle" font-weight="700" fill="#2c2c2a">должно вырасти само?</text>
+    <text x="639" y="1168" text-anchor="middle" fill="#5f5e5a">→ ЭМЕРДЖЕНТНОЕ (сей)</text>
+
+    <rect x="766" y="1122" width="206" height="58" rx="9" fill="#f1efe8" stroke="#d9d6cc"/>
+    <text x="869" y="1148" text-anchor="middle" font-weight="700" fill="#2c2c2a">придумать по ситуации?</text>
+    <text x="869" y="1168" text-anchor="middle" fill="#5f5e5a">→ LLM (голос)</text>
+  </g>
+  <text x="512" y="1212" text-anchor="middle" font-size="12.5" fill="#888780" font-style="italic">«Семя не мертвее дерева оттого, что мало» — примитивы малы, чтобы жизнь из них была широка</text>
+</svg>
