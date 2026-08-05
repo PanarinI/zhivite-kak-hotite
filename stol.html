@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>СТОЛ</title>
+<style>
+  :root{ --glow:#e8a33d; --warm:#c9803c; --terra:#c2542c; --paper:#f2e8d5; --faint:#8d8577; }
+  *{box-sizing:border-box}
+  body{margin:0;background:#0e0b08;color:#e6ddcc;font-family:Helvetica,Arial,sans-serif;
+       line-height:1.5;display:flex;justify-content:center;padding:22px 16px 60px}
+  main{width:100%;max-width:1180px}
+  h1{font-family:Georgia,serif;font-size:20px;margin:0 0 2px;font-weight:400;letter-spacing:2px}
+  .sub{color:var(--faint);font-size:12.5px;margin-bottom:14px}
+  .stavka{font-family:Georgia,serif;font-size:17px;color:var(--glow);margin:0 0 16px}
+  .stavka b{color:#f0d9a8;font-weight:400}
+  .stol{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .col{flex:1 1 240px;min-width:220px}
+  .col.center{flex:2 1 460px;min-width:340px}
+  h3{margin:0 0 8px;font-size:10.5px;letter-spacing:1.4px;color:var(--faint);font-weight:600}
+  .chel{border:1px solid #362a20;border-radius:9px;padding:9px 11px;margin-bottom:7px;background:#181310;
+        cursor:pointer;transition:border-color .15s,background .15s}
+  .chel:hover{background:#211a15;border-color:#5a4634}
+  .chel.za{opacity:.4;cursor:default}
+  .chel.za:hover{background:#181310;border-color:#362a20}
+  .chel b{font-family:Georgia,serif;font-size:15px;font-weight:400;color:#f0e4cc}
+  .chel i{display:block;font-style:normal;font-size:11.5px;color:#8d8577;margin-top:1px}
+  .prosba{display:block;font-size:11.5px;color:#b99a6a;margin-top:4px;font-style:italic}
+  .zametka{display:block;font-size:11.5px;color:#7fb27a;margin-top:3px}
+  svg{display:block;width:100%;height:auto;border:1px solid #362a20;border-radius:10px;background:#15110d}
+  .tema{border:1px solid #362a20;border-radius:9px;padding:8px 11px;margin-bottom:7px;background:#181310;
+        cursor:pointer;font-size:13.5px}
+  .tema:hover{background:#211a15}
+  .tema.on{border-color:var(--glow);color:var(--glow);background:#241a12}
+  .tema .n{float:right;color:var(--glow);font-family:Georgia,serif}
+  button.go{margin-top:12px;width:100%;background:var(--terra);color:#fff;border:none;border-radius:8px;
+            padding:12px 16px;font-size:15px;cursor:pointer;font-family:inherit;letter-spacing:1px}
+  button.go:hover{background:#a5431f}
+  button.go:disabled{background:#3a2e26;color:#7d756a;cursor:default}
+  .log{margin-top:12px;border:1px solid #362a20;border-radius:10px;padding:12px 14px;background:#181310;
+       min-height:70px;font-size:13.5px}
+  .log .kadr{font-size:10.5px;letter-spacing:1.3px;color:var(--faint);margin:10px 0 5px}
+  .log .p{margin:0 0 5px;padding-left:10px;border-left:2px solid var(--warm)}
+  .log .p b{color:#f0e4cc;font-weight:400}
+  .log .p.sryv{border-left-color:var(--terra);color:#f0c0a8}
+  .utro{margin-top:14px;background:var(--paper);color:#2c241a;border-radius:9px;padding:18px 22px;
+        font-family:Georgia,serif;display:none}
+  .utro.on{display:block}
+  .utro h4{margin:0 0 8px;font-size:10.5px;letter-spacing:1.6px;color:#8a7d66;font-family:Helvetica,Arial,sans-serif}
+  .utro .uzel{font-size:16.5px;line-height:1.65;margin:0 0 12px}
+  .utro .itog{font-size:14.5px;color:#6b5f4a;border-top:1px solid #d8ccb4;padding-top:10px}
+  .utro .itog b{color:#8a3a16;font-weight:400}
+  .zam{margin-top:12px;font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#4a4034}
+  .zam select{background:#e8dcc4;border:1px solid #b3a98f;border-radius:5px;padding:4px 6px;font-size:13px;color:#2c241a}
+  .zam button{margin-left:8px;background:#8a5a2c;color:#fff;border:none;border-radius:6px;padding:5px 12px;
+              font-size:12.5px;cursor:pointer;font-family:inherit}
+  .note{margin-top:18px;font-size:12px;color:#6d665c;border-top:1px solid #2b2119;padding-top:10px}
+</style>
+</head>
+<body>
+<main>
+  <h1>СТОЛ</h1>
+  <div class="sub" id="sub">вечер первый · Москва, 2024</div>
+  <p class="stavka" id="stavkaTxt">…</p>
+
+  <div class="stol">
+    <div class="col">
+      <h3>КТО ХОДИТ К ТЕБЕ</h3>
+      <div id="krug"></div>
+    </div>
+
+    <div class="col center">
+      <svg id="kadr" viewBox="0 0 520 380" aria-label="Стол"></svg>
+      <div class="log" id="log"><span style="color:#6d665c;font-style:italic">
+        Посади за стол троих или больше, выбери, о чём пойдёт речь, — и накрывай.
+      </span></div>
+      <div class="utro" id="utro">
+        <h4 id="utroH">УТРОМ</h4>
+        <p class="uzel" id="uzel"></p>
+        <div class="itog" id="itog"></div>
+        <div class="zam" id="zam"></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3>О ЧЁМ ПОЙДЁТ РЕЧЬ</h3>
+      <div id="temy"></div>
+      <button class="go" id="nakryt" disabled>НАКРЫВАТЬ</button>
+      <button class="go" id="dalshe" style="display:none;background:#3d5a4a">СЛЕДУЮЩИЙ ВЕЧЕР</button>
+    </div>
+  </div>
+
+  <div class="note" id="note"></div>
+</main>
+
+<script src="miry/moskva.js?v=4"></script>
+<script src="dvizhok.js?v=4"></script>
+<script>
+(function(){
+  var M = window.MIR, D = window.DVIZHOK;
+  var MEST = 5;
+  var vecherN = 1, seed = 20240803;
+  var krug = D.roditKrug(M, seed);
+  var mesta = new Array(MEST).fill(null);
+  var temy = [];
+  var stavka = null, zametki = {}, prosby = {};
+  var idet = false;
+
+  // ── ставка и просьбы на вечер ────────────────────────────────────────────
+  function novyiVecher(){
+    mesta = new Array(MEST).fill(null);
+    temy = [];
+    idet = false;
+    var r = Math.floor(Math.random() * M.STAVKI.length);
+    var a = krug[Math.floor(Math.random() * krug.length)];
+    var b = krug.filter(function(x){ return x !== a; })[Math.floor(Math.random() * (krug.length - 1))];
+    stavka = { tip: M.STAVKI[r].tip, kto: a, kto2: b,
+               txt: D.rod(M.STAVKI[r].txt.replace('{кто2}', b.name).replace('{кто}', a.name), a.g) };
+    prosby = {};
+    krug.forEach(function(c){
+      if (Math.random() < 0.4){
+        var dr = krug.filter(function(x){ return x !== c; })[Math.floor(Math.random() * (krug.length - 1))];
+        prosby[c.name] = M.PROSBY[Math.floor(Math.random() * M.PROSBY.length)]
+                           .replace('{тв}', dr.tv).replace('{кто}', dr.name);
+      }
+    });
+    document.getElementById('utro').classList.remove('on');
+    document.getElementById('dalshe').style.display = 'none';
+    document.getElementById('nakryt').style.display = '';
+    document.getElementById('log').innerHTML = '<span style="color:#6d665c;font-style:italic">' +
+      'Посади за стол троих или больше, выбери, о чём пойдёт речь, — и накрывай.</span>';
+    risovat();
+  }
+
+  // ── КАДР: стол и места ──────────────────────────────────────────────────
+  function tochka(i){
+    var a = -Math.PI / 2 + i * (2 * Math.PI / MEST);
+    return { x: 260 + Math.cos(a) * 150, y: 195 + Math.sin(a) * 118 };
+  }
+
+  function figura(x, y, ch, sost){
+    var otsel = (sost && sost.otsel) || 0;
+    var c = tochka(0);
+    var dx = (x - 260) * otsel * 0.09, dy = (y - 195) * otsel * 0.09;
+    x += dx; y += dy;
+    var teplo = sost ? sost.teplo : 1;
+    var s = '';
+    s += '<circle cx="'+x+'" cy="'+y+'" r="34" fill="#e8a33d" opacity="'+(0.13 * teplo).toFixed(3)+'"/>';
+    s += '<ellipse cx="'+x+'" cy="'+(y+26)+'" rx="20" ry="5" fill="#000" opacity=".4"/>';
+    if (sost && sost.ushel){
+      s += '<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="11" fill="#5d554a">пусто</text>';
+      s += '<text x="'+x+'" y="'+(y+30)+'" text-anchor="middle" font-size="11.5" fill="#5d554a">'+ch.name+'</text>';
+      return s;
+    }
+    s += '<path d="M'+(x-15)+','+(y+24)+' C'+(x-15)+','+(y+2)+' '+(x-9)+','+(y-6)+' '+x+','+(y-6)+
+         ' C'+(x+9)+','+(y-6)+' '+(x+15)+','+(y+2)+' '+(x+15)+','+(y+24)+' Z" fill="#1a1f27"/>';
+    s += '<circle cx="'+x+'" cy="'+(y-16)+'" r="9" fill="#2a3038"/>';
+    s += '<path d="M'+(x-9)+','+(y-18)+' a9,9 0 0,1 18,0 l-3,-2 a6,6 0 0,0 -12,0 Z" fill="#15181e"/>';
+    if (ch.g === 'ж') s += '<circle cx="'+x+'" cy="'+(y-25)+'" r="4" fill="#15181e"/>';
+    s += '<text x="'+x+'" y="'+(y+40)+'" text-anchor="middle" font-size="12" fill="#c9bda6" font-family="Georgia,serif">'+ch.name+'</text>';
+    return s;
+  }
+
+  function risovat(sost){
+    var s = '';
+    s += '<defs><radialGradient id="lamp" cx="50%" cy="50%" r="60%">' +
+         '<stop offset="0%" stop-color="#e8a33d" stop-opacity=".22"/>' +
+         '<stop offset="100%" stop-color="#15110d" stop-opacity="0"/></radialGradient></defs>';
+    s += '<rect x="0" y="0" width="520" height="380" fill="#15110d"/>';
+    s += '<ellipse cx="260" cy="195" rx="250" ry="185" fill="url(#lamp)"/>';
+    s += '<ellipse cx="260" cy="200" rx="118" ry="86" fill="#c9b48c"/>';
+    s += '<ellipse cx="260" cy="195" rx="118" ry="86" fill="#e0cfa6"/>';
+    s += '<ellipse cx="260" cy="195" rx="96" ry="68" fill="none" stroke="#c9b48c" stroke-width="1.5"/>';
+
+    for (var i = 0; i < MEST; i++){
+      var t = tochka(i);
+      if (mesta[i]){
+        s += figura(t.x, t.y, mesta[i], sost && sost[mesta[i].name]);
+      } else {
+        s += '<g style="cursor:pointer" data-mesto="'+i+'">';
+        s += '<circle cx="'+t.x+'" cy="'+t.y+'" r="21" fill="none" stroke="#4a3c2c" stroke-width="1.6" stroke-dasharray="4 4"/>';
+        s += '<text x="'+t.x+'" y="'+(t.y+4)+'" text-anchor="middle" font-size="18" fill="#4a3c2c">+</text></g>';
+      }
+    }
+    document.getElementById('kadr').innerHTML = s;
+    obnovit();
+  }
+
+  // ── круг и темы ─────────────────────────────────────────────────────────
+  function obnovit(){
+    var h = '';
+    krug.forEach(function(c, i){
+      var za = mesta.indexOf(c) >= 0;
+      h += '<div class="chel'+(za ? ' za' : '')+'" data-c="'+i+'"><b>'+c.name+'</b><i>'+c.kto+'</i>';
+      if (prosby[c.name]) h += '<span class="prosba">✉ «'+prosby[c.name]+'»</span>';
+      if (zametki[c.name]) h += '<span class="zametka">▸ '+zametki[c.name]+'</span>';
+      h += '</div>';
+    });
+    document.getElementById('krug').innerHTML = h;
+
+    var vse = Object.keys(M.SITU);
+    var ht = '';
+    vse.forEach(function(k){
+      var n = temy.indexOf(k);
+      ht += '<div class="tema'+(n >= 0 ? ' on' : '')+'" data-t="'+k+'">' +
+            (n >= 0 ? '<span class="n">'+(n+1)+'</span>' : '') + M.SITU[k] + '</div>';
+    });
+    document.getElementById('temy').innerHTML = ht;
+
+    document.getElementById('stavkaTxt').innerHTML = 'Ты хочешь, <b>' + stavka.txt + '</b>.';
+    document.getElementById('sub').textContent = 'вечер ' + vecherN + ' · Москва, 2024';
+    document.getElementById('nakryt').disabled =
+      idet || mesta.filter(Boolean).length < 3 || temy.length < 3;
+    document.getElementById('note').innerHTML =
+      (idet ? '<b style="color:#b8ab97">Вечер идёт.</b> Клик по столу — быстрее. ' : '') +
+      'Ты решаешь только состав, рассадку и темы. Дальше вечер идёт сам: люди читают чужие жесты ' +
+      'через свои старые ушибы — и потому понимают не то. <b style="color:#b8ab97">Читают только соседи</b> ' +
+      'по столу; сидящий через одного слышит вполуха, дальний не слышит вовсе.';
+  }
+
+  document.getElementById('krug').onclick = function(e){
+    if (idet) return;
+    var el = e.target.closest('[data-c]'); if (!el) return;
+    var c = krug[+el.dataset.c];
+    if (mesta.indexOf(c) >= 0) return;
+    var i = mesta.indexOf(null); if (i < 0) return;
+    mesta[i] = c; risovat();
+  };
+  document.getElementById('kadr').onclick = function(e){
+    if (idet) return;
+    var el = e.target.closest('[data-mesto]');
+    if (el) return;                                  // пустое место — сажаем кликом слева
+    // клик по человеку за столом — встаёт
+    var t = e.target.closest('g'); if (t) return;
+    for (var i = 0; i < MEST; i++){
+      if (!mesta[i]) continue;
+      var p = tochka(i);
+      var pt = document.getElementById('kadr').getBoundingClientRect();
+      var x = (e.clientX - pt.left) / pt.width * 520, y = (e.clientY - pt.top) / pt.height * 380;
+      if (Math.abs(x - p.x) < 30 && Math.abs(y - p.y) < 34){ mesta[i] = null; risovat(); return; }
+    }
+  };
+  document.getElementById('temy').onclick = function(e){
+    if (idet) return;
+    var el = e.target.closest('[data-t]'); if (!el) return;
+    var k = el.dataset.t, i = temy.indexOf(k);
+    if (i >= 0) temy.splice(i, 1); else if (temy.length < 3) temy.push(k);
+    obnovit();
+  };
+
+  // ── ВЕЧЕР ИДЁТ ──────────────────────────────────────────────────────────
+  var bystro = false;
+  document.getElementById('kadr').addEventListener('click', function(){ if (idet) bystro = true; });
+  document.getElementById('log').addEventListener('click', function(){ if (idet) bystro = true; });
+
+  document.getElementById('nakryt').onclick = function(){
+    idet = true; bystro = false; obnovit();
+    var v = D.provesti(M, mesta, temy, seed + vecherN * 7919);
+    var log = document.getElementById('log'); log.innerHTML = '';
+    var sost = {}; mesta.filter(Boolean).forEach(function(c){ sost[c.name] = { teplo:1, otsel:0, ushel:false }; });
+
+    var shagi = [];
+    v.hronika.forEach(function(t){
+      shagi.push({ tip:'kadr', txt:t.kadr });
+      t.sobytiya.forEach(function(s){ shagi.push({ tip:'act', s:s }); });
+    });
+
+    var i = 0;
+    (function tick(){
+      if (i >= shagi.length){ return finish(v, sost); }
+      var sh = shagi[i++];
+      if (sh.tip === 'kadr'){
+        log.insertAdjacentHTML('beforeend', '<div class="kadr">' + sh.txt.toUpperCase() + '</div>');
+      } else {
+        var s = sh.s;
+        log.insertAdjacentHTML('beforeend',
+          '<div class="p'+(s.sryv ? ' sryv' : '')+'"><b>'+s.kto+'</b> — '+s.txt+'</div>');
+        s.chteniya.forEach(function(c){
+          if (c.cena < 0){
+            var o = sost[c.kto];
+            o.teplo = Math.max(0.15, o.teplo + c.cena);
+            o.otsel = Math.min(3, o.otsel + 1);
+          }
+        });
+        if (s.sryv) sost[s.kto].ushel = (s.txt.indexOf('уходит') >= 0 || s.txt.indexOf('уходит') >= 0);
+        risovat(sost);
+      }
+      log.scrollTop = log.scrollHeight;
+      setTimeout(tick, bystro ? 60 : (sh.tip === 'kadr' ? 700 : 1400));
+    })();
+  };
+
+  function finish(v, sost){
+    var u = document.getElementById('utro');
+    var kon = v.konec.tip === 'срыв' ? v.konec.kto + ' сорвалась, и вечер кончился' :
+              v.konec.tip === 'холод' ? 'все досидели, но стало холодно' : 'вечер прошёл спокойно';
+    document.getElementById('utroH').textContent = 'УТРОМ · ' + kon;
+
+    document.getElementById('uzel').innerHTML = v.uzel
+      ? '<b>' + v.uzel.kto + '</b> просто ' + v.uzel.txt + '. <b>' + v.uzel.chital +
+        '</b> поняла это так: «' + v.uzel.kak + '» — и с этого всё пошло.'
+      : 'Никто никого не понял криво. Такое бывает, и это тоже вечер.';
+
+    // сбылась ли твоя ставка
+    var sb = false, kt = stavka.kto, za = v.za_stolom;
+    var e = za.filter(function(d){ return d.name === kt.name; })[0];
+    if (stavka.tip === 'bez_uhoda') sb = !za.some(function(d){ return d.sorvalsya; });
+    else if (!e) sb = false;
+    else if (stavka.tip === 'ostalas')  sb = !e.sorvalsya && Object.values(e.teplo).some(function(x){ return x > 0.4; });
+    else if (stavka.tip === 'otpustilo') sb = e.napryazhenie < 0.35;
+    else if (stavka.tip === 'pomirilis'){
+      var e2 = za.filter(function(d){ return d.name === stavka.kto2.name; })[0];
+      sb = !!(e2 && e.teplo[e2.name] > 0.4 && e2.teplo[e.name] > 0.4);
+    }
+    document.getElementById('itog').innerHTML = 'Ты хотел, ' + stavka.txt + '. <b>' +
+      (sb ? 'Вышло.' : 'Не вышло.') + '</b>';
+
+    // заметка про человека
+    var pro = v.uzel ? v.uzel.chital : (za[0] && za[0].name);
+    var kogda = Object.keys(M.SITU).map(function(k){ return '<option value="'+k+'">'+M.SITU[k]+'</option>'; }).join('');
+    document.getElementById('zam').innerHTML =
+      'Записать себе: <b>' + pro + '</b> плохо переносит, когда ' +
+      '<select id="zamSel">' + kogda + '</select>' +
+      '<button id="zamOk">записать</button>' +
+      '<div style="margin-top:6px;color:#8a7d66;font-size:12px">' +
+      'Верна заметка или нет, тебе никто не скажет. Выяснится тем, что ты сажаешь человека не туда.</div>';
+    document.getElementById('zamOk').onclick = function(){
+      zametki[pro] = 'плохо переносит: ' + M.SITU[document.getElementById('zamSel').value];
+      document.getElementById('zamOk').textContent = 'записано';
+      obnovit();
+    };
+
+    u.classList.add('on');
+    document.getElementById('nakryt').style.display = 'none';
+    var d = document.getElementById('dalshe');
+    d.style.display = ''; d.disabled = false;
+    idet = false;
+  }
+
+  document.getElementById('dalshe').onclick = function(){ vecherN++; novyiVecher(); };
+
+  novyiVecher();
+})();
+</script>
+</body>
+</html>

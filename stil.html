@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Проба стилю · хата Одарки</title>
+<style>
+  body{margin:0;background:#0b0907;color:#d9cfbe;font-family:Helvetica,Arial,sans-serif;
+    display:flex;justify-content:center;padding:24px 18px 60px;line-height:1.55}
+  main{width:100%;max-width:1060px}
+  h1{font-family:Georgia,serif;font-size:22px;margin:0 0 4px;font-weight:400}
+  .sub{color:#8d8577;font-size:12.5px;margin:0 0 14px;max-width:840px}
+  .wrap{border:1px solid #362a20;border-radius:10px;overflow:hidden;background:#100c09;line-height:0}
+  canvas{width:100%;height:auto;display:block}
+  canvas.px{image-rendering:pixelated;image-rendering:crisp-edges}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0 0;line-height:1.5}
+  .grp{display:flex;gap:8px;flex-wrap:wrap;padding-right:14px;margin-right:6px;border-right:1px solid #2b2119}
+  button{background:#1e1712;color:#d9cfbe;border:1px solid #46372a;border-radius:7px;
+    padding:8px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+  button:hover{background:#2a211a}
+  button.on{background:#c2542c;border-color:#c2542c;color:#fff}
+  .note{margin-top:18px;font-size:12.5px;color:#7d756a;border-top:1px solid #2b2119;padding-top:12px;max-width:860px}
+  .note b{color:#b8ab97}
+</style>
+</head>
+<body>
+<main>
+  <h1>Хата Одарки — проба мови</h1>
+  <p class="sub">Одна и та же геометрия рисуется в двух стилях: <b>пиксель</b> (канва 240×150, палитра 12 цветов, свет положен дизерингом Байера) и <b>гладкий</b> (та же сцена в ×4 разрешении, свет градиентом). Переключай — код один, меняется только разрешение и способ класть свет.</p>
+
+  <div class="wrap"><canvas id="c"></canvas></div>
+
+  <div class="bar">
+    <div class="grp">
+      <button id="sp" class="on">пиксель</button>
+      <button id="sv">гладкий</button>
+    </div>
+    <div class="grp">
+      <button id="bd" class="on">свет дизерингом</button>
+      <button id="bn">только ночь</button>
+    </div>
+    <button id="bz">крупнее</button>
+  </div>
+
+  <div class="note"><b>Что добавилось против прошлой пробы:</b> белёное полотно сорочек как светлые пятна на тёмном (приём Нарбута) · складки, пояса, взуття · фактура глины на стенах и побелки на печи · сажа вокруг челюсти · мисник с посудой, жердка с одеждой, вікно в ночь, <b>порожня колиска</b> под сволоком · пыль в луче каганця · дым. Фигуры перестали быть плоскими не из-за контура, а из-за <b>внутреннего контраста</b>: тёмная свита ↔ белая сорочка ↔ намітка.</div>
+</main>
+
+<script>
+(function(){
+  var cv=document.getElementById('c'), ctx=cv.getContext('2d');
+  var W=240, H=150;
+  var mode='px', dither=true, night=false, zoom=4;
+
+  // ── палитра: [в тени, на свету] ──
+  var P={
+    ceil:  ['#120d0a','#241a13'],
+    wall:  ['#1b1511','#3d2e20'],
+    wallD: ['#150f0c','#2e2217'],
+    wood:  ['#241b13','#4a3826'],
+    woodL: ['#33271a','#66502f'],
+    lime:  ['#7d7466','#dcd0b2'],   // побілка печі
+    limeD: ['#5e5749','#b0a488'],
+    linen: ['#6e6656','#cfc2a2'],   // біле полотно сорочок
+    fig:   ['#0a0706','#17100b'],   // темна свита
+    cold:  ['#1f2a32','#3d4e5b'],
+    red:   ['#5e2a14','#c2542c'],
+    ember: ['#4a1c0a','#b8451a'],
+    flame: ['#8a6428','#f6e2ae']
+  };
+  var BAYER=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
+  function mk(l){ var o={}; for(var k in P) o[k]=P[k][l?1:0]; return o; }
+  function hash(x,y){ var n=(x*374761393+y*668265263)^0x5bf03635; n=(n^(n>>13))*1274126177; return ((n^(n>>16))>>>0)/4294967296; }
+
+  // ══════════ СЦЕНА (геометрия в координатах 240×150, U — множитель) ══════════
+  function scene(g,c,U){
+    function r(x,y,w,h,col){ g.fillStyle=col; g.fillRect(x*U,y*U,Math.max(U*0.999,w*U),Math.max(U*0.999,h*U)); }
+    function trap(cx,y0,y1,wT,wB,col){ var n=Math.max(1,y1-y0);
+      for(var i=0;i<=n;i++){ var w=wT+(wB-wT)*i/n; r(cx-w/2,y0+i,w,1,col); } }
+    function ell(cx,cy,rx,ry,col){
+      for(var yy=-ry;yy<=ry;yy++){ var w=rx*Math.sqrt(Math.max(0,1-(yy*yy)/(ry*ry))); if(w>0.4) r(cx-w,cy+yy,w*2,1,col); } }
+    function speck(x0,y0,x1,y1,dens,col){ for(var y=y0;y<y1;y++)for(var x=x0;x<x1;x++) if(hash(x,y)<dens) r(x,y,1,1,col); }
+
+    // ── стеля, стіни, долівка ──
+    r(0,0,W,20,c.ceil);
+    r(0,26,W,92,c.wall);
+    speck(0,26,W,118,0.06,c.wallD);                 // фактура глини
+    r(0,118,W,H-118,c.wood);
+    speck(0,118,W,H,0.10,c.woodL);                  // товчена долівка
+    for(var i=0;i<5;i++) r(0,120+i*6,W,1,c.wood);
+    // СВОЛОК
+    r(0,20,W,6,c.woodL); r(0,25,W,1,c.wood);
+    for(var s=0;s<12;s++) r(s*21+3,22,9,1,c.wood);  // текстура бруса
+
+    // ── вікно в ніч ──
+    r(150,44,20,17,c.cold); r(149,43,22,1,c.woodL); r(149,60,22,1,c.woodL);
+    r(159,44,1,17,c.woodL); r(150,52,20,1,c.woodL);
+
+    // ── ДВЕРІ + холодне світло + зілля ──
+    r(8,34,34,84,c.cold); r(7,33,36,2,c.woodL); r(6,34,2,85,c.woodL); r(42,34,2,85,c.woodL);
+    for(var z=0;z<5;z++){ r(11+z*6,35,1,6,c.wood); r(10+z*6,40,3,1,c.wood); }
+    // ЗНАХАРКА: темна намітка, світла сорочка, пучок зілля
+    trap(25,88,118,10,16,c.fig);
+    r(20,88,10,2,c.red);                             // крайка
+    trap(25,74,88,8,10,c.linen);                     // сорочка — світла пляма
+    r(21,80,1,7,c.fig); r(29,80,1,7,c.fig);
+    ell(25,69,4.5,5,c.fig); r(20,63,10,7,c.fig);
+    r(30,88,5,2,c.linen); r(34,86,3,2,c.fig);
+    r(37,88,1,5,c.wood); r(39,89,1,4,c.wood); r(38,86,1,3,c.wood);
+
+    // ── ПІЧ: чверть хати ──
+    trap(102,42,118,44,52,c.lime);
+    r(76,42,26,76,c.limeD);                          // тіньовий бік
+    r(96,26,18,16,c.limeD); r(96,26,10,16,c.lime);   // комин
+    for(var v=0;v<7;v++) r(80+v*7,44,1,66,c.limeD);  // патьоки побілки
+    r(88,88,30,22,c.fig);                            // челюсть
+    speck(84,84,122,90,0.35,c.wallD);                // сажа
+    ell(103,105,12,3,c.ember); ell(103,106,6,2,c.flame);
+    r(76,110,54,5,c.limeD); r(76,110,54,2,c.lime);   // припічок
+    r(120,64,8,3,c.woodL);                           // кілочок
+
+    // ── МИСНИК + ЖЕРДКА з одягом ──
+    r(132,40,22,2,c.woodL); r(132,52,22,2,c.woodL); r(132,42,2,10,c.wood); r(152,42,2,10,c.wood);
+    ell(138,50,3,2,c.limeD); ell(146,50,3,2,c.limeD); r(141,44,4,6,c.woodL);
+    r(130,64,50,1,c.woodL);                          // жердка
+    trap(140,65,80,7,9,c.linen); trap(158,65,76,6,8,c.fig);
+    r(168,65,6,10,c.red);
+
+    // ── ПОРОЖНЯ КОЛИСКА під сволоком ──
+    r(186,26,1,12,c.wood); r(196,26,1,12,c.wood);
+    trap(191,38,46,14,10,c.woodL); r(184,38,14,1,c.wood);
+    r(187,40,8,2,c.linen);
+
+    // ── ПІЛ + ІВАСИК ──
+    r(130,96,48,3,c.woodL); r(132,99,2,19,c.wood); r(174,99,2,19,c.wood);
+    trap(154,88,96,24,42,c.linen);
+    for(var f=0;f<4;f++) r(140+f*8,90+f%2,1,6,c.wallD);   // складки рядна
+    ell(137,90,5,4,c.fig); r(133,86,8,4,c.fig);
+
+    // ── ОДАРКА: намітка, світла сорочка, смугаста спідниця ──
+    trap(196,96,118,13,20,c.fig);
+    for(var q=0;q<5;q++) r(189+q*4,98+q,1,20,c.wallD);    // повздовжні смуги
+    r(189,94,15,3,c.red);                                  // крайка
+    trap(196,80,96,9,12,c.linen);                          // сорочка
+    r(191,84,1,9,c.wallD); r(201,84,1,9,c.wallD);
+    ell(196,75,5,5.5,c.fig);
+    r(190,69,12,7,c.linen);                                // НАМІТКА
+    r(201,74,3,16,c.linen); r(202,86,2,1,c.red); r(202,89,2,1,c.red);
+    r(184,86,8,3,c.linen); r(179,84,5,5,c.woodL); r(180,83,3,1,c.cold);  // рука з кухлем
+
+    // ── ГАФІЯ: темна намітка, зігнута, рука наперекір ──
+    trap(60,88,118,12,18,c.fig);
+    r(53,88,14,2,c.red);
+    trap(60,72,88,9,12,c.linen);                           // сорочка з-під свити
+    trap(60,72,88,13,15,c.fig); r(55,74,10,14,c.linen);    // свита розкрита
+    ell(60,67,5,6,c.fig); r(54,60,12,8,c.fig);
+    r(53,68,1,11,c.fig); r(66,68,1,11,c.fig);
+    r(45,80,13,3,c.fig); r(42,79,4,3,c.fig);               // рука до дверей
+    r(66,86,4,3,c.fig);
+    r(56,116,4,2,c.wood); r(61,116,4,2,c.wood);            // постоли
+
+    // ── СТІЛ · КАГАНЕЦЬ · ГЛЕЧИК ──
+    r(202,92,36,3,c.woodL); r(204,95,2,23,c.wood); r(234,95,2,23,c.wood);
+    r(206,88,8,4,c.woodL); r(209,83,1,5,c.flame); r(208,82,3,2,c.flame);
+    for(var d=0;d<4;d++) r(209,78-d*3,1,1,c.wallD);        // димок
+    trap(226,80,92,5,9,c.woodL); r(224,80,5,1,c.wood);
+    ell(218,91,4,2,c.limeD);
+
+    // ── ПОКУТЬ ──
+    r(212,30,22,22,c.woodL); r(215,33,16,16,c.wood); ell(223,40,3.5,4.5,c.limeD);
+    r(209,28,28,3,c.linen); r(209,31,2,18,c.linen); r(235,31,2,18,c.linen);
+    r(209,36,2,1,c.red); r(235,36,2,1,c.red); r(209,42,2,1,c.red); r(235,42,2,1,c.red);
+
+    // ── СКРИНЯ + дитяча сорочечка (передній план) ──
+    r(0,106,48,30,c.woodL); r(0,106,48,3,c.wood); r(0,118,48,1,c.wood);
+    for(var b=0;b<3;b++) r(6+b*15,110,9,1,c.red);
+    r(11,98,10,8,c.linen); r(13,97,6,1,c.linen); r(12,101,8,1,c.red);
+    r(40,112,3,3,c.wood);
+
+    // ── пил у промені ──
+    if(!night) for(var p=0;p<26;p++){ var px=170+((p*37)%66), py=60+((p*53)%46);
+      if(hash(px,py)<0.6) r(px,py,1,1,c.limeD); }
+  }
+
+  // ── свет ──
+  function lightAt(x,y){
+    if(night) return 0;
+    var dx=(x-209)/1.4, dy=(y-84), l=1.28-Math.sqrt(dx*dx+dy*dy)/92;
+    var ex=(x-103)/1.6, ey=(y-104); l=Math.max(l,0.62-Math.sqrt(ex*ex+ey*ey)/48);   // жар печі
+    var cx=(x-25)/1.25, cy=(y-70); l=Math.max(l,0.70-Math.sqrt(cx*cx+cy*cy)/64);    // двері
+    return Math.max(0,Math.min(1,l));
+  }
+
+  var oA=document.createElement('canvas'), oB=document.createElement('canvas');
+
+  function draw(){
+    var U = (mode==='px') ? 1 : 4;
+    cv.width=W*U; cv.height=H*U;
+    cv.className = (mode==='px') ? 'px' : '';
+    cv.style.maxWidth = (W*zoom)+'px';
+    oA.width=oB.width=W*U; oA.height=oB.height=H*U;
+    var ga=oA.getContext('2d'), gb=oB.getContext('2d');
+    ga.clearRect(0,0,W*U,H*U); gb.clearRect(0,0,W*U,H*U);
+    scene(ga,mk(false),U); scene(gb,mk(true),U);
+
+    if(mode==='px'){
+      var A=ga.getImageData(0,0,W,H), B=gb.getImageData(0,0,W,H), O=ctx.createImageData(W,H);
+      for(var y=0;y<H;y++)for(var x=0;x<W;x++){
+        var i=(y*W+x)*4, l=lightAt(x,y);
+        var t = dither ? (BAYER[(y%4)*4+(x%4)]+0.5)/16 : 0.5;
+        var src=(l>t)?B:A;
+        O.data[i]=src.data[i];O.data[i+1]=src.data[i+1];O.data[i+2]=src.data[i+2];O.data[i+3]=255;
+      }
+      ctx.putImageData(O,0,0);
+    } else {
+      ctx.drawImage(oA,0,0);
+      ctx.save();
+      if(!night){
+        ctx.globalCompositeOperation='source-over';
+        var pat=ctx.createRadialGradient(209*U,84*U,4*U,209*U,84*U,95*U);
+        pat.addColorStop(0,'rgba(255,255,255,1)'); pat.addColorStop(1,'rgba(255,255,255,0)');
+        var tmp=document.createElement('canvas'); tmp.width=W*U; tmp.height=H*U;
+        var tg=tmp.getContext('2d'); tg.drawImage(oB,0,0);
+        tg.globalCompositeOperation='destination-in'; tg.fillStyle=pat; tg.fillRect(0,0,W*U,H*U);
+        ctx.drawImage(tmp,0,0);
+        var p2=ctx.createRadialGradient(25*U,70*U,2*U,25*U,70*U,60*U);
+        p2.addColorStop(0,'rgba(255,255,255,.9)'); p2.addColorStop(1,'rgba(255,255,255,0)');
+        var t2=document.createElement('canvas'); t2.width=W*U; t2.height=H*U;
+        var g2=t2.getContext('2d'); g2.drawImage(oB,0,0);
+        g2.globalCompositeOperation='destination-in'; g2.fillStyle=p2; g2.fillRect(0,0,W*U,H*U);
+        ctx.drawImage(t2,0,0);
+      }
+      ctx.restore();
+      var vg=ctx.createRadialGradient(W*U/2,H*U/2,H*U*0.35,W*U/2,H*U/2,H*U*0.95);
+      vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.66)');
+      ctx.fillStyle=vg; ctx.fillRect(0,0,W*U,H*U);
+    }
+  }
+
+  function sync(){
+    document.getElementById('sp').className = mode==='px'?'on':'';
+    document.getElementById('sv').className = mode==='sm'?'on':'';
+    document.getElementById('bd').className = (dither&&!night)?'on':'';
+    document.getElementById('bn').className = night?'on':'';
+    draw();
+  }
+  document.getElementById('sp').onclick=function(){ mode='px'; sync(); };
+  document.getElementById('sv').onclick=function(){ mode='sm'; sync(); };
+  document.getElementById('bd').onclick=function(){ dither=true; night=false; sync(); };
+  document.getElementById('bn').onclick=function(){ night=!night; sync(); };
+  document.getElementById('bz').onclick=function(){ zoom=(zoom===4?6:4); this.textContent=(zoom===4?'крупнее':'мельче'); sync(); };
+  sync();
+})();
+</script>
+</body>
+</html>

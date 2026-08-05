@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<title>Солвер v3 — разрешима ли тайна души</title>
+<style>
+  body{background:#faf9f5;color:#2c2c2a;font-family:ui-monospace,Menlo,Consolas,monospace;
+    margin:0;padding:28px 22px 60px;line-height:1.55;font-size:13px}
+  h1{font-family:Georgia,serif;font-size:22px;margin:0 0 4px}
+  .sub{color:#888780;font-size:12.5px;margin:0 0 18px;font-family:Helvetica,Arial,sans-serif;max-width:860px}
+  pre{white-space:pre-wrap;margin:0;max-width:960px}
+  b{color:#993C1D}
+</style>
+</head>
+<body>
+<h1>Солвер v3: разрешима ли тайна души?</h1>
+<p class="sub">Три души живут восемь дней. Правда каждой = <b>нужда × рубец</b> (25 вариантов), правда мира = тройка → <b>15 625 гипотез</b>. Движок прогоняет мир по каждой гипотезе и вычёркивает те, что расходятся с увиденным. Три конфигурации — чтобы увидеть, что именно поднимает разрешимость.</p>
+<pre id="out">считаю… (десятки секунд — движок гоняет миллионы прогонов)</pre>
+
+<script>
+(function(){
+  var NUZHDY=["голод","признание","принадлежность","смысл","автономия"];
+  var RUBTSY=["утрата дитяти","предательство близкого","публичный позор","голодная зима","изгнание"];
+  var VERBS=["отняла","попросила","поделилась","ушла","промолчала","похвалилась"];
+  var NAMES=["Одарка","Гафія","Мошко"];
+  var SITU=["скудная вода","общий стол","пришёл чужой","дитя больно","чужой дар","старший велит","долгий пост","праздник"];
+  var DAYS=8, H=15625;
+
+  var NB={ "голод":{0:.55,1:.50}, "признание":{5:.60,0:.10}, "принадлежность":{2:.60,1:.20},
+           "смысл":{4:.60,3:.15}, "автономия":{3:.55,4:.20,2:-.20} };
+  var SB={ "утрата дитяти":{"дитя больно":{0:1.2},"общий стол":{3:.8}},
+           "предательство близкого":{"пришёл чужой":{3:1.0},"чужой дар":{4:1.0}},
+           "публичный позор":{"общий стол":{4:1.0},"старший велит":{4:.9}},
+           "голодная зима":{"скудная вода":{0:1.1},"чужой дар":{0:.9}},
+           "изгнание":{"пришёл чужой":{3:1.0},"общий стол":{3:.9},"праздник":{3:1.0}} };
+  // МАНЕРА — рубец проступает в том, КАК сделано (богатый поступок)
+  var MB={ "утрата дитяти":{0:"хватая, будто отнимают у неё",3:"не взглянув на детей"},
+           "предательство близкого":{2:"глядя в сторону",1:"через силу"},
+           "публичный позор":{4:"не поднимая глаз",1:"едва слышно"},
+           "голодная зима":{0:"жадно, себе за пазуху",2:"отмерив ровно половину"},
+           "изгнание":{3:"первой, не прощаясь",4:"как чужая"} };
+
+  // ── состояние мира: плоский массив на каждую гипотезу ──
+  // [0..2] нужда трёх душ · [3..11] граф отношений 3×3
+  function freshState(a,base){ a[base]=.30;a[base+1]=.32;a[base+2]=.28; for(var k=3;k<12;k++)a[base+k]=0; }
+
+  function dayEvents(t0,t1,t2,S,base,d,rich){
+    var tr=[t0,t1,t2], situ=SITU[d], ev="";
+    for(var i=0;i<3;i++){
+      var j=(i+1+(d%2))%3; if(j===i)j=(i+2)%3;
+      var nd=NUZHDY[(tr[i]/5)|0], sc=RUBTSY[tr[i]%5];
+      var read=S[base+3+i*3+j], press=S[base+i];
+      var s0=0,s1=0,s2=0,s3=0,s4=0,s5=0;
+      var nb=NB[nd];
+      if(nb[0])s0+=nb[0]; if(nb[1])s1+=nb[1]; if(nb[2])s2+=nb[2];
+      if(nb[3])s3+=nb[3]; if(nb[4])s4+=nb[4]; if(nb[5])s5+=nb[5];
+      var sb=SB[sc][situ];
+      if(sb){ if(sb[0])s0+=sb[0]; if(sb[1])s1+=sb[1]; if(sb[2])s2+=sb[2];
+              if(sb[3])s3+=sb[3]; if(sb[4])s4+=sb[4]; if(sb[5])s5+=sb[5]; }
+      s0+=press*0.9-read*1.0; s1+=press*0.6+read*0.3; s2+=(1-press)*0.7+read*0.9;
+      s3+=-read*0.35; s4+=0.05; s5+=read*0.1;
+      if(situ==="скудная вода"||situ==="долгий пост"){ s0+=0.35; s2-=0.30; }
+      if(situ==="праздник"){ s2+=0.25; s5+=0.20; }
+      var b=0,bv=s0;
+      if(s1>bv+1e-9){b=1;bv=s1;} if(s2>bv+1e-9){b=2;bv=s2;} if(s3>bv+1e-9){b=3;bv=s3;}
+      if(s4>bv+1e-9){b=4;bv=s4;} if(s5>bv+1e-9){b=5;bv=s5;}
+      ev += i+","+b+","+j;
+      if(rich){ var m=MB[sc]; ev += (m&&m[b])? ","+m[b] : ",-"; }
+      ev += ";";
+      // последствия — мир меняется, значит завтра всё иначе
+      if(b===0){ S[base+i]=Math.max(0,S[base+i]-.28); S[base+j]=Math.min(1,S[base+j]+.20);
+                 S[base+3+j*3+i]-=.40; S[base+3+i*3+j]-=.10; }
+      else if(b===2){ S[base+i]=Math.min(1,S[base+i]+.06); S[base+j]=Math.max(0,S[base+j]-.14);
+                 S[base+3+j*3+i]+=.28; S[base+3+i*3+j]+=.18; }
+      else if(b===1){ if(S[base+3+j*3+i]>.1){ S[base+i]=Math.max(0,S[base+i]-.15); S[base+3+i*3+j]+=.10; }
+                      else S[base+3+i*3+j]-=.05; }
+      else if(b===3){ S[base+3+i*3+j]-=.08; }
+      S[base+i]=Math.min(1,S[base+i]+.05);
+    }
+    return ev;
+  }
+
+  function mul(s){ return function(){ s|=0; s=s+0x6D2B79F5|0; var t=Math.imul(s^s>>>15,1|s);
+    t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+  // ── один прогон ──────────────────────────────────────────────────────────
+  // mode: 0 = положения дня идут своим чередом · 1 = игрок ПРОВОЦИРУЕТ (движок выбирает лучшее)
+  var HS=new Float64Array(H*12), TS=new Float64Array(12), tmp=new Float64Array(12);
+  var alive=new Int32Array(H), next=new Int32Array(H);
+  var sigMap={};
+
+  function trial(truth,rich,mode,rnd,wantTrace){
+    var nA=H; for(var q=0;q<H;q++) alive[q]=q;
+    for(var q2=0;q2<H;q2++) freshState(HS,q2*12);
+    freshState(TS,0);
+    var order=[]; for(var d0=0;d0<DAYS;d0++) order.push(d0);
+    if(mode===0){ for(var i0=order.length-1;i0>0;i0--){var j0=Math.floor(rnd()*(i0+1)),t0=order[i0];order[i0]=order[j0];order[j0]=t0;} }
+    var used={}, trace=[];
+    for(var step=0; step<DAYS; step++){
+      var pick;
+      if(mode===0){ pick=order[step]; }
+      else {
+        // ПРОВОКАЦИЯ: примерить каждое положение, взять то, что сильнее всего расщепит остаток
+        var bestD=-1, bestScore=1e18;
+        for(var cand=0; cand<DAYS; cand++){
+          if(used[cand]) continue;
+          var groups={}, worst=0;
+          for(var w=0; w<nA; w++){
+            var h=alive[w], bs=h*12;
+            for(var c=0;c<12;c++) tmp[c]=HS[bs+c];
+            var a=(h/625)|0, b2=((h/25)|0)%25, c2=h%25;
+            var sg=dayEvents(a,b2,c2,tmp,0,cand,rich);
+            var g=(groups[sg]=(groups[sg]||0)+1); if(g>worst) worst=g;
+          }
+          if(worst<bestScore){ bestScore=worst; bestD=cand; }
+        }
+        pick=bestD;
+      }
+      used[pick]=1;
+      var truthEv=dayEvents((truth/625)|0,((truth/25)|0)%25,truth%25,TS,0,pick,rich);
+      var nn=0;
+      for(var w2=0; w2<nA; w2++){
+        var h2=alive[w2], bs2=h2*12;
+        var a2=(h2/625)|0, b3=((h2/25)|0)%25, c3=h2%25;
+        if(dayEvents(a2,b3,c3,HS,bs2,pick,rich)===truthEv) next[nn++]=h2;
+      }
+      for(var k2=0;k2<nn;k2++) alive[k2]=next[k2];
+      nA=nn;
+      if(wantTrace) trace.push({situ:SITU[pick], ev:truthEv, left:nA});
+      if(nA===1) return {solved:step+1, trace:trace, left:1};
+    }
+    return {solved:0, trace:trace, left:nA};
+  }
+
+  // ── три конфигурации ─────────────────────────────────────────────────────
+  var TRIALS=14, L=[], cfg=[
+    {name:"1 · грубый поступок, положения идут своим чередом", rich:false, mode:0},
+    {name:"2 · + МАНЕРА поступка (рубец виден в том, КАК сделано)", rich:true, mode:0},
+    {name:"3 · + ПРОВОКАЦИЯ (движок ведёт к тому, что расщепит остаток)", rich:true, mode:1}
+  ];
+  L.push("пространство: 25 правд на душу × 3 души = "+H+" гипотез · дней: "+DAYS+" · испытаний на конфигурацию: "+TRIALS);
+  L.push("");
+  var exTrace=null;
+  for(var c0=0;c0<cfg.length;c0++){
+    var r=mul(777+c0*13), solved=0, days=0, leftovers=[];
+    for(var t=0;t<TRIALS;t++){
+      var truth=Math.floor(r()*H);
+      var res=trial(truth,cfg[c0].rich,cfg[c0].mode,r,(c0===2&&!exTrace));
+      if(res.solved){ solved++; days+=res.solved; if(c0===2&&!exTrace&&res.solved>=2) exTrace={truth:truth,trace:res.trace}; }
+      else leftovers.push(res.left);
+    }
+    L.push("КОНФИГУРАЦИЯ "+cfg[c0].name);
+    L.push("   решено однозначно: "+solved+"/"+TRIALS+"  =  "+Math.round(solved/TRIALS*100)+"%   "+"█".repeat(Math.round(solved/TRIALS*40)));
+    L.push("   средняя длина дела: "+(solved?(days/solved).toFixed(1)+" дн.":"—")+
+           (leftovers.length?"   ·  когда не решено, остаётся гипотез: "+leftovers.join(", "):""));
+    L.push("");
+  }
+  if(exTrace){
+    L.push("── КАК ЭТО ВЫГЛЯДИТ ПРИ ПРОВОКАЦИИ ──");
+    var tt=exTrace.truth, a=(tt/625)|0, b=((tt/25)|0)%25, c=tt%25, TR=[a,b,c];
+    for(var i=0;i<3;i++) L.push("  ПРАВДА "+NAMES[i]+": нужда «"+NUZHDY[(TR[i]/5)|0]+"», рубец «"+RUBTSY[TR[i]%5]+"»");
+    L.push("");
+    exTrace.trace.forEach(function(s,ix){
+      L.push("  ход "+(ix+1)+" · игрок сводит их в положение: «"+s.situ+"»");
+      s.ev.split(";").filter(Boolean).forEach(function(e){
+        var p=e.split(","); var mn=(p[3]&&p[3]!=="-")? ", "+p[3] : "";
+        L.push("     "+NAMES[+p[0]]+" "+VERBS[+p[1]]+" — "+NAMES[+p[2]]+mn);
+      });
+      L.push("     → объяснений осталось: "+s.left+(s.left===1?"   ← дело решено":""));
+    });
+  }
+  document.getElementById('out').textContent=L.join("\n");
+})();
+</script>
+</body>
+</html>

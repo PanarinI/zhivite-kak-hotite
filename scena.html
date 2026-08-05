@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Сцена · проигрыватель дел</title>
+<style>
+  :root{
+    --night:#15110d; --wall:#2b2119; --glow:#e8a33d; --warm:#c9803c;
+    --cold:#5b6d7a; --ink:#0c0906; --paper:#f2e8d5; --faint:#8d8577; --terra:#c2542c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#0e0b08;color:#e6ddcc;
+    font-family:Helvetica,Arial,sans-serif;line-height:1.55;
+    display:flex;justify-content:center;padding:26px 18px 70px}
+  main{width:100%;max-width:1120px}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  h1{font-family:Georgia,serif;font-size:23px;margin:0;font-weight:400;letter-spacing:.3px}
+  .place{color:#8d8577;font-size:12.5px}
+  .povod{font-family:Georgia,serif;font-size:14.5px;color:#b9ab93;font-style:italic;margin:0 0 12px}
+  .lens{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 14px}
+  .lensLbl{font-size:10.5px;letter-spacing:1.4px;color:#6d665c}
+  .lens button{margin:0;background:#1e1712;color:#d9cfbe;border:1px solid #46372a;border-radius:16px;
+    padding:6px 15px;font-size:13px;cursor:pointer;font-family:inherit}
+  .lens button:hover{background:#2a211a}
+  .lens button.on{background:#3a2a1c;border-color:var(--glow);color:var(--glow)}
+  .lensHint{font-size:12px;color:#7d756a;font-style:italic}
+  .stage{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .frame{flex:1 1 620px;min-width:320px;border:1px solid #362a20;border-radius:10px;overflow:hidden;background:#15110d}
+  svg{display:block;width:100%;height:auto}
+  .hot{cursor:pointer}
+  .hot:hover{filter:drop-shadow(0 0 7px rgba(232,163,61,.85))}
+  .hot.used{opacity:.62}
+  .mark{fill:var(--glow);opacity:.55}
+  .hot.used .mark{opacity:0}
+  .side{flex:1 1 300px;min-width:270px;display:flex;flex-direction:column;gap:12px}
+  .box{border:1px solid #362a20;border-radius:10px;padding:13px 15px;background:#181310}
+  .box h3{margin:0 0 9px;font-size:11px;letter-spacing:1.3px;color:#8d8577;font-weight:600}
+  .obs{font-size:13.5px;margin:0 0 9px;padding-left:11px;border-left:2px solid var(--warm);color:#e0d5c2}
+  .obs i{color:#9a9184;font-style:normal;font-size:11.5px;display:block;letter-spacing:.4px}
+  .obs.rich{border-left-color:#5b6d7a}
+  .empty{color:#6d665c;font-size:13px;font-style:italic}
+  .count{font-family:Georgia,serif;font-size:38px;color:var(--glow);line-height:1;margin:2px 0 3px}
+  .count small{font-size:12px;color:#8d8577;font-family:Helvetica,Arial,sans-serif;display:block;letter-spacing:.6px;margin-bottom:5px}
+  .hint{font-size:11.5px;color:#7d756a;margin-top:6px}
+  .deduce{margin-top:16px;border:1px solid #3d3025;border-radius:10px;padding:15px 17px;background:#191411}
+  .deduce h3{margin:0 0 11px;font-size:11px;letter-spacing:1.3px;color:#8d8577;font-weight:600}
+  .sentence{font-family:Georgia,serif;font-size:16.5px;line-height:2.1;color:#eadfc9}
+  select{background:#241c16;color:var(--glow);border:1px solid #4a3a2c;border-radius:6px;
+    padding:5px 8px;font-family:Georgia,serif;font-size:15px;cursor:pointer}
+  select:focus{outline:1px solid var(--glow)}
+  button.go{margin-top:13px;background:var(--terra);color:#fff;border:none;border-radius:7px;
+    padding:9px 18px;font-size:14px;cursor:pointer;font-family:inherit}
+  button.go:hover{background:#a5431f}
+  button.go:disabled{background:#3a2e26;color:#7d756a;cursor:default}
+  .verdict{margin-top:10px;font-size:13.5px;min-height:20px}
+  .verdict.no{color:var(--terra)} .verdict.yes{color:#7fb27a}
+  .journal{margin-top:16px;background:var(--paper);color:#2c241a;border-radius:8px;padding:20px 24px;
+    font-family:Georgia,serif;box-shadow:0 6px 26px rgba(0,0,0,.5);display:none}
+  .journal.on{display:block}
+  .journal h4{margin:0 0 4px;font-size:11px;letter-spacing:1.6px;color:#8a7d66;font-weight:600;font-family:Helvetica,Arial,sans-serif}
+  .journal p{margin:8px 0 0;font-size:16px;line-height:1.75;font-style:italic}
+  .journal .sig{margin-top:12px;font-size:12px;color:#8a7d66;font-style:normal;font-family:Helvetica,Arial,sans-serif}
+  .acts{margin-top:14px;border-top:1px dashed #3d3025;padding-top:13px;display:none}
+  .acts.on{display:block}
+  .acts h4{margin:0 0 9px;font-size:11px;letter-spacing:1.3px;color:var(--glow);font-weight:600}
+  .act{display:block;width:100%;text-align:left;margin:0 0 8px;background:#1b1613;border:1px solid #3d3025;
+    border-radius:8px;padding:11px 13px;color:#e0d5c2;font-size:13.5px;cursor:pointer;font-family:inherit}
+  .act:hover{background:#241d18;border-color:#5a4634}
+  .act b{color:var(--glow);font-weight:600}
+  .act i{display:block;font-style:normal;font-size:11.5px;color:#8d8577;margin-top:3px}
+  .act.locked{opacity:.5;cursor:default}
+  .act.locked:hover{background:#1b1613;border-color:#3d3025}
+  .outcome{margin-top:10px;background:#20302a;border:1px solid #3d5a4a;border-radius:8px;
+    padding:12px 14px;font-size:13.5px;color:#cfe0d2;display:none}
+  .outcome.on{display:block}
+  .final{margin-top:14px;background:#2a1f18;border:1px solid #5a4028;border-radius:8px;padding:14px 16px;
+    font-family:Georgia,serif;font-size:15px;line-height:1.75;color:#e8d9bd;display:none}
+  .final.on{display:block}
+  .note{margin-top:20px;font-size:12.5px;color:#7d756a;border-top:1px solid #2b2119;padding-top:12px;max-width:860px}
+  .note b{color:#b8ab97}
+</style>
+</head>
+<body>
+<main>
+  <div class="head">
+    <h1 id="title">…</h1>
+    <div class="place" id="place">…</div>
+  </div>
+  <p class="povod" id="povod">…</p>
+
+  <div class="lens">
+    <span class="lensLbl">МИР:</span>
+    <button id="W0">Москва · 2024</button>
+    <button id="W1">Волинь · 1869</button>
+    <span class="lensHint">один движок, разные словари — дела порождает та же машина</span>
+  </div>
+
+  <div class="lens">
+    <span class="lensLbl">ТЫ СЕЙЧАС В:</span>
+    <button id="L0" class="on">…</button>
+    <button id="L1">…</button>
+    <span class="lensHint" id="lensHint">…</span>
+  </div>
+
+  <div class="stage">
+    <div class="frame">
+      <svg id="kadr" viewBox="0 0 760 470" role="img" aria-label="Застывший вечер">
+        <defs id="kdefs"></defs>
+        <g id="kbody"></g>
+        <g id="figury"></g>
+        <rect x="0" y="0" width="760" height="470" fill="url(#vig)" pointer-events="none"/>
+      </svg>
+    </div>
+
+    <div class="side">
+      <div class="box">
+        <h3>ЧТО ТЫ ВИДИШЬ</h3>
+        <div id="obs"></div>
+      </div>
+      <div class="box">
+        <div class="count"><small>ОБЪЯСНЕНИЙ ЕЙ ОСТАЛОСЬ</small><span id="cnt">…</span></div>
+        <div class="hint" id="hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deduce">
+    <h3>СЛОЖИТЬ ПРАВДУ</h3>
+    <div class="sentence" id="sentence"></div>
+    <button class="go" id="check" disabled>Записать в дневник</button>
+    <div class="verdict" id="verdict"></div>
+    <div class="journal" id="journal">
+      <h4 id="jhead">ДНЕВНИК ПОНИМАНИЯ</h4>
+      <p id="jtext"></p>
+      <div class="sig" id="jsig"></div>
+    </div>
+    <div class="acts" id="acts">
+      <h4>ТЕПЕРЬ ТЫ МОЖЕШЬ</h4>
+      <div id="actList"></div>
+      <div class="outcome" id="outcome"></div>
+    </div>
+    <div class="final" id="final"></div>
+  </div>
+
+  <div class="note" id="note"></div>
+</main>
+
+<script>
+// Сцена — проигрыватель: мир и дело приходят снаружи.
+//   scena.html                          → мир moskva, дело 1035
+//   scena.html?mir=volyn&delo=1035      → та же машина, другой мир
+(function(){
+  var q = new URLSearchParams(location.search);
+  var MIR = q.get('mir') || 'moskva';
+  var SEED = q.get('delo') || '1182';
+
+  function zagruzit(mir, seed, gotovo){
+    window.DELO = window.PLOT = window.KADR = null;
+    var need = ['miry/' + mir + '-kadr.js',
+                'dela/delo-' + mir + '-' + seed + '.js',
+                'dela/plot-' + mir + '-' + seed + '.js'];
+    var i = 0;
+    (function next(){
+      if (i >= need.length){ gotovo(); return; }
+      var sc = document.createElement('script');
+      sc.src = need[i++] + '?t=' + (need.length * 100 + i);   // мир можно сменить на лету
+      sc.onload = next;
+      sc.onerror = function(){ next(); };   // плоть может быть ещё не написана — это не поломка
+      document.head.appendChild(sc);
+    })();
+  }
+
+  function smenitMir(mir){
+    MIR = mir;
+    document.getElementById('W0').className = (mir === 'moskva' ? 'on' : '');
+    document.getElementById('W1').className = (mir === 'volyn'  ? 'on' : '');
+    zagruzit(MIR, SEED, start);
+  }
+  document.getElementById('W0').onclick = function(){ smenitMir('moskva'); };
+  document.getElementById('W1').onclick = function(){ smenitMir('volyn'); };
+
+  smenitMir(MIR);
+
+function start(){
+  var D = window.DELO, P = window.PLOT, K = window.KADR;
+  if (!D || !K){
+    document.getElementById('title').textContent =
+      'Нет дела или кадра. Сначала: node stanok.js ' + MIR + ' 60 provoke ' + SEED;
+    return;
+  }
+  document.documentElement.lang = (MIR === 'volyn') ? 'uk' : 'ru';
+  document.getElementById('kdefs').innerHTML = K.defs;
+  document.getElementById('kbody').innerHTML = K.svg;
+
+  var L = 0;
+  var ST = D.lensy.map(function(){ return {seen:[], rechi:[], vesh:null, done:{}, solved:false, acted:false}; });
+  function cur(){ return D.lensy[L]; }
+  function plot(){ return (P && P.lensy && P.lensy[L]) || {journal:'', acts:[]}; }
+  function st(){ return ST[L]; }
+
+  // Гипотезы, что выжили: то же, что считает движок — только по поступкам, не по вещам
+  // Поступки сужают до пары (нужда, рубец); вещь в кадре называет, какая это биография.
+  function survivors(){
+    var s = st();
+    return cur().gipotezy.filter(function(h){
+      if (s.vesh && h.vesh !== s.vesh) return false;
+      return s.seen.every(function(o){ return h.acts[o.situ] === o.act; });
+    });
+  }
+
+  function drawFigury(){
+    var c = cur();
+    var me = K.figura(150, 436, 186, c.gMe, {dark:'#12151a'});
+    var tg = K.figura(300, 440, 190, c.gTarget, {strah:true, detal:'telefon'});
+    document.getElementById('figury').innerHTML =
+      '<g class="hot" data-z="me">' + me + '<circle class="mark" cx="150" cy="242" r="3.4"/></g>' +
+      '<g class="hot" data-z="target">' + tg + '<circle class="mark" cx="300" cy="242" r="3.4"/></g>';
+    bindHot();
+  }
+
+  function zoneItems(z){
+    var c = cur(), out = [];
+    c.nabl.forEach(function(o){ if (o.zone === z) out.push({kind:'act', o:o}); });
+    c.rechi.forEach(function(r){ if (r.zone === z) out.push({kind:'rech', o:r}); });
+    return out;
+  }
+
+  function bindHot(){
+    document.querySelectorAll('.hot').forEach(function(g){
+      var z = g.dataset.z, items = zoneItems(z), mark = g.querySelector('.mark');
+      if (!items.length){                       // в этом деле здесь ничего нет
+        g.style.cursor = 'default'; g.style.pointerEvents = 'none';
+        if (mark) mark.style.display = 'none';
+        return;
+      }
+      g.style.cursor = ''; g.style.pointerEvents = '';
+      if (mark) mark.style.display = '';
+      g.onclick = function(){
+        var s = st();
+        if (s.done[z] || s.solved) return;
+        s.done[z] = 1;
+        items.forEach(function(it){
+          if (it.kind === 'act') s.seen.push({situ:it.o.situ, kadr:it.o.kadr, act:it.o.act});
+          else {
+            s.rechi.push({txt:it.o.txt, bio:!!it.o.bio});
+            if (it.o.bio) s.vesh = it.o.txt;      // эта вещь — улика, а не намёк
+          }
+        });
+        render();
+      };
+    });
+  }
+
+  function buildSentence(){
+    var c = cur(), h = c.fraza.f1 + '<select id="need"><option value="">…</option>';
+    c.slova.need.forEach(function(n, i){ h += '<option value="'+i+'">'+n+'</option>'; });
+    h += '</select>' + c.fraza.f2 + '<select id="scar"><option value="">…</option>';
+    c.slova.scar.forEach(function(r, i){ h += '<option value="'+i+'">'+r+'</option>'; });
+    h += '</select>' + c.fraza.f3;
+    document.getElementById('sentence').innerHTML = h;
+    document.getElementById('need').onchange = render;
+    document.getElementById('scar').onchange = render;
+  }
+
+  function buildActs(){
+    var s = st(), acts = plot().acts, el = document.getElementById('actList'), h = '';
+    if (!acts.length){
+      el.innerHTML = '<div class="empty">Плоть для этой линзы ещё не написана — ' +
+                     'дневник и поступки движок не порождает, их доводит рука.</div>';
+      return;
+    }
+    acts.forEach(function(a, i){
+      h += '<button class="act'+(s.acted?' locked':'')+'" data-a="'+i+'">' +
+           (a.key ? '<b>'+a.t+'</b>' : a.t) + '<i>'+a.i+'</i></button>';
+    });
+    el.innerHTML = h;
+    if (!s.acted) el.querySelectorAll('.act').forEach(function(b){
+      b.onclick = function(){
+        var a = acts[+b.dataset.a]; s.acted = true;
+        var o = document.getElementById('outcome'); o.textContent = a.o; o.classList.add('on');
+        render();
+      };
+    });
+  }
+
+  function render(){
+    var c = cur(), s = st();
+    document.getElementById('title').textContent = (P && P.title) || D.hata;
+    document.getElementById('place').textContent = (P && P.podpis) || D.mesto || K.mesto;
+    document.getElementById('povod').textContent = 'В этот вечер: ' + D.povod + '.';
+    document.getElementById('L0').textContent = D.lensy[0].me + ' · ' + D.lensy[0].meRole;
+    document.getElementById('L1').textContent = D.lensy[1].me + ' · ' + D.lensy[1].meRole;
+    document.getElementById('lensHint').textContent = 'перед тобой — ' + c.targetRole + ', которую надо понять';
+
+    document.querySelectorAll('.hot').forEach(function(g){
+      if (s.done[g.dataset.z]) g.classList.add('used'); else g.classList.remove('used');
+    });
+
+    var box = document.getElementById('obs');
+    if (!s.seen.length && !s.rechi.length)
+      box.innerHTML = '<div class="empty">Мир замер. Кликай по людям и вещам — на что посмотришь, то и узнаешь.</div>';
+    else {
+      var h = '';
+      s.seen.forEach(function(o){ h += '<div class="obs"><i>'+o.kadr.toUpperCase()+'</i>'+o.act+'</div>'; });
+      s.rechi.forEach(function(r){
+        h += '<div class="obs rich"><i>'+(r.bio ? 'ВЕЩЬ · УЛИКА' : 'ВЕЩЬ')+'</i>'+r.txt+'</div>'; });
+      box.innerHTML = h;
+    }
+
+    var sv = survivors(), n = sv.length, hint = document.getElementById('hint');
+    document.getElementById('cnt').textContent = s.solved ? 1 : n;
+    if (s.solved) hint.textContent = 'Ты поняла, кто перед тобой.';
+    else if (n === cur().gipotezy.length) hint.textContent = 'Пока она может быть кем угодно.';
+    else if (n === 1) hint.textContent = 'Остался один ответ.';
+    else if (n <= 5) hint.innerHTML = 'Круг сузился: ' + sv.slice(0,5).map(function(p){ return p.nw+' + '+p.rw; }).join(' · ');
+    else hint.textContent = 'Одного взгляда мало — она показывает себя не везде.';
+
+    var ns = document.getElementById('need'), ss = document.getElementById('scar');
+    document.getElementById('check').disabled = s.solved || !(ns && ns.value !== '' && ss && ss.value !== '');
+
+    var jr = document.getElementById('journal'), ac = document.getElementById('acts');
+    if (s.solved){
+      document.getElementById('jhead').textContent = 'ДНЕВНИК ПОНИМАНИЯ · ' + c.target;
+      document.getElementById('jtext').textContent = plot().journal ||
+        '(здесь будет дневник — его пишет рука, не движок)';
+      document.getElementById('jsig').textContent = (P && P.podpis) || D.mesto;
+      jr.classList.add('on'); buildActs(); ac.classList.add('on');
+      if (!s.acted) document.getElementById('outcome').classList.remove('on');
+    } else { jr.classList.remove('on'); ac.classList.remove('on'); document.getElementById('outcome').classList.remove('on'); }
+
+    var fin = document.getElementById('final');
+    if (ST.every(function(x){ return x.acted; })){
+      fin.textContent = (P && P.final) || '';
+      fin.classList.add('on');
+    } else fin.classList.remove('on');
+
+    document.getElementById('note').innerHTML =
+      '<b>Что здесь настоящее:</b> всё дело породил станок — правда каждой души, поступки, счётчик ' +
+      '(5 нужд × 5 рубцов × 3 биографии = 75 объяснений) и сама фраза с дырами собраны движком из его же ' +
+      'правды. Поступки сужают до рубца, а какая это была история — называет вещь в шкафу. ' +
+      '<b>Что доведено рукой:</b> дневник и поступки — плоть, которой движок не порождает. ' +
+      '<b>Дело:</b> мир ' + D.mir + ' · сид ' + D.seed + ' · ' +
+      (D.dvePravoty ? 'две разные правды' : 'правды совпадают') + '.';
+  }
+
+  document.getElementById('check').onclick = function(){
+    var c = cur(), s = st(), v = document.getElementById('verdict');
+    var ni = +document.getElementById('need').value, si = +document.getElementById('scar').value;
+    var parts = c.pravda.split(' × ');
+    var wrong = (c.slova.need[ni] !== parts[0] ? 1 : 0) + (c.slova.scar[si] !== parts[1] ? 1 : 0);
+    if (wrong === 0){
+      s.solved = true; v.className = 'verdict yes';
+      v.textContent = 'Сходится. Всё, что ты видела, объясняется этим — и только этим.';
+      render();
+    } else {
+      v.className = 'verdict no';
+      v.textContent = wrong === 1 ? 'Не сходится — но одно из двух верное.' : 'Не сходится. Оба неверны.';
+    }
+  };
+
+  function setLens(i){
+    L = i;
+    document.getElementById('L0').className = (i === 0 ? 'on' : '');
+    document.getElementById('L1').className = (i === 1 ? 'on' : '');
+    var v = document.getElementById('verdict'); v.textContent = ''; v.className = 'verdict';
+    drawFigury(); buildSentence(); render();
+  }
+  document.getElementById('L0').onclick = function(){ setLens(0); };
+  document.getElementById('L1').onclick = function(){ setLens(1); };
+
+  setLens(0);
+}
+})();
+</script>
+</body>
+</html>

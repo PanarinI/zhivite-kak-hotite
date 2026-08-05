@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" font-family="Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5f5e5a"/></marker>
+    <marker id="ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ba7517"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1D9E75"/></marker>
+  </defs>
+  <rect width="1000" height="660" fill="#faf9f5"/>
+
+  <text x="500" y="46" text-anchor="middle" font-size="27" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">Ядро игры: понимание как инструмент</text>
+  <text x="500" y="70" text-anchor="middle" font-size="13" fill="#888780">не «разгадать и записать», а «понял человека — и потому смог» · выбрано автором 2026-08-02</text>
+  <line x1="330" y1="86" x2="670" y2="86" stroke="#d9d6cc"/>
+
+  <!-- ПЕТЛЯ -->
+  <rect x="26" y="108" width="948" height="286" rx="14" fill="#fff" stroke="#d9d6cc"/>
+  <text x="50" y="134" font-size="12" font-weight="700" fill="#888780" letter-spacing="1.2">ПЕТЛЯ ОДНОЙ СЦЕНЫ</text>
+
+  <g>
+    <rect x="50" y="150" width="164" height="94" rx="10" fill="#f1efe8" stroke="#5a9e8f" stroke-width="1.5"/>
+    <text x="132" y="176" text-anchor="middle" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">ЗАСТЫВШИЙ КАДР</text>
+    <text x="132" y="197" text-anchor="middle" font-size="11.5" fill="#5f5e5a">мир замер, ты внутри мига</text>
+    <text x="132" y="215" text-anchor="middle" font-size="11.5" fill="#5f5e5a">клик по людям и вещам</text>
+    <text x="132" y="233" text-anchor="middle" font-size="10.5" fill="#888780" font-style="italic">анимация не нужна · задержка = такт</text>
+  </g>
+  <line x1="220" y1="197" x2="256" y2="197" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g>
+    <rect x="262" y="150" width="164" height="94" rx="10" fill="#f1efe8" stroke="#d9d6cc"/>
+    <text x="344" y="176" text-anchor="middle" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">УЛИКИ</text>
+    <text x="344" y="196" text-anchor="middle" font-size="11.5" fill="#5f5e5a">поступок + <tspan font-weight="700">манера</tspan></text>
+    <text x="344" y="214" text-anchor="middle" font-size="11.5" fill="#5f5e5a">вещи, что молчат о ней</text>
+    <text x="344" y="233" text-anchor="middle" font-size="10.5" fill="#993C1D" font-style="italic">провокация: веди туда, где болит</text>
+  </g>
+  <line x1="432" y1="197" x2="468" y2="197" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g>
+    <rect x="474" y="150" width="164" height="94" rx="10" fill="#fdf6e9" stroke="#ba7517" stroke-width="1.8"/>
+    <text x="556" y="174" text-anchor="middle" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">ОСТАЛОСЬ ОБЪЯСНЕНИЙ</text>
+    <text x="556" y="206" text-anchor="middle" font-size="24" font-weight="700" fill="#ba7517" font-family="Georgia,serif">25 → 5 → 1</text>
+    <text x="556" y="230" text-anchor="middle" font-size="10.5" fill="#888780" font-style="italic">движок видит остаток → сам ведёт</text>
+  </g>
+  <line x1="644" y1="197" x2="680" y2="197" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g>
+    <rect x="686" y="150" width="264" height="94" rx="10" fill="#f1efe8" stroke="#d9d6cc"/>
+    <text x="818" y="174" text-anchor="middle" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">ФРАЗА С ДЫРАМИ</text>
+    <text x="818" y="196" text-anchor="middle" font-size="11.5" fill="#5f5e5a">«боїться [____], а [____] навчила її»</text>
+    <text x="818" y="216" text-anchor="middle" font-size="11" fill="#993C1D">слова ЧЕЛОВЕЧЕСКИЕ, не язык модели</text>
+    <text x="818" y="234" text-anchor="middle" font-size="10.5" fill="#888780" font-style="italic">мягкая проверка: «ошибок не больше двух»</text>
+  </g>
+
+  <!-- выплата -->
+  <line x1="818" y1="250" x2="818" y2="278" stroke="#1D9E75" stroke-width="1.8" marker-end="url(#ag)"/>
+  <g>
+    <rect x="474" y="284" width="476" height="92" rx="10" fill="#eef7f2" stroke="#1D9E75" stroke-width="1.8"/>
+    <text x="712" y="308" text-anchor="middle" font-size="16" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">ТЕПЕРЬ ТЫ МОЖЕШЬ</text>
+    <text x="712" y="330" text-anchor="middle" font-size="12" fill="#5f5e5a">2–3 действия · у каждого необратимая цена</text>
+    <text x="712" y="352" text-anchor="middle" font-size="12.5" fill="#0f7a58" font-weight="700">одно открыто ТОЛЬКО потому, что ты понял</text>
+    <text x="712" y="369" text-anchor="middle" font-size="10.5" fill="#888780" font-style="italic">понимание — инструмент, не самоцель</text>
+  </g>
+
+  <!-- дневник -->
+  <g>
+    <rect x="50" y="284" width="404" height="92" rx="10" fill="#f6f1e4" stroke="#c9bfa6"/>
+    <text x="252" y="308" text-anchor="middle" font-size="15" font-weight="700" fill="#2c2c2a" font-family="Georgia,serif">ДНЕВНИК ПОНИМАНИЯ</text>
+    <text x="252" y="330" text-anchor="middle" font-size="12" fill="#5f5e5a">копится то, что понял ТЫ — выводы не автоматизируем</text>
+    <text x="252" y="350" text-anchor="middle" font-size="12" fill="#5f5e5a">показывает и края незнания: «у неё рубец, ты не знаешь откуда»</text>
+    <text x="252" y="368" text-anchor="middle" font-size="10.5" fill="#888780" font-style="italic">урок Her Story: связи достраивает игрок, иначе игра исчезает</text>
+  </g>
+  <line x1="470" y1="330" x2="466" y2="330" stroke="#1D9E75" stroke-width="1.5" marker-start="url(#ag)"/>
+
+  <!-- ДВЕ ЛИНЗЫ -->
+  <rect x="26" y="410" width="948" height="132" rx="14" fill="#fff" stroke="#d9d6cc"/>
+  <text x="50" y="436" font-size="12" font-weight="700" fill="#888780" letter-spacing="1.2">ДВЕ ЛИНЗЫ — ТОТ ЖЕ ВЕЧЕР С ДВУХ СТОРОН</text>
+  <g>
+    <rect x="60" y="450" width="330" height="74" rx="10" fill="#f1efe8" stroke="#ba7517"/>
+    <text x="225" y="474" text-anchor="middle" font-size="14" font-weight="700" fill="#2c2c2a">ты в ОДАРЦІ → распутываешь ГАФІЮ</text>
+    <text x="225" y="495" text-anchor="middle" font-size="11.5" fill="#5f5e5a">боится остаться одна · та зима, когда схоронила третьего</text>
+    <text x="225" y="514" text-anchor="middle" font-size="11" fill="#993C1D">«обійняти і сказати: я знаю про ту зиму»</text>
+  </g>
+  <path d="M400,487 h60" stroke="#ba7517" stroke-width="2" marker-start="url(#ao)" marker-end="url(#ao)"/>
+  <text x="430" y="478" text-anchor="middle" font-size="10.5" fill="#ba7517">линза</text>
+  <g>
+    <rect x="470" y="450" width="330" height="74" rx="10" fill="#f1efe8" stroke="#ba7517"/>
+    <text x="635" y="474" text-anchor="middle" font-size="14" font-weight="700" fill="#2c2c2a">ты в ГАФІЇ → распутываешь ОДАРКУ</text>
+    <text x="635" y="495" text-anchor="middle" font-size="11.5" fill="#5f5e5a">боится, что за неё снова решат · та неділя, коли сміялося село</text>
+    <text x="635" y="514" text-anchor="middle" font-size="11" fill="#993C1D">«сказати їй про своїх трьох»</text>
+  </g>
+  <g>
+    <rect x="812" y="450" width="138" height="74" rx="10" fill="#faf3ee" stroke="#D85A30" stroke-width="1.6"/>
+    <text x="881" y="480" text-anchor="middle" font-size="14" font-weight="700" fill="#8a2f18" font-family="Georgia,serif">обе правы</text>
+    <text x="881" y="501" text-anchor="middle" font-size="11" fill="#5f5e5a">простого выбора</text>
+    <text x="881" y="516" text-anchor="middle" font-size="11" fill="#5f5e5a">не было и не могло</text>
+  </g>
+
+  <!-- ФУНДАМЕНТ -->
+  <rect x="26" y="558" width="948" height="76" rx="14" fill="#f1efe8" stroke="#d9d6cc"/>
+  <text x="50" y="582" font-size="12" font-weight="700" fill="#888780" letter-spacing="1.2">ПОД ВСЕМ ЭТИМ</text>
+  <text x="50" y="606" font-size="13" fill="#2c2c2a"><tspan font-weight="700">Правду держит движок</tspan> (детерминированно, проверяемо солвером) · <tspan font-weight="700">LLM только озвучивает</tspan> — иначе смерть Vaudeville</text>
+  <text x="50" y="626" font-size="13" fill="#2c2c2a"><tspan font-weight="700">Генерация — для автора:</tspan> движок порождает дела → автор отбирает и доводит → в релиз идут отобранные</text>
+</svg>

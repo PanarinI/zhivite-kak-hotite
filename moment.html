@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Вербівка · момент</title>
+<style>
+  :root{
+    --night:#15110d; --wall:#2b2119; --wall2:#1a1410; --glow:#e8a33d; --warm:#c9803c;
+    --cold:#5b6d7a; --ink:#0c0906; --paper:#f2e8d5; --faint:#8d8577; --terra:#c2542c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#0e0b08;color:#e6ddcc;
+    font-family:Helvetica,Arial,sans-serif;line-height:1.55;
+    display:flex;justify-content:center;padding:26px 18px 70px}
+  main{width:100%;max-width:1120px}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  h1{font-family:Georgia,serif;font-size:23px;margin:0;font-weight:400;letter-spacing:.3px}
+  .place{color:#8d8577;font-size:12.5px}
+  .stage{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .frame{flex:1 1 620px;min-width:320px;position:relative;border:1px solid #362a20;border-radius:10px;overflow:hidden;background:#15110d}
+  svg{display:block;width:100%;height:auto}
+  .hot{cursor:pointer}
+  .hot:hover{filter:drop-shadow(0 0 7px rgba(232,163,61,.85))}
+  .hot.used{opacity:.62}
+  .mark{fill:var(--glow);opacity:.55}
+  .hot.used .mark{opacity:0}
+  .side{flex:1 1 300px;min-width:270px;display:flex;flex-direction:column;gap:12px}
+  .box{border:1px solid #362a20;border-radius:10px;padding:13px 15px;background:#181310}
+  .box h3{margin:0 0 9px;font-size:11px;letter-spacing:1.3px;color:#8d8577;font-weight:600}
+  .obs{font-size:13.5px;margin:0 0 9px;padding-left:11px;border-left:2px solid var(--warm);color:#e0d5c2}
+  .obs i{color:#9a9184;font-style:normal;font-size:11.5px;display:block;letter-spacing:.4px}
+  .empty{color:#6d665c;font-size:13px;font-style:italic}
+  .count{font-family:Georgia,serif;font-size:38px;color:var(--glow);line-height:1;margin:2px 0 3px}
+  .count small{font-size:12px;color:#8d8577;font-family:Helvetica,Arial,sans-serif;display:block;letter-spacing:.6px;margin-bottom:5px}
+  .hint{font-size:11.5px;color:#7d756a;margin-top:6px}
+  .deduce{margin-top:16px;border:1px solid #3d3025;border-radius:10px;padding:15px 17px;background:#191411}
+  .deduce h3{margin:0 0 11px;font-size:11px;letter-spacing:1.3px;color:#8d8577;font-weight:600}
+  .sentence{font-family:Georgia,serif;font-size:16.5px;line-height:2.1;color:#eadfc9}
+  select{background:#241c16;color:var(--glow);border:1px solid #4a3a2c;border-radius:6px;
+    padding:5px 8px;font-family:Georgia,serif;font-size:15px;cursor:pointer}
+  select:focus{outline:1px solid var(--glow)}
+  button{margin-top:13px;background:var(--terra);color:#fff;border:none;border-radius:7px;
+    padding:9px 18px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{background:#a5431f}
+  button:disabled{background:#3a2e26;color:#7d756a;cursor:default}
+  .verdict{margin-top:10px;font-size:13.5px;min-height:20px}
+  .verdict.no{color:var(--terra)} .verdict.yes{color:#7fb27a}
+  .journal{margin-top:16px;background:var(--paper);color:#2c241a;border-radius:8px;padding:20px 24px;
+    font-family:Georgia,serif;box-shadow:0 6px 26px rgba(0,0,0,.5);display:none}
+  .journal.on{display:block}
+  .journal h4{margin:0 0 4px;font-size:11px;letter-spacing:1.6px;color:#8a7d66;font-weight:600;font-family:Helvetica,Arial,sans-serif}
+  .journal p{margin:8px 0 0;font-size:16px;line-height:1.75;font-style:italic}
+  .journal .sig{margin-top:12px;font-size:12px;color:#8a7d66;font-style:normal;font-family:Helvetica,Arial,sans-serif}
+  .note{margin-top:20px;font-size:12.5px;color:#7d756a;border-top:1px solid #2b2119;padding-top:12px;max-width:820px}
+  .note b{color:#b8ab97}
+  .lens{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:-4px 0 14px}
+  .lensLbl{font-size:10.5px;letter-spacing:1.4px;color:#6d665c}
+  .lens button{margin:0;background:#1e1712;color:#d9cfbe;border:1px solid #46372a;border-radius:16px;
+    padding:6px 15px;font-size:13px}
+  .lens button:hover{background:#2a211a}
+  .lens button.on{background:#3a2a1c;border-color:var(--glow);color:var(--glow)}
+  .lensHint{font-size:12px;color:#7d756a;font-style:italic}
+  .acts{margin-top:14px;border-top:1px dashed #3d3025;padding-top:13px;display:none}
+  .acts.on{display:block}
+  .acts h4{margin:0 0 9px;font-size:11px;letter-spacing:1.3px;color:var(--glow);font-weight:600}
+  .act{display:block;width:100%;text-align:left;margin:0 0 8px;background:#1b1613;border:1px solid #3d3025;
+    border-radius:8px;padding:11px 13px;color:#e0d5c2;font-size:13.5px;cursor:pointer;font-family:inherit}
+  .act:hover{background:#241d18;border-color:#5a4634}
+  .act b{color:var(--glow);font-weight:600}
+  .act i{display:block;font-style:normal;font-size:11.5px;color:#8d8577;margin-top:3px}
+  .act.locked{opacity:.5;cursor:default}
+  .act.locked:hover{background:#1b1613;border-color:#3d3025}
+  .outcome{margin-top:10px;background:#20302a;border:1px solid #3d5a4a;border-radius:8px;
+    padding:12px 14px;font-size:13.5px;color:#cfe0d2;display:none}
+  .outcome.on{display:block}
+  .final{margin-top:14px;background:#2a1f18;border:1px solid #5a4028;border-radius:8px;padding:14px 16px;
+    font-family:Georgia,serif;font-size:15px;line-height:1.75;color:#e8d9bd;display:none}
+  .final.on{display:block}
+</style>
+</head>
+<body>
+<main>
+  <div class="head">
+    <h1 id="title">Гафія не пускає знахарку</h1>
+    <div class="place">Вербівка над Случчю · Волинь · осінь 1868 · хата Одарки, поночі</div>
+  </div>
+  <div class="lens">
+    <span class="lensLbl">ТЫ СЕЙЧАС В:</span>
+    <button id="L0" class="on">Одарці · солдатці</button>
+    <button id="L1">Гафії · свекрусі</button>
+    <span class="lensHint" id="lensHint">перед тобой — свекровь, которую надо понять</span>
+  </div>
+
+  <div class="stage">
+    <div class="frame">
+      <svg viewBox="0 0 760 440" role="img" aria-label="Застывший момент в хате">
+        <defs>
+          <radialGradient id="lamp" cx="82%" cy="63%" r="78%">
+            <stop offset="0%" stop-color="#e8a33d" stop-opacity=".55"/>
+            <stop offset="35%" stop-color="#b8712f" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#15110d" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="doorlight" cx="50%" cy="40%" r="70%">
+            <stop offset="0%" stop-color="#8fa6b5" stop-opacity=".38"/>
+            <stop offset="100%" stop-color="#5b6d7a" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="wallg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2b2119"/><stop offset="100%" stop-color="#17120e"/>
+          </linearGradient>
+          <linearGradient id="floorg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#241b14"/><stop offset="100%" stop-color="#120e0a"/>
+          </linearGradient>
+          <radialGradient id="vig" cx="50%" cy="50%" r="72%">
+            <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#000" stop-opacity=".72"/>
+          </radialGradient>
+          <filter id="soft"><feGaussianBlur stdDeviation="9"/></filter>
+        </defs>
+
+        <!-- стены и пол -->
+        <rect x="0" y="0" width="760" height="378" fill="url(#wallg)"/>
+        <rect x="0" y="372" width="760" height="68" fill="url(#floorg)"/>
+        <path d="M0,372 H760" stroke="#3a2c20" stroke-width="1.2"/>
+        <!-- СВОЛОК: стеля 230 см — фігури майже дістають головою -->
+        <rect x="0" y="108" width="760" height="15" fill="#3b2c1c"/>
+        <rect x="0" y="123" width="760" height="3" fill="#241a10"/>
+
+        <!-- холодный свет из дверей -->
+        <ellipse cx="120" cy="255" rx="150" ry="180" fill="url(#doorlight)"/>
+
+        <!-- ПІЧ — чверть хати, білений об'єм, що ділить кадр -->
+        <g>
+          <path d="M243,372 L243,206 Q243,172 276,170 L372,170 Q404,172 404,206 L404,372 Z" fill="#cbbfa6"/>
+          <path d="M243,372 L243,206 Q243,172 276,170 L300,170 L300,372 Z" fill="#b3a68c"/>
+          <path d="M300,170 L300,126 L368,126 L368,170 Z" fill="#bdb096"/>
+          <!-- челюсть печі, вугілля дотліває -->
+          <path d="M276,338 L276,286 Q323,258 371,286 L371,338 Z" fill="#150f0a"/>
+          <ellipse cx="323" cy="330" rx="30" ry="9" fill="#8a3a16" opacity=".55"/>
+          <ellipse cx="323" cy="332" rx="16" ry="5" fill="#c2542c" opacity=".5"/>
+          <!-- припічок -->
+          <path d="M236,338 L411,338 L411,352 L236,352 Z" fill="#ddd2ba"/>
+          <path d="M243,238 L404,238" stroke="#a3977e" stroke-width="1.6"/>
+        </g>
+
+        <!-- ДВЕРІ + ЗНАХАРКА (+ пучки зілля над дверима — статус через предмет) -->
+        <g class="hot" data-id="znaharka">
+          <rect x="36" y="140" width="112" height="234" fill="#0b0e11"/>
+          <rect x="36" y="140" width="112" height="234" fill="none" stroke="#463527" stroke-width="3"/>
+          <rect x="30" y="132" width="124" height="10" fill="#3d2e21"/>
+          <!-- знахарка: стара, 5.2 hu, зігнута, з пучком зілля -->
+          <ellipse cx="92" cy="372" rx="34" ry="6" fill="#000" opacity=".5"/>
+          <g fill="#1b222a">
+            <path d="M66,372 C64,326 70,284 82,262 C90,246 108,246 116,262 C128,284 132,326 130,372 Z"/>
+            <path d="M84,262 C84,244 88,232 98,230 C108,232 112,244 112,262 Z"/>
+            <ellipse cx="98" cy="232" rx="14" ry="16"/>
+            <path d="M84,234 C84,216 90,208 98,208 C106,208 112,216 112,234 C112,248 106,252 98,252 C90,252 84,248 84,234 Z"/>
+            <path d="M84,236 C78,258 80,282 84,300 L92,298 C88,278 88,256 92,238 Z"/>
+          </g>
+          <path d="M118,284 C130,290 138,298 142,308" stroke="#1b222a" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <g stroke="#33443a" stroke-width="2.4" stroke-linecap="round">
+            <path d="M142,308 l12,18"/><path d="M147,306 l14,14"/><path d="M139,312 l14,20"/>
+          </g>
+          <!-- зілля над дверима -->
+          <g stroke="#3c4a3c" stroke-width="2" stroke-linecap="round">
+            <path d="M58,142 l-3,20"/><path d="M64,142 l0,22"/><path d="M70,142 l3,19"/>
+            <path d="M118,142 l-3,18"/><path d="M124,142 l1,21"/>
+          </g>
+          <circle class="mark" cx="92" cy="176" r="3.4"/>
+        </g>
+
+        <!-- ГАФІЯ: стара 5.2 hu · шия коротка (страх) · плечі зведені · рука наперекір -->
+        <g class="hot" data-id="gafia">
+          <ellipse cx="196" cy="372" rx="40" ry="7" fill="#000" opacity=".55"/>
+          <g fill="var(--ink)">
+            <path d="M160,372 C157,322 166,286 180,266 C191,250 214,249 223,266 C238,290 240,330 236,372 Z"/>
+            <path d="M186,268 C185,254 190,246 200,245 C211,246 215,254 214,268 Z"/>
+            <ellipse cx="200" cy="242" rx="16" ry="17.5"/>
+            <!-- намітка старої: під підборіддям, темна -->
+            <path d="M182,246 C181,222 189,210 200,210 C212,210 219,222 218,246 C220,262 212,268 200,268 C188,268 180,262 182,246 Z"/>
+            <path d="M182,248 C171,268 169,288 173,302 L184,299 C179,284 180,266 186,250 Z"/>
+            <path d="M218,248 C229,268 231,288 227,302 L216,299 C221,284 220,266 214,250 Z"/>
+          </g>
+          <!-- рука наперекір, до дверей (зазор від корпусу — закон силуету) -->
+          <path d="M178,292 C158,290 138,284 122,276" stroke="var(--ink)" stroke-width="12" stroke-linecap="round" fill="none"/>
+          <path d="M124,276 l-10,-6" stroke="var(--ink)" stroke-width="8" stroke-linecap="round"/>
+          <!-- друга рука притиснута до грудей -->
+          <path d="M226,294 C237,304 235,318 222,322" stroke="var(--ink)" stroke-width="11" stroke-linecap="round" fill="none"/>
+          <circle class="mark" cx="200" cy="192" r="3.4"/>
+        </g>
+
+        <!-- ПІЛ + ІВАСИК (біля печі, як і належить хворому) -->
+        <g class="hot" data-id="ivas">
+          <rect x="412" y="304" width="150" height="12" fill="#4a3826"/>
+          <rect x="418" y="316" width="10" height="56" fill="#3a2b1d"/>
+          <rect x="546" y="316" width="10" height="56" fill="#3a2b1d"/>
+          <path d="M424,304 C440,280 460,272 488,272 C516,272 536,282 550,304 Z" fill="#7d6a52"/>
+          <path d="M440,298 C454,284 468,280 486,280" stroke="#9a866b" stroke-width="2" fill="none"/>
+          <ellipse cx="440" cy="286" rx="14" ry="13" fill="#1a130d"/>
+          <path d="M428,284 C428,271 434,265 441,265 C448,265 454,271 454,284 Z" fill="#241a12"/>
+          <circle class="mark" cx="488" cy="250" r="3.4"/>
+        </g>
+
+        <!-- ОДАРКА: замужня мати-солдатка · НАМІТКА з кінцями по спині · смугаста спідниця · без намиста (жалоба) -->
+        <g class="hot" data-id="dar">
+          <ellipse cx="600" cy="372" rx="42" ry="7" fill="#000" opacity=".5"/>
+          <g fill="#120d09">
+            <path d="M566,372 C564,340 572,314 588,302 C602,292 622,296 628,312 C638,334 640,356 638,372 Z"/>
+            <path d="M592,302 C591,288 597,279 607,278 C618,279 623,288 622,302 Z"/>
+            <ellipse cx="607" cy="276" rx="15" ry="16"/>
+          </g>
+          <!-- смуги спідниці (повздовжні — Волинь) -->
+          <g stroke="#2a1f16" stroke-width="1.6" opacity=".8">
+            <path d="M578,330 L575,372"/><path d="M592,322 L590,372"/><path d="M607,318 L607,372"/>
+            <path d="M622,322 L624,372"/><path d="M634,334 L636,372"/>
+          </g>
+          <!-- намітка: біла, кінці спущені по спині -->
+          <path d="M590,280 C589,258 597,248 607,248 C618,248 626,258 625,280 C617,274 599,274 590,280 Z" fill="#cfc4ab"/>
+          <path d="M623,272 C636,276 642,300 640,330 L630,328 C632,302 628,282 620,278 Z" fill="#cfc4ab"/>
+          <path d="M634,296 h8 M636,312 h8" stroke="#c2542c" stroke-width="1.6"/>
+          <!-- рука з кухлем, простягнута до Гафії -->
+          <path d="M584,312 C566,310 552,304 542,298" stroke="#120d09" stroke-width="11" stroke-linecap="round" fill="none"/>
+          <g transform="translate(528,288)">
+            <path d="M0,0 h20 v15 a10,10 0 0 1 -20,0 Z" fill="#6d5b46"/>
+            <path d="M20,3 a7,7 0 0 1 0,10" stroke="#6d5b46" stroke-width="2.6" fill="none"/>
+            <ellipse cx="10" cy="0" rx="10" ry="3.2" fill="#8fa6b5" opacity=".55"/>
+          </g>
+          <circle class="mark" cx="607" cy="226" r="3.4"/>
+        </g>
+
+        <!-- СТІЛ + КАГАНЕЦЬ + ГЛЕЧИК (єдине світло, низько) -->
+        <g class="hot" data-id="stil">
+          <rect x="646" y="290" width="112" height="11" fill="#5a4630"/>
+          <rect x="654" y="301" width="9" height="71" fill="#3f3020"/>
+          <rect x="742" y="301" width="9" height="71" fill="#3f3020"/>
+          <ellipse cx="676" cy="286" rx="16" ry="6" fill="#4e3c28"/>
+          <path d="M676,284 C680,274 678,266 676,260 C674,266 672,274 676,284 Z" fill="#ffd27a"/>
+          <ellipse cx="676" cy="270" rx="13" ry="17" fill="#e8a33d" opacity=".3" filter="url(#soft)"/>
+          <path d="M718,290 C710,284 708,270 714,262 C712,256 714,252 720,252 C726,252 728,256 726,262 C732,270 730,284 722,290 Z" fill="#6b5540"/>
+          <path d="M738,290 a12,8 0 0 0 24,0 Z" fill="#5e4a34"/>
+          <circle class="mark" cx="700" cy="250" r="3.4"/>
+        </g>
+
+        <!-- ПОКУТЬ: по діагоналі від печі — вісь кадру (вогонь ↔ правда) -->
+        <g>
+          <rect x="666" y="146" width="50" height="62" fill="#3b2c1d"/>
+          <rect x="672" y="152" width="38" height="50" fill="#6d5535"/>
+          <ellipse cx="691" cy="170" rx="9" ry="11" fill="#c2a06a" opacity=".75"/>
+          <path d="M657,140 h68 l-8,11 h-52 Z" fill="#d9cdb4"/>
+          <path d="M662,151 l-4,42 l10,-6 l4,-36 Z" fill="#d9cdb4"/>
+          <path d="M719,151 l4,42 l-10,-6 l-4,-36 Z" fill="#d9cdb4"/>
+          <path d="M660,160 h8 M713,160 h8" stroke="#c2542c" stroke-width="2.4"/>
+          <path d="M660,170 h8 M713,170 h8" stroke="#c2542c" stroke-width="2.4"/>
+        </g>
+
+        <!-- СКРИНЯ з дитячою сорочечкою (передній план) -->
+        <g class="hot" data-id="skrynia">
+          <path d="M0,420 L0,352 L146,340 L146,412 Z" fill="#4a3826"/>
+          <path d="M0,352 L146,340 L146,352 L0,364 Z" fill="#5e4831"/>
+          <path d="M0,382 L146,370" stroke="#33261a" stroke-width="2.4"/>
+          <path d="M104,364 l6,10 l-6,10 l-6,-10 Z" fill="#8a6b46"/>
+          <g transform="translate(26,326)">
+            <path d="M0,14 L10,4 L20,4 L30,14 L24,20 L24,40 L6,42 L6,20 Z" fill="#e6dcc6"/>
+            <path d="M9,10 h12" stroke="#c2542c" stroke-width="1.6"/>
+            <path d="M8,24 h14" stroke="#c2542c" stroke-width="1.4"/>
+          </g>
+          <circle class="mark" cx="74" cy="330" r="3.4"/>
+        </g>
+
+        <!-- тёплый свет поверх + виньетка -->
+        <rect x="0" y="0" width="760" height="440" fill="url(#lamp)" style="pointer-events:none"/>
+        <rect x="0" y="0" width="760" height="440" fill="url(#vig)" style="pointer-events:none"/>
+      </svg>
+    </div>
+
+    <div class="side">
+      <div class="box">
+        <h3>ЧТО ТЫ УВИДЕЛ</h3>
+        <div id="obs"><div class="empty">Мир замер. Кликай по людям и вещам — на что посмотришь, то и узнаешь.</div></div>
+      </div>
+      <div class="box">
+        <div class="count"><small>ОБЪЯСНЕНИЙ ЕЙ ОСТАЛОСЬ</small><span id="cnt">25</span></div>
+        <div class="hint" id="hint">Пока она может быть кем угодно.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deduce">
+    <h3>СЛОЖИТЬ ПРАВДУ</h3>
+    <div class="sentence" id="sentence"></div>
+    <button id="check" disabled>Записать в дневник</button>
+    <div class="verdict" id="verdict"></div>
+    <div class="journal" id="journal">
+      <h4 id="jhead">ДНЕВНИК ПОНИМАНИЯ</h4>
+      <p id="jtext"></p>
+      <div class="sig">Вербівка, осень 1868 · ніч</div>
+    </div>
+    <div class="acts" id="acts">
+      <h4>ТЕПЕР ТИ МОЖЕШ</h4>
+      <div id="actList"></div>
+      <div class="outcome" id="outcome"></div>
+    </div>
+    <div class="final" id="final"></div>
+  </div>
+
+  <div class="note"><b>Что здесь настоящее:</b> счётчик «объяснений осталось» — не декорация. Он считает по-настоящему: 5 нужд × 5 рубцов = 25 гипотез, и каждое увиденное вычёркивает те, при которых Гафія повела бы себя иначе. <b>Что подделка:</b> сцена нарисована руками под один случай — в игре её порождает движок, а рубец у Гафії каждую партию другой.</div>
+</main>
+
+<script>
+(function(){
+  var NUZHDY=["голод","признание","принадлежность","смысл","автономия"];
+  var RUBTSY=["утрата дитяти","предательство близкого","публичный позор","голодная зима","изгнание"];
+  var needAct={
+    "голод":{"дитя больно":"сперва кормит, потом лечит","за общим столом":"ест торопливо","предложен дар":"берёт, не поблагодарив","старший велит":"делает за миску"},
+    "признание":{"дитя больно":"хлопочет так, чтоб видели","за общим столом":"рассказывает о себе","предложен дар":"берёт и показывает соседям","старший велит":"спорит при людях"},
+    "принадлежность":{"дитя больно":"держит за руку и не отходит","за общим столом":"садится в середину","предложен дар":"благодарит горячо и долго","старший велит":"подчиняется, чтоб не ссориться"},
+    "смысл":{"дитя больно":"молится в углу","за общим столом":"молчит весь ужин","предложен дар":"будто не заметила","старший велит":"делает молча, думая о своём"},
+    "автономия":{"дитя больно":"лечит по-своему, никого не слушая","за общим столом":"ест отдельно, у печи","предложен дар":"отказывается от дара","старший велит":"огрызается"}
+  };
+  var scarAct={
+    "утрата дитяти":{"дитя больно":"мечется и не подпускает знахарку","за общим столом":"не смотрит на детей"},
+    "предательство близкого":{"предложен дар":"отказывается от дара"},
+    "публичный позор":{"за общим столом":"садится с краю","старший велит":"подчиняется, не поднимая глаз"},
+    "голодная зима":{"предложен дар":"берёт жадно, даже когда сыта"},
+    "изгнание":{"за общим столом":"садится с краю","старший велит":"уходит, не ответив"}
+  };
+  function behave(n,s,c){ var o=scarAct[s]; return (o&&o[c])?o[c]:needAct[n][c]; }
+
+  // ЧЕЛОВЕЧЕСКИЕ СЛОВА — игрок не должен читать язык модели
+  var NW={"голод":"залишитися голодною","признание":"бути ніким","принадлежность":"залишитися одна",
+          "смысл":"що все це було марно","автономия":"що за неї знову все вирішать"};
+  var RW={"утрата дитяти":"та зима, коли вона поховала третього",
+          "предательство близкого":"той, кому вона вірила",
+          "публичный позор":"та неділя, коли з неї сміялося село",
+          "голодная зима":"голодний рік",
+          "изгнание":"той рік, коли її не пустили на поріг"};
+
+  // ── ДВІ ЛІНЗИ: ти входиш в одну і розплутуєш іншу ──
+  var LENS=[
+    { me:"Одарка", target:"Гафія",
+      title:"Гафія не пускає знахарку",
+      hint:"перед тобою — свекруха, яку треба зрозуміти",
+      truth:{need:"принадлежность", scar:"утрата дитяти"},
+      f1:"Гафія не пускає знахарку до Івася, бо боїться ", f2:", а ", f3:" навчила її бачити світ так.",
+      hot:{
+        znaharka:{ctx:"дитя больно", txt:"мечеться і не підпускає знахарку до дитини"},
+        stil:    {ctx:"за общим столом", txt:"за вечерею не дивиться на дітей — ані на Івася, ані на сусідських"},
+        dar:     {ctx:"предложен дар", txt:"за кухоль води дякує гаряче й довго, наче за порятунок"},
+        ivas:    {word:"дитя горить третю добу"},
+        skrynia: {word:"на скрині — дитяча сорочечка, вишита, не на Івасів зріст"},
+        gafia:   {word:"її рука тремтить, а голос — ні"}
+      },
+      journal:"Її злоба — не злоба. Гафія поховала дитя після знахарки і відтоді не пускає її на поріг, наче може ту зиму відіграти назад. Тримається за своїх так, ніби їх ось-ось відберуть: за кухоль води дякує, як за порятунок. Вона не Івася береже від знахарки. Вона себе береже від другого разу.",
+      acts:[
+        {t:"Відступити мовчки — і покликати знахарку через вікно",
+         i:"Дитя буде врятоване. Вона відчує зраду.",
+         o:"Знахарка увійшла через вікно. До ранку Івась задихав рівно. Гафія до самої смерті не сказала тобі про ту ніч ані слова."},
+        {t:"Обійняти її і сказати: я знаю про ту зиму", key:true,
+         i:"Відкрито лише тому, що ти її зрозуміла.",
+         o:"Вона довго мовчала, а тоді сіла на скриню й заплакала — вперше за багато років. І сама відчинила двері. Ви обидві не спали до ранку, і вперше це було не поодинці."},
+        {t:"Наказати як господиня хати",
+         i:"Скориться. Між вами стане стіна.",
+         o:"Вона відступила, не піднявши очей. Знахарка допомогла. За стіл поруч ви більше ніколи не сідали."}
+      ]
+    },
+    { me:"Гафія", target:"Одарка",
+      title:"Одарка послала по знахарку",
+      hint:"перед тобою — невістка, яку треба зрозуміти",
+      truth:{need:"автономия", scar:"публичный позор"},
+      f1:"Одарка послала по знахарку, нікого не спитавши, бо боїться ", f2:", а ", f3:" навчила її бачити світ так.",
+      hot:{
+        dar:     {ctx:"дитя больно", txt:"лікує по-своєму й нікого не слухає — сама послала по знахарку"},
+        stil:    {ctx:"за общим столом", txt:"за вечерею сідає скраю, до стіни, хоч місця досить"},
+        znaharka:{ctx:"старший велит", txt:"я веліла не пускати — скорилася мовчки, очей не підвела"},
+        ivas:    {word:"дитя горить, а вона не плаче — тільки робить"},
+        skrynia: {word:"її придане й досі не розібране, четвертий рік"},
+        gafia:   {word:"твоя власна рука тремтить — і ти це знаєш"}
+      },
+      journal:"Вона не бунтує проти мене. Вона боїться, що за неї знову все вирішать — як тоді, коли забрали Панаса й не спитали. А скраю сідає не з гордості: відколи вона солдатка, селу є про що шепотіти. Мовчить не тому, що скорилася. Мовчить, бо вже знає, чим кінчається сказане вголос.",
+      acts:[
+        {t:"Пустити знахарку і вийти з хати",
+         i:"Ти не заважатимеш. І не будеш поруч.",
+         o:"Ти вийшла на призьбу і простояла до ранку. Так і не спитала, що там робилося. Вранці Івась спав."},
+        {t:"Сказати їй про своїх трьох", key:true,
+         i:"Відкрито лише тому, що ти її зрозуміла.",
+         o:"Ти сказала вголос те, чого не говорила тридцять років. Вона не відпустила твоєї руки — і не сказала жодного слова, за що ти й була їй вдячна."},
+        {t:"Стояти на своєму до ранку",
+         i:"Ти встоїш. Але тепер вона знає, на що ти здатна.",
+         o:"Ти встояла. Івась вижив і без знахарки. Але тепер вона знає: ти можеш стати між нею і дитям — і станеш, якщо доведеться."}
+      ]
+    }
+  ];
+
+  var L=0;
+  var ST=[{seen:[],words:[],done:{},solved:false,acted:false},
+          {seen:[],words:[],done:{},solved:false,acted:false}];
+  function cur(){ return LENS[L]; }
+  function st(){ return ST[L]; }
+
+  function survivors(){
+    var s=st(), out=[];
+    for(var i=0;i<5;i++)for(var j=0;j<5;j++){
+      var ok=true;
+      for(var k=0;k<s.seen.length;k++)
+        if(behave(NUZHDY[i],RUBTSY[j],s.seen[k].ctx)!==s.seen[k].act){ ok=false; break; }
+      if(ok) out.push([NUZHDY[i],RUBTSY[j]]);
+    }
+    return out;
+  }
+
+  function buildSentence(){
+    var c=cur(), h=c.f1+'<select id="need"><option value="">…</option>';
+    NUZHDY.forEach(function(n){ h+='<option value="'+n+'">'+NW[n]+'</option>'; });
+    h+='</select>'+c.f2+'<select id="scar"><option value="">…</option>';
+    RUBTSY.forEach(function(r){ h+='<option value="'+r+'">'+RW[r]+'</option>'; });
+    h+='</select>'+c.f3;
+    document.getElementById('sentence').innerHTML=h;
+    document.getElementById('need').onchange=render;
+    document.getElementById('scar').onchange=render;
+  }
+
+  function buildActs(){
+    var c=cur(), s=st(), el=document.getElementById('actList'), h='';
+    c.acts.forEach(function(a,i){
+      h+='<button class="act'+(s.acted?' locked':'')+'" data-a="'+i+'">'+
+         (a.key?'<b>'+a.t+'</b>':a.t)+'<i>'+a.i+'</i></button>';
+    });
+    el.innerHTML=h;
+    if(!s.acted) el.querySelectorAll('.act').forEach(function(b){
+      b.onclick=function(){
+        var a=c.acts[+b.dataset.a]; s.acted=true;
+        var o=document.getElementById('outcome'); o.textContent=a.o; o.classList.add('on');
+        render();
+      };
+    });
+  }
+
+  function render(){
+    var c=cur(), s=st();
+    document.getElementById('title').textContent=c.title;
+    document.getElementById('lensHint').textContent=c.hint;
+    document.querySelectorAll('.hot').forEach(function(g){
+      if(s.done[g.dataset.id]) g.classList.add('used'); else g.classList.remove('used');
+    });
+    var box=document.getElementById('obs');
+    if(!s.seen.length && !s.words.length)
+      box.innerHTML='<div class="empty">Світ завмер. Клікай по людях і речах — на що подивишся, те й дізнаєшся.</div>';
+    else{
+      var h='';
+      s.seen.forEach(function(o){ h+='<div class="obs"><i>'+o.ctx.toUpperCase()+'</i>'+o.txt+'</div>'; });
+      s.words.forEach(function(w){ h+='<div class="obs" style="border-left-color:#5b6d7a"><i>РІЧ</i>'+w+'</div>'; });
+      box.innerHTML=h;
+    }
+    var sv=survivors(), n=sv.length, hint=document.getElementById('hint');
+    document.getElementById('cnt').textContent = s.solved? 1 : n;
+    if(s.solved) hint.textContent='Ти зрозуміла її.';
+    else if(n===25) hint.textContent='Поки вона може бути ким завгодно.';
+    else if(n===1) hint.textContent='Лишилася одна відповідь.';
+    else if(n<=5) hint.innerHTML='Коло звузилось: '+sv.map(function(p){return NW[p[0]]+' + '+RW[p[1]];}).slice(0,5).join(' · ');
+    else hint.textContent='Одного погляду мало — вона показує себе не скрізь.';
+    var ns=document.getElementById('need'), ss=document.getElementById('scar');
+    document.getElementById('check').disabled = s.solved || !(ns && ns.value && ss && ss.value);
+    var jr=document.getElementById('journal'), ac=document.getElementById('acts');
+    if(s.solved){
+      document.getElementById('jhead').textContent='ЩОДЕННИК РОЗУМІННЯ · '+c.target;
+      document.getElementById('jtext').textContent=c.journal;
+      jr.classList.add('on'); buildActs(); ac.classList.add('on');
+      if(!s.acted) document.getElementById('outcome').classList.remove('on');
+    } else {
+      jr.classList.remove('on'); ac.classList.remove('on');
+      document.getElementById('outcome').classList.remove('on');
+    }
+    var fin=document.getElementById('final');
+    if(ST[0].acted && ST[1].acted){
+      fin.textContent='Ти прожила цей вечір з двох боків. Гафія боялася втратити ще одного. Одарка боялася, що за неї знову все вирішать. Обидві мали рацію — і простого вибору не було. Не тому, що ти погано шукала.';
+      fin.classList.add('on');
+    } else fin.classList.remove('on');
+  }
+
+  document.querySelectorAll('.hot').forEach(function(g){
+    g.addEventListener('click',function(){
+      var s=st(), id=g.dataset.id;
+      if(s.done[id]||s.solved) return;
+      var h=cur().hot[id]; if(!h) return;
+      s.done[id]=1;
+      if(h.ctx) s.seen.push({ctx:h.ctx, act:behave(cur().truth.need,cur().truth.scar,h.ctx), txt:h.txt});
+      else s.words.push(h.word);
+      render();
+    });
+  });
+
+  document.getElementById('check').onclick=function(){
+    var c=cur(), s=st(), v=document.getElementById('verdict');
+    var n=document.getElementById('need').value, sc=document.getElementById('scar').value;
+    var wrong=(n!==c.truth.need?1:0)+(sc!==c.truth.scar?1:0);
+    if(wrong===0){ s.solved=true; v.className='verdict yes';
+      v.textContent='Сходиться. Усе, що ти бачила, пояснюється цим — і тільки цим.'; render(); }
+    else { v.className='verdict no';
+      v.textContent = wrong===1 ? 'Не сходиться — але одне з двох правильне.' : 'Не сходиться. Обидва неправильні.'; }
+  };
+
+  function setLens(i){
+    L=i;
+    document.getElementById('L0').className=(i===0?'on':'');
+    document.getElementById('L1').className=(i===1?'on':'');
+    var v=document.getElementById('verdict'); v.textContent=''; v.className='verdict';
+    buildSentence(); render();
+  }
+  document.getElementById('L0').onclick=function(){ setLens(0); };
+  document.getElementById('L1').onclick=function(){ setLens(1); };
+
+  buildSentence(); render();
+})();
+</script>
+</body>
+</html>
