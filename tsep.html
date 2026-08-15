@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Цепь — четверо, один страх</title>
+<style>
+  :root{
+    --paper:#ffffff; --ink:#2c2c2a; --grey:#5f5e5a; --faint:#888780; --line:#d9d6cc;
+    --terra:#D85A30; --terra-deep:#993C1D; --terra-pale:#FAECE7;
+    --violet:#7F77DD; --violet-deep:#3C3489;
+    --ochre:#ba7517; --ochre-pale:#FBF3E4;
+    --beige:#f1efe8; --beige2:#f7f5ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:Helvetica,Arial,sans-serif;line-height:1.5;
+    display:flex;justify-content:center;padding:34px 20px 90px}
+  main{width:100%;max-width:640px}
+  .top{font-size:12px;color:var(--faint);margin-bottom:22px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:.5px}
+  h2{font-size:21px;margin:0 0 14px}
+  .sub{color:var(--faint);font-size:13px;margin:0 0 24px}
+  .voice{font-family:Georgia,serif;font-size:17px;color:var(--ink);margin:0 0 16px}
+  .voice.em{color:var(--terra-deep)}
+  /* «как это было на самом деле» — сухая врезка с настоящим фактом эпохи */
+  .real{border-left:2px solid var(--line);padding:2px 0 2px 15px;margin:20px 0 4px}
+  .real .lab{font-size:10.5px;font-weight:600;letter-spacing:1.3px;color:var(--faint);
+    margin-bottom:5px}
+  .real .txt{font-size:13.5px;color:var(--grey);line-height:1.5}
+  .real .ist{font-size:11.5px;color:var(--faint);margin-top:5px;font-style:italic}
+
+  .lens-note{font-size:13.5px;color:var(--ochre);font-style:italic;margin:16px 0 20px;
+    border-left:3px solid var(--ochre);background:var(--ochre-pale);
+    border-radius:0 8px 8px 0;padding:9px 14px}
+  .lens-note::before{content:"ТЫ ПОМНИШЬ ЭТО С ДРУГОЙ СТОРОНЫ";display:block;
+    font-size:10.5px;letter-spacing:1.2px;font-style:normal;font-weight:600;
+    color:var(--ochre);margin-bottom:4px;opacity:.75}
+  .q{font-weight:600;font-size:15px;margin:22px 0 12px}
+
+  /* нить — где мы в цепи */
+  .thread{display:flex;gap:6px;align-items:center;margin:0 0 20px;flex-wrap:wrap}
+  .link{font-size:11px;letter-spacing:.6px;color:var(--faint);
+    border:1px solid var(--line);border-radius:14px;padding:4px 10px;white-space:nowrap}
+  .link.done{color:var(--ochre);border-color:var(--ochre);background:var(--ochre-pale)}
+  .link.now{color:#fff;background:var(--terra);border-color:var(--terra);font-weight:600}
+  .thread .dash{color:var(--line);font-size:12px}
+
+  .chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;
+    letter-spacing:1px;color:var(--ochre);border:1px solid var(--ochre);
+    border-radius:20px;padding:5px 13px;margin-bottom:18px}
+  .chip .eye{width:16px;height:10px;border:1.6px solid var(--ochre);border-radius:50%;
+    position:relative;background:transparent}
+  .chip .eye::after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;
+    background:var(--ochre);left:5px;top:2px}
+  .chip.time{color:var(--faint);border-color:var(--line);letter-spacing:1.5px}
+
+  /* эхо — что дошло сюда о твоём прошлом поступке */
+  .echo{background:var(--terra-pale);border:1px solid #E9C6B7;border-radius:10px;
+    padding:14px 18px;margin:0 0 18px}
+  .echo .lab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--terra-deep);
+    margin-bottom:7px}
+  .echo .txt{font-family:Georgia,serif;font-size:15.5px;color:var(--ink);font-style:italic}
+
+  .flab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--violet-deep);
+    margin:22px 0 2px}
+  .fsub{font-size:12.5px;color:var(--faint);font-style:italic;margin:0 0 8px}
+  .forces{border-left:3px solid var(--violet);padding:2px 0 2px 16px;margin:0 0 8px}
+  .forces div{font-size:14px;color:var(--grey);margin:9px 0}
+  .forces b{color:var(--violet-deep);font-weight:600}
+
+  /* слой автора — по умолчанию скрыт, включается кнопкой внизу */
+  .scar{display:none}
+  body.dev .scar{display:block;background:var(--beige);border:1px dashed var(--faint);
+    border-radius:8px;padding:11px 14px;color:var(--grey);font-weight:400;font-size:13.5px}
+  body.dev .scar::before{content:"СЛОЙ АВТОРА · игроку не показывается";display:block;
+    font-size:10.5px;letter-spacing:1.2px;color:var(--faint);font-weight:600;margin-bottom:5px}
+  .devbtn{position:fixed;right:14px;bottom:14px;font-size:11px;letter-spacing:.5px;
+    background:var(--paper);color:var(--faint);border:1px solid var(--line);
+    border-radius:14px;padding:5px 12px;cursor:pointer;font-family:inherit}
+  .devbtn:hover{color:var(--ink);border-color:var(--faint)}
+
+  .choice{display:block;width:100%;text-align:left;background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:10px 0;
+    cursor:pointer;font-family:inherit;transition:.15s}
+  .choice:hover{background:var(--beige);border-color:var(--faint)}
+  .choice .t{font-size:15px;color:var(--ink)}
+  .choice .c{display:block;font-size:12.5px;color:var(--faint);margin-top:5px}
+
+  /* переход: что было на деле → как ушло в мир */
+  .deed{background:var(--beige2);border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin:0 0 12px}
+  .deed .lab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--faint);
+    margin-bottom:7px}
+  .deed .txt{font-family:Georgia,serif;font-size:16px}
+  .arrow{text-align:center;color:var(--terra);font-size:19px;margin:2px 0 12px;line-height:1}
+  .scar{color:var(--terra-deep);font-size:13.5px;font-weight:600;margin:2px 0 22px}
+  .behind{font-family:Georgia,serif;font-size:15px;font-style:italic;color:var(--grey);
+    border-left:3px solid var(--line);padding-left:15px;margin:0 0 16px}
+  .mystery{font-size:13.5px;font-weight:600;color:var(--terra-deep);margin:0 0 24px}
+  .honest{background:var(--beige);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;font-size:13.5px;color:var(--grey);margin:22px 0}
+  .honest b{color:var(--ink)}
+  .go{background:var(--terra);color:#fff;border:none;border-radius:8px;
+    padding:12px 22px;font-size:15px;font-family:inherit;cursor:pointer;margin-top:8px}
+  .go:hover{background:var(--terra-deep)}
+  .go.ghost{background:transparent;color:var(--terra-deep);border:1px solid var(--terra)}
+  .hidden{display:none}
+
+  /* свод — вся цепь одним взглядом */
+  .roll{border:1px solid var(--line);border-radius:10px;padding:6px 20px 14px;margin:0 0 20px}
+  .roll .row{border-left:3px solid var(--ochre);padding:2px 0 2px 15px;margin:16px 0}
+  .roll .who{font-size:11.5px;font-weight:600;letter-spacing:1px;color:var(--ochre);margin-bottom:3px}
+  .roll .did{font-size:14.5px;color:var(--ink)}
+  .roll .went{font-size:13px;color:var(--faint);font-style:italic;margin-top:3px}
+
+  .journal{border-top:2px solid var(--ochre);margin-top:30px;padding-top:20px}
+  .jhead{font-size:12px;font-weight:600;letter-spacing:1.5px;color:var(--ochre);margin-bottom:6px}
+  .jnote{font-size:13px;color:var(--faint);font-style:italic;margin:0 0 14px}
+  #insight{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+    font-family:Georgia,serif;font-size:15px;color:var(--ink);resize:vertical;background:var(--paper)}
+  #insight:focus{outline:none;border-color:var(--ochre)}
+  #entries{margin-top:18px}
+  .entry{border-left:3px solid var(--ochre);padding:2px 0 2px 15px;margin:14px 0}
+  .entry .meta{font-size:11.5px;color:var(--faint);margin-bottom:4px}
+  .entry .text{font-family:Georgia,serif;font-size:15px;color:var(--ink)}
+  .jempty{font-size:13px;color:var(--faint);font-style:italic}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">цепь · четверо, один страх · живите как хотите · 2026-08-15</div>
+  <div id="thread" class="thread hidden"></div>
+
+  <!-- ЗАСТАВКА -->
+  <section id="s0">
+    <h1>Цепь</h1>
+    <p class="sub">Москва, посад за рекой · зима 7078 года от сотворения мира</p>
+    <p class="voice">Государь разделил землю надвое: своё — опричнина, остальное — земщина. Посад ваш в земщине. Со Слободы наезжают за именами: кто говорил лишнее.</p>
+    <p class="voice">Никто здесь не злодей. Каждому есть чего бояться. Ты проживёшь четверых — по очереди, сверху вниз.</p>
+    <button class="go" onclick="startChain()">Войти в первого →</button>
+  </section>
+
+  <!-- ЗВЕНО -->
+  <section id="sLink" class="hidden">
+    <div class="chip"><span class="eye"></span> <span id="chipWho"></span></div>
+    <div id="echoBox" class="echo hidden">
+      <div class="lab">ЧТО ДОШЛО СЮДА</div>
+      <div class="txt" id="echoTxt"></div>
+    </div>
+    <p class="voice" id="scene"></p>
+    <p class="voice em hidden" id="sceneEm"></p>
+    <div class="flab">ЧТО НА ТЕБЯ ДАВИТ</div>
+    <p class="fsub">Три силы этого вечера. Не характер — положение: у любого на твоём месте было бы то же.</p>
+    <div class="forces" id="forces"></div>
+    <div class="real hidden" id="realBox">
+      <div class="lab">КАК ЭТО БЫЛО НА САМОМ ДЕЛЕ</div>
+      <div class="txt" id="realTxt"></div>
+      <div class="ist" id="realIst"></div>
+    </div>
+    <p class="lens-note hidden" id="lensNote"></p>
+    <p class="q" id="question"></p>
+    <div id="choices"></div>
+  </section>
+
+  <!-- ПЕРЕХОД -->
+  <section id="sPass" class="hidden">
+    <div class="deed">
+      <div class="lab">ЧТО ТЫ СДЕЛАЛ НА ДЕЛЕ</div>
+      <div class="txt" id="deedTxt"></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="deed" style="background:var(--terra-pale);border-color:#E9C6B7">
+      <div class="lab" style="color:var(--terra-deep)">КАК ЭТО УШЛО В МИР</div>
+      <div class="txt" id="molvaTxt"></div>
+    </div>
+    <p class="scar" id="scarTxt"></p>
+    <button class="go" id="passBtn"></button>
+  </section>
+
+  <!-- ЛЕНТА -->
+  <section id="sLenta" class="hidden">
+    <div class="chip time">⟶ ДВЕНАДЦАТЬ ЛЕТ СПУСТЯ</div>
+    <p class="voice" id="outcome"></p>
+    <p class="behind" id="behind"></p>
+    <p class="mystery" id="ring"></p>
+    <button class="go" onclick="toEnd()">Свести цепь →</button>
+  </section>
+
+  <!-- СВОД + ЖУРНАЛ -->
+  <section id="sEnd" class="hidden">
+    <h2>Четверо, один страх</h2>
+    <div class="roll" id="roll"></div>
+    <p class="voice" id="verdict"></p>
+    <p class="mystery">Кто из четверых начал? Отсюда не разделить: каждый отвечал на то, что до него дошло, — а дошло не то, что было.</p>
+
+    <div class="honest"><b>Честно про слои:</b> люди, силы и искажения молвы здесь <b>держит движок</b> — правило одно на всех: <i>молва усиливает страх на шаг и стирает имя того, кто решал</i>. Ничего не выдумывает ИИ. Заготовлены пока сами сцены — живое начнётся, когда поводы станет порождать мир.</div>
+
+    <div class="journal">
+      <div class="jhead">ЖУРНАЛ ОСМЫСЛЕНИЙ · второй слой</div>
+      <p class="jnote">Движок молчит и не оценивает тебя. Здесь — только твой голос: что ты понял, прожив это.</p>
+      <textarea id="insight" rows="3" placeholder="Что ты понял, прожив эту цепь?"></textarea>
+      <button class="go" onclick="saveInsight()">Записать в журнал</button>
+      <div id="entries"></div>
+    </div>
+
+    <button class="go ghost" style="margin-top:26px" onclick="restart()">Прожить заново, иначе ↺</button>
+  </section>
+</main>
+<button class="devbtn" id="devbtn" onclick="toggleDev()">слой автора: выкл</button>
+
+<script>
+/* ============================================================
+   ЦЕПЬ — движок держит правду.
+   Состояние: что сделал каждый и что из этого дошло до следующего.
+   Правило искажения одно: молва усиливает страх на шаг
+   и стирает имя того, кто решал.
+   ============================================================ */
+
+var S = { deeds: [], molva: [], nazvan: null, tyazhest: 0 };
+
+var THREAD = ['Третьяк · опричник','Сила · староста','Фёкла · вдова','Гриша · отрок'];
+
+/* ---------- ЗВЕНО 1 — ТРЕТЬЯК, опричник со Слободы ---------- */
+var L1 = {
+  who: 'ВСЕЛЁН: ТРЕТЬЯК · опричник со Слободы',
+  scene: 'Ты въехал на посад затемно. С тобой государева грамота: сыскать, кто говорил на государя, и привезти имена за руками. Сколько имён, каких — не сказано. Сказано: не возвращаться пустым.',
+  em: 'Брата твоего взяли месяц назад. Тебя о нём не спросили ни разу — ни обвинили, ни отпустили. Спросили бы — ты бы отвечал, оправдывался, может, и отговорился. А так отвечать не на что, и не понять: чист ты или уже вписан. Спросить самому нельзя — спрашивает тот, кто боится.',
+  forces: [
+    ['страх', 'ты сам под тенью брата. Пустая бумага — и завтра спросят, отчего ты жалеешь земских.'],
+    ['власть', 'здесь тебя боятся. Пока боятся — ты цел.'],
+    ['туман', 'ты не знаешь, кто уже написал на тебя. И не узнаешь.']
+  ],
+  real: {
+    txt:'Сыск не начинался с доноса. Он начинался с ОБЫСКА: приезжий опрашивал местных о человеке, и те отвечали «за руками» — за своими подписями. В обыск полагалось брать «добрых людей человек пятнадцать или двадцать», а среди них целовальников — по крестному целованию. Тот, кто требует имена, требует не самоуправства, а законной процедуры.',
+    ist:'Судебник 1550 года, статьи 52 и 58'
+  },
+  q: 'Как возьмёшь имена?',
+  choices: [
+    { k:'A', t:'Взять первого, кто под руку.', otdal:true,
+      c:'быстро, никого не выбирал — и потому спишь',
+      deed:'Ты взял первого, кто попался у кабака: пьяного мужика, который что-то бормотал. Имени его ты не спросил.',
+      molva:'На посаде к утру: «Со Слободы берут кого попало. Значит, теперь всех».',
+      scar:'Страх стал беспричинным. Беспричинный страх сильнее прицельного.' },
+    { k:'B', t:'Велеть старосте назвать самому.', otdal:true,
+      c:'руки чисты — но ты научил их выдавать своих',
+      deed:'Ты положил бумагу перед старостой: «К вечеру имена. Или поедешь сам». И вышел ждать на двор.',
+      molva:'На посаде к утру: «Староста нынче пишет имена. Гляди, кого впишет».',
+      scar:'Ты не назвал никого — и всё же назвал. Рука теперь чужая, а рубец ложится тот же.' },
+    { k:'C', t:'Отписать, что на посаде тихо.', otdal:false,
+      c:'взять на себя; если найдут иное — тихо станет у тебя дома',
+      deed:'Ты написал: «На посаде тихо, речей не слыхано». И приписал своё имя под этим.',
+      molva:'На Слободе к утру: «Третьяк за земских ручается. Не за брата ли своего?» А на посад послали другого — с той же бумагой.',
+      scar:'Ты вышел из цепи. Цепь не заметила и пошла дальше, без тебя.' }
+  ]
+};
+
+/* ---------- ЗВЕНО 2 — СИЛА, староста ---------- */
+var L2 = {
+  who: 'ВСЕЛЁН: СИЛА · староста посада',
+  echo: {
+    A: 'Говорят, взяли Прошку у кабака ни за что. Стало быть, берут не за вину — берут за число. Число надо кому-то дать.',
+    B: 'Опричник положил бумагу тебе на стол и ждёт на дворе. К вечеру — имена. Или поедешь сам.',
+    C: 'Первый уехал ни с чем — и на другой же день приехал второй, злее. Говорят, того, первого, самого теперь пишут.'
+  },
+  scene: 'Посад держится круговой порукой: за одного отвечают все. Ты этих людей знаешь по именам с их крестин. У тебя двое внуков.',
+  forces: [
+    ['страх', 'не дашь имени — возьмут десять. Так было в Новгороде этой зимой: там не спрашивали, кто именно.'],
+    ['власть', 'здесь твоё слово — закон, и все это знают. Оттого и спрашивают тебя.'],
+    ['стыд', 'кого ни назови — ты его крестил или хоронил его отца.']
+  ],
+  real: {
+    txt:'Круговая порука на посаде — это прежде всего про подати. Подать клали на весь посад разом, а мир раскладывал её по дворам: чего не добрали с одного, добирали со всех. В обыске посад отвечал так же — разом. Что скажут выборный староста и целовальники, то и правда.',
+    ist:'Земская реформа 1555–56 годов; тягло и раскладка по дворам'
+  },
+  q: 'Чьё имя ляжет на бумагу?',
+  choices: [
+    { k:'A', t:'Вдову Фёклу — за неё некому вступиться.', otdal:true,
+      c:'самое дешёвое имя на посаде; и все увидят, что оно дешёвое',
+      nazvan:'Фёкла',
+      deed:'Ты назвал вдову. Она торгует на торгу, мужа нет, родни нет. Ты сказал себе: спрошу — отпустят, взять с неё нечего.',
+      molva:'На посаде к вечеру: «Староста своих бережёт, а сирых отдаёт». Кто-то добавил: «И правильно, а то бы всех».',
+      scar:'Посад узнал цену себе: у кого нет заступника, тот идёт первым.' },
+    { k:'B', t:'Овдокима, зажиточного — с него возьмут откуп.', otdal:true,
+      c:'может, обойдётся деньгами; и посад запомнит, что богатого продали за деньги',
+      nazvan:'Овдоким',
+      deed:'Ты назвал зажиточного соседа. Расчёт простой: у него есть чем откупиться, и дело кончится ничем.',
+      molva:'На посаде к вечеру: «Овдокима пишут. За богатство и пишут». Бедный выдохнул, богатый начал прятать.',
+      scar:'Ты положил цену на человека — и посад понял, что цена бывает.' },
+    { k:'C', t:'Назвать себя.', otdal:false,
+      c:'посад цел; внуки — нет',
+      nazvan:'Сила',
+      deed:'Ты вписал своё имя и понёс бумагу сам. По дороге зашёл к попу — сказать, где лежит грамота на двор.',
+      molva:'На посаде к вечеру: «Старосту взяли. Значит, и правда что-то было — не берут же ни за что». Твою жертву переписали в твою вину.',
+      scar:'Ты отдал себя, а молва отдала твоё имя. Спасти можно тело — не имя.' }
+  ]
+};
+
+/* ---------- ЗВЕНО 3 — ФЁКЛА, вдова ---------- */
+var L3 = {
+  who: 'ВСЕЛЁН: ФЁКЛА · вдова, торгует на торгу',
+  echo: {
+    A: 'За тобой пришли на торг, при людях. Никто не поднял глаз. Староста стоял в стороне и смотрел в снег.',
+    B: 'Взяли Овдокима, а тебя зовут свидетелем: подтвердить, что слышала от него лишнее. Обещают: подтвердишь — и пойдёшь домой.',
+    C: 'Взяли старосту. Тебя зовут свидетелем: сказать, что он говорил лишнее. Говорят, скажешь — и его вина станет виной, а не наветом.'
+  },
+  scene: 'Тебе за сорок. Муж помер на правеже: поручился за чужой долг. Всё, что есть, — место на торгу и сын Гриша, отрок, ещё не целовал креста.',
+  forces: [
+    ['страх', 'не за себя. За Гришу: одному ему тут не выжить.'],
+    ['нужда', 'место на торгу — вся твоя жизнь. Отдашь — зимой нечего есть.'],
+    ['вера', 'поп Сергий учил: не послушествуй на друга своего свидетельства ложна. Ты это помнишь.']
+  ],
+  lens: 'Этот же вечер ты уже видел глазами старосты — знаешь, из чего он выбирал. Легче не становится.',
+  real: {
+    txt:'Правёж — это про деньги, а не про сыск. Должника ставили у приказа и били батогами по ногам, пока не заплатит или не выкупится; норма — месяц правежа за сто рублей долга. За чужой долг на правёж ставили поручителя. По государеву делу правежа не было: там был расспрос.',
+    ist:'Судебник 1550 года, статья 55; указ о сроках правежа 1555 года'
+  },
+  q: 'Что скажешь?',
+  choices: [
+    { k:'A', t:'Откупиться — отдать место на торгу.', otdal:false,
+      c:'никого не назовёшь; сын будет голодать',
+      deed:'Ты отдала место на торгу и серьги покойной матери. Никого не назвала. Домой шла пешком через реку.',
+      molva:'На посаде: «Вдова откупилась. Стало быть, было чем — стало быть, было за что». Место на торгу занял человек со Слободы.',
+      scar:'Ты купила чистые руки ценой хлеба сына. Он ещё не знает этой цены, но узнает.' },
+    { k:'B', t:'Назвать Марью — она всё равно разносит слух.', otdal:true,
+      c:'спасёшься; Гриша услышит, как ты это скажешь',
+      nazvan:'Марья',
+      deed:'Ты сказала: «Марья говорила». Это было правдой — Марья говорит обо всём. Ты выбрала правду, которая тебя спасала.',
+      molva:'На посаде: «Вдова выдала соседку». Прибавили: «А та бы её и не пожалела». Так стало легче всем.',
+      scar:'Гриша стоял в сенях и слышал. Он запомнил не слова — он запомнил, что так можно.' },
+    { k:'C', t:'Молчать.', otdal:false,
+      c:'расспрос; сын останется один',
+      deed:'Ты молчала. Тебя таскали на расспрос, били и держали в железах — при людях, чтобы видели. Ты не сказала ничего и не потому, что храбрая, — сказать было нечего.',
+      molva:'На посаде: «Молчит — значит, крепкая. Крепких так просто не берут». Твоё молчание тоже стало уликой.',
+      scar:'Ты не назвала никого. Гриша видел, как тебя били, и не смог ничего.' }
+  ]
+};
+
+/* ---------- ЗВЕНО 4 — ГРИША, отрок ---------- */
+var L4 = {
+  who: 'ВСЕЛЁН: ГРИША · отрок, ещё не целовал креста',
+  echo: {
+    A: 'Мать вернулась без места на торгу. Всю зиму варили пустое. Она не жаловалась ни разу, и от этого было хуже.',
+    B: 'Ты стоял в сенях и слышал, как мать назвала соседку. Потом вы ели, и она положила тебе больше.',
+    C: 'Ты видел, как мать били на торгу, при всех. Ты стоял и держал шапку в руках.'
+  },
+  scene: 'Тебе четырнадцать. На посаде тебя жалеют, но в дом не зовут — от вашего двора теперь сторонятся. Весной надо становиться в тягло: платить, как все.',
+  forces: [
+    ['страх', 'ты один. Никто за тебя не встанет — ты это проверил.'],
+    ['обида', 'они все стояли рядом и смотрели. Каждый по-своему был прав.'],
+    ['голод', 'простой, каждый день, без всякого смысла.']
+  ],
+  lens: 'Того, кто привёз бумагу, ты уже видел изнутри — знаешь, что он тоже боялся. Легче не становится.',
+  real: {
+    txt:'Через год после этой зимы, 24 мая 1571 года, крымский хан сжёг Москву. Посады выгорели дотла, а перед тем был мор. Тот, кто вернулся бы сюда через двенадцать лет, нашёл бы наполовину других людей.',
+    ist:'Поход Девлет-Гирея на Москву, 1571 год; мор 1570–71 годов'
+  },
+  q: 'Куда пойдёшь?',
+  choices: [
+    { k:'A', t:'В Слободу — там кормят, и там не боятся.',
+      c:'стать тем, кого боялся',
+      deed:'Весной ты ушёл в Слободу. Тебя взяли в услужение: за конями ходить. Кормили. Никто не спрашивал, чей ты сын.' },
+    { k:'B', t:'Остаться на посаде и тянуть тягло.',
+      c:'жить рядом с теми, кто не вступился',
+      deed:'Ты остался. Стал в тягло, взял материно ремесло, женился на Марьиной дочери. Здоровался со старостиным родом каждый день.' },
+    { k:'C', t:'Уйти на низ, к вольным.',
+      c:'своя воля — и ничья защита',
+      deed:'Ты ушёл вниз по реке, к казакам. Там не спрашивают, откуда ты и чей.' }
+  ]
+};
+
+/* ---------- ЛЕНТА: двенадцать лет ---------- */
+var LENTA = {
+  A: { out:'Двенадцать лет спустя ты въезжаешь на посад затемно. С тобой бумага: привезти имена — кто говорил лишнее. Сколько имён, каких — не сказано. Сказано: не возвращаться пустым.',
+       behind:'Ты не мстишь. Ты просто там, где кормят и где не боятся. Мальчишка, который смотрел из сеней, не собирался становиться этим — он собирался выжить.' },
+  B: { out:'Двенадцать лет спустя ты староста этого посада. Со Слободы приехали за именами, и бумага лежит перед тобой. У тебя двое детей.',
+       behind:'Ты клялся себе, что не будешь как он. Ты и не будешь — ты просто выберешь того, за кого некому вступиться, и найдёшь для этого причину получше.' },
+  C: { out:'Двенадцать лет спустя ты на низу, в казачьей ватаге. Летом брали купеческий караван на Волге, зимой ходили на ногайский улус. На посад ты не вернулся ни разу — туда дошёл только слух: кто-то из здешних ушёл в воровские казаки, а чей он, уже не помнят.',
+       behind:'Ты ушёл от страха и принёс его с собой — только теперь боятся тебя. Это оказалось легче, чем бояться самому.' }
+};
+
+/* ---------- обратная память: что дошло до Гриши о самом начале ---------- */
+var PAMYAT = {
+  A:'Про то, с чего всё началось, ты знаешь так: «Тогда наехали и хватали всех подряд, ни за что». Имени Третьяка ты не слышал никогда — молва стёрла его первым.',
+  B:'Про то, с чего всё началось, ты знаешь так: «Тогда староста продал наших». Что бумагу ему положил приезжий и ждал на дворе — до тебя не дошло.',
+  C:'Про то, с чего всё началось, ты знаешь так: «Тогда сверху решили, что мы виноваты». Что первый приезжий отказался писать имена и пропал сам — не знает уже никто.'
+};
+
+/* ============================ движок ============================ */
+var stage = 0;
+
+function el(id){ return document.getElementById(id); }
+function show(id){
+  document.querySelectorAll('section').forEach(function(s){ s.classList.add('hidden'); });
+  el(id).classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+function drawThread(now){
+  var box = el('thread');
+  box.classList.remove('hidden');
+  box.innerHTML = '';
+  THREAD.forEach(function(name, i){
+    if(i) { var d=document.createElement('span'); d.className='dash'; d.textContent='—'; box.appendChild(d); }
+    var s = document.createElement('span');
+    s.className = 'link' + (i < now ? ' done' : (i === now ? ' now' : ''));
+    s.textContent = name;
+    box.appendChild(s);
+  });
+}
+
+function startChain(){ stage = 0; renderLink(); }
+
+function renderLink(){
+  var L = [L1,L2,L3,L4][stage];
+  drawThread(stage);
+  el('chipWho').textContent = L.who;
+
+  // эхо — что дошло сюда о твоём же прошлом поступке
+  if(L.echo && S.deeds.length){
+    var key = S.deeds[S.deeds.length-1].k;
+    el('echoTxt').textContent = L.echo[key];
+    el('echoBox').classList.remove('hidden');
+  } else {
+    el('echoBox').classList.add('hidden');
+  }
+
+  el('scene').textContent = L.scene;
+  if(L.em){ el('sceneEm').textContent = L.em; el('sceneEm').classList.remove('hidden'); }
+  else el('sceneEm').classList.add('hidden');
+
+  var f = el('forces'); f.innerHTML = '';
+  L.forces.forEach(function(p){
+    var d = document.createElement('div');
+    var b = document.createElement('b'); b.textContent = p[0];
+    d.appendChild(b);
+    d.appendChild(document.createTextNode(' — ' + p[1]));
+    f.appendChild(d);
+  });
+
+  if(L.real){
+    el('realTxt').textContent = L.real.txt;
+    el('realIst').textContent = L.real.ist;
+    el('realBox').classList.remove('hidden');
+  } else el('realBox').classList.add('hidden');
+
+  if(L.lens){ el('lensNote').textContent = L.lens; el('lensNote').classList.remove('hidden'); }
+  else el('lensNote').classList.add('hidden');
+
+  el('question').textContent = L.q;
+
+  var c = el('choices'); c.innerHTML = '';
+  L.choices.forEach(function(ch){
+    var b = document.createElement('button');
+    b.className = 'choice';
+    var t = document.createElement('span'); t.className='t'; t.textContent = ch.t;
+    var s = document.createElement('span'); s.className='c'; s.textContent = ch.c;
+    b.appendChild(t); b.appendChild(s);
+    b.onclick = function(){ choose(ch); };
+    c.appendChild(b);
+  });
+
+  show('sLink');
+}
+
+function choose(ch){
+  S.deeds.push({ stage: stage, k: ch.k, who: THREAD[stage], deed: ch.deed, molva: ch.molva || null });
+  if(ch.nazvan) S.nazvan = ch.nazvan;
+  // считаем не букву, а смысл: отдал ли ты другого. Четвёртое звено не про имена — оно про то, кем стал.
+  if(stage < 3 && ch.otdal) S.tyazhest++;
+
+  if(stage === 3){            // последнее звено — сразу в ленту
+    var l = LENTA[ch.k];
+    el('outcome').textContent = l.out;
+    el('behind').textContent = l.behind;
+    el('ring').textContent = PAMYAT[S.deeds[0].k];
+    drawThread(4);
+    show('sLenta');
+    return;
+  }
+
+  el('deedTxt').textContent = ch.deed;
+  el('molvaTxt').textContent = ch.molva;
+  el('scarTxt').textContent = ch.scar;
+  el('passBtn').textContent = 'Стать тем, до кого дошло: ' + THREAD[stage+1].split(' · ')[0] + ' →';
+  el('passBtn').onclick = function(){ stage++; renderLink(); };
+  show('sPass');
+}
+
+function toEnd(){
+  var r = el('roll'); r.innerHTML = '';
+  S.deeds.forEach(function(d){
+    var row = document.createElement('div'); row.className='row';
+    var w = document.createElement('div'); w.className='who'; w.textContent = d.who;
+    var t = document.createElement('div'); t.className='did'; t.textContent = d.deed;
+    row.appendChild(w); row.appendChild(t);
+    if(d.molva){ var g = document.createElement('div'); g.className='went'; g.textContent = 'дошло: ' + d.molva; row.appendChild(g); }
+    r.appendChild(row);
+  });
+
+  var v;
+  if(S.tyazhest === 0) v = 'Ни один не отдал другого. Каждый заплатил собой — и цепь всё равно дотянулась до конца: её тянуло не имя, а страх, а страх находит дорогу и без имён.';
+  else if(S.tyazhest === 3) v = 'Каждый отдал другого. Каждый был прав по-своему, и у каждого наготове объяснение. Никто из троих не считает себя тем, с кого началось.';
+  else v = 'Кто-то удержался, кто-то нет. Цепь прошла насквозь — там, где удержались, она просто пошла в обход.';
+  el('verdict').textContent = v;
+
+  show('sEnd');
+  renderJournal();
+}
+
+/* ---------- журнал ---------- */
+function loadJournal(){
+  try { return JSON.parse(localStorage.getItem('tsep-journal') || '[]'); }
+  catch(e){ return []; }
+}
+function saveInsight(){
+  var e = el('insight'); var text = (e.value||'').trim();
+  if(!text) return;
+  var arr = loadJournal();
+  arr.push({
+    when: new Date().toLocaleString('ru-RU'),
+    put: S.deeds.map(function(d){ return d.who.split(' · ')[0] + ':' + d.k; }).join(' · '),
+    nazvan: S.nazvan,
+    text: text
+  });
+  localStorage.setItem('tsep-journal', JSON.stringify(arr));
+  e.value = '';
+  renderJournal();
+}
+function renderJournal(){
+  var box = el('entries'); box.innerHTML = '';
+  var arr = loadJournal();
+  if(!arr.length){
+    var p = document.createElement('p'); p.className='jempty';
+    p.textContent = 'Журнал пуст. Первая мысль — за тобой.';
+    box.appendChild(p); return;
+  }
+  arr.slice().reverse().forEach(function(it, i){
+    var n = arr.length - i;
+    var wrap = document.createElement('div'); wrap.className='entry';
+    var meta = document.createElement('div'); meta.className='meta';
+    meta.textContent = '№' + n + ' · ' + it.when + ' · прожил: ' + it.put + (it.nazvan ? ' · назван: ' + it.nazvan : ' · никто не назван');
+    var txt = document.createElement('div'); txt.className='text'; txt.textContent = it.text;
+    wrap.appendChild(meta); wrap.appendChild(txt); box.appendChild(wrap);
+  });
+}
+/* слой автора: строки-выводы, которые движок держит для себя.
+   Игроку не показываются — он должен прийти к этому сам (закон «без хардкода вывода»). */
+function toggleDev(){
+  var on = document.body.classList.toggle('dev');
+  el('devbtn').textContent = 'слой автора: ' + (on ? 'вкл' : 'выкл');
+}
+function restart(){
+  S = { deeds: [], molva: [], nazvan: null, tyazhest: 0 };
+  stage = 0;
+  el('thread').classList.add('hidden');
+  show('s0');
+}
+</script>
+</body>
+</html>

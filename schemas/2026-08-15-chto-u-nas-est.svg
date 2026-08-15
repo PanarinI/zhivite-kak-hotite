@@ -1,0 +1,122 @@
+<svg viewBox="0 0 900 660" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Что у нас есть — три слоя, и где нерв (2026-08-15)</title>
+  <desc>Вся разработка укладывается в три слоя. Верхний — МИР СВЕРХУ: люди ходят сами, встречаются, летопись пишется в два голоса, места получают имена от того, что там случилось (index.html — сцены живые; world.html — встань за плечо, сцены немые из-за CORS; posad.html — Москва XVI века, взгляд и слух). Средний — ЧЕЛОВЕК ИЗНУТРИ, атом выбора: вселён в одного, на него давят силы, выбор у каждого с ценой, слово уходит в мир и по дороге искажается, и ты вселяешься в того, кого задело. Здесь живёт нерв: страх сверху стал приказом, приказ стал чужой смертью, и оба объяснимы. Нижний — РАСПОЗНАВАНИЕ: сложить правду из дырок, счётчик оставшихся объяснений, две линзы как экзамен. Отвергнуто автором: психология вылезла из-под капота и стала анкетой. Связь слоёв: мир даёт повод, атом проживается, последствие ложится обратно в мир. Берём первым средний слой — он дешевле всего и в нём нерв.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888780"/></marker>
+    <marker id="art" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C0603A"/></marker>
+    <marker id="arg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5C8A55"/></marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="660" fill="#ffffff"/>
+  <text x="20" y="26" font-size="13" fill="#888780">Что у нас есть — три слоя, и где нерв · живите как хотите · 2026-08-15</text>
+
+  <!-- ================= СЛОЙ 1: МИР СВЕРХУ ================= -->
+  <rect x="24" y="46" width="852" height="152" rx="10" fill="#F7F9F6" stroke="#C9D8C4" stroke-width="1.2"/>
+  <text x="44" y="72" font-size="12.5" font-weight="600" fill="#3F6438">СЛОЙ МИРА — «сцена сверху»</text>
+  <text x="44" y="90" font-size="10.5" fill="#5f5e5a">люди ходят сами · встречаются · летопись пишется в два голоса · места получают имена</text>
+
+  <g font-size="11">
+    <rect x="44" y="102" width="252" height="74" rx="7" fill="#ffffff" stroke="#5C8A55" stroke-width="1.4"/>
+    <text x="58" y="122" font-size="11.5" font-weight="600" fill="#2c2c2a">Долина · index.html</text>
+    <text x="58" y="140" fill="#5f5e5a">сид · 30 дней · финал · сохранение</text>
+    <text x="58" y="156" fill="#3F6438">сцены ЖИВЫЕ (воркер открыт)</text>
+    <text x="58" y="170" fill="#888780">«с того дня место зовут Костёр Раздора»</text>
+
+    <rect x="312" y="102" width="252" height="74" rx="7" fill="#ffffff" stroke="#b4b2a9" stroke-width="1.2"/>
+    <text x="326" y="122" font-size="11.5" font-weight="600" fill="#2c2c2a">За плечом · world.html</text>
+    <text x="326" y="140" fill="#5f5e5a">кликнул по человеку — встал за плечо</text>
+    <text x="326" y="156" fill="#5f5e5a">его встречи разыгрываются сценой</text>
+    <text x="326" y="170" fill="#C0603A">сцены НЕМЫЕ — CORS воркера</text>
+
+    <rect x="580" y="102" width="276" height="74" rx="7" fill="#ffffff" stroke="#b4b2a9" stroke-width="1.2"/>
+    <text x="594" y="122" font-size="11.5" font-weight="600" fill="#2c2c2a">Посад · posad.html · Москва XVI в.</text>
+    <text x="594" y="140" fill="#5f5e5a">опричник · староста · вдова · синодик</text>
+    <text x="594" y="156" fill="#5f5e5a">что увидел — знаешь; чего нет — дойдёт</text>
+    <text x="594" y="170" fill="#5f5e5a">слухом</text>
+  </g>
+
+  <!-- связка вниз -->
+  <path d="M300 198 L300 236" stroke="#888780" stroke-width="1.4" fill="none" marker-end="url(#ar)"/>
+  <text x="310" y="222" font-size="10.5" fill="#5f5e5a">мир даёт ПОВОД</text>
+
+  <!-- ================= СЛОЙ 2: ЧЕЛОВЕК ИЗНУТРИ ================= -->
+  <rect x="24" y="240" width="852" height="212" rx="10" fill="#FDF6F2" stroke="#E3B8A4" stroke-width="1.6"/>
+  <text x="44" y="266" font-size="12.5" font-weight="600" fill="#A34C28">СЛОЙ ЧЕЛОВЕКА ИЗНУТРИ — атом выбора · atom.html</text>
+  <text x="44" y="284" font-size="10.5" fill="#5f5e5a">ты не смотришь на человека — ты им побыл</text>
+
+  <rect x="700" y="252" width="158" height="30" rx="15" fill="#C0603A"/>
+  <text x="779" y="272" font-size="11.5" font-weight="600" fill="#ffffff" text-anchor="middle">БЕРЁМ ПЕРВЫМ</text>
+
+  <g font-size="11">
+    <!-- 1 вселён -->
+    <rect x="44" y="300" width="150" height="60" rx="7" fill="#ffffff" stroke="#C0603A" stroke-width="1.4"/>
+    <text x="119" y="322" font-size="11.5" font-weight="600" fill="#2c2c2a" text-anchor="middle">ВСЕЛЁН</text>
+    <text x="119" y="340" fill="#5f5e5a" text-anchor="middle">правитель · гонец ждёт</text>
+    <text x="119" y="354" fill="#888780" text-anchor="middle">за рекой видели конных</text>
+    <path d="M194 330 L226 330" stroke="#C0603A" stroke-width="1.4" marker-end="url(#art)"/>
+
+    <!-- 2 давление -->
+    <rect x="228" y="300" width="150" height="60" rx="7" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.4"/>
+    <text x="303" y="320" font-size="11.5" font-weight="600" fill="#3C3489" text-anchor="middle">ДАВЯТ СИЛЫ</text>
+    <text x="303" y="338" fill="#3C3489" text-anchor="middle">страх · власть · туман</text>
+    <text x="303" y="353" fill="#888780" text-anchor="middle">ни одного доброго хода</text>
+    <path d="M378 330 L410 330" stroke="#C0603A" stroke-width="1.4" marker-end="url(#art)"/>
+
+    <!-- 3 выбор -->
+    <rect x="412" y="300" width="150" height="60" rx="7" fill="#ffffff" stroke="#C0603A" stroke-width="1.4"/>
+    <text x="487" y="320" font-size="11.5" font-weight="600" fill="#2c2c2a" text-anchor="middle">ВЫБОР · у каждого цена</text>
+    <text x="487" y="338" fill="#5f5e5a" text-anchor="middle">назвать нашествием ·</text>
+    <text x="487" y="352" fill="#5f5e5a" text-anchor="middle">сказать как есть · промолчать</text>
+    <path d="M562 330 L594 330" stroke="#C0603A" stroke-width="1.4" marker-end="url(#art)"/>
+
+    <!-- 4 слово ушло -->
+    <rect x="596" y="300" width="150" height="60" rx="7" fill="#ffffff" stroke="#C0603A" stroke-width="1.4"/>
+    <text x="671" y="320" font-size="11.5" font-weight="600" fill="#2c2c2a" text-anchor="middle">СЛОВО УШЛО В МИР</text>
+    <text x="671" y="338" fill="#5f5e5a" text-anchor="middle">и по дороге исказилось</text>
+    <text x="671" y="352" fill="#888780" text-anchor="middle">рубец лёг на задетого</text>
+    <path d="M671 360 L671 386" stroke="#C0603A" stroke-width="1.4" marker-end="url(#art)"/>
+
+    <!-- 5 вселён в задетого -->
+    <rect x="412" y="388" width="334" height="48" rx="7" fill="#FBEAE1" stroke="#C0603A" stroke-width="1.6"/>
+    <text x="579" y="408" font-size="11.5" font-weight="600" fill="#A34C28" text-anchor="middle">ВСЕЛЁН В ТОГО, КОГО ЗАДЕЛО — воин на дозоре</text>
+    <text x="579" y="426" fill="#5f5e5a" text-anchor="middle">«будь он проклят: сидит в тепле, боится показаться слабым — а лечь тут нам»</text>
+  </g>
+
+  <!-- нерв -->
+  <rect x="44" y="378" width="334" height="58" rx="7" fill="#ffffff" stroke="#C0603A" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <text x="60" y="398" font-size="11.5" font-weight="600" fill="#A34C28">ЗДЕСЬ ЖИВЁТ НЕРВ</text>
+  <text x="60" y="415" font-size="11" fill="#2c2c2a">страх сверху стал приказом,</text>
+  <text x="60" y="430" font-size="11" fill="#2c2c2a">приказ стал чужой смертью — и оба объяснимы</text>
+
+  <!-- возврат в мир -->
+  <path d="M866 330 C888 330 888 150 866 150" stroke="#5C8A55" stroke-width="1.4" fill="none" marker-end="url(#arg)"/>
+  <text x="806" y="238" font-size="10.5" fill="#3F6438" text-anchor="middle">последствие</text>
+  <text x="806" y="252" font-size="10.5" fill="#3F6438" text-anchor="middle">ложится в мир</text>
+
+  <!-- ================= СЛОЙ 3: ОТВЕРГНУТОЕ ================= -->
+  <rect x="24" y="470" width="852" height="118" rx="10" fill="#F4F4F2" stroke="#c9c7c0" stroke-width="1.2"/>
+  <text x="44" y="496" font-size="12.5" font-weight="600" fill="#888780">СЛОЙ РАСПОЗНАВАНИЯ — отвергнут автором (не строим)</text>
+
+  <g font-size="11" fill="#888780">
+    <rect x="44" y="508" width="252" height="62" rx="7" fill="#ffffff" stroke="#c9c7c0" stroke-width="1"/>
+    <text x="58" y="528" font-size="11.5" fill="#888780">«сложить правду»</text>
+    <text x="58" y="546">боится [__] · научила видеть [__]</text>
+    <text x="58" y="561">анкета из закрытого списка</text>
+    <line x1="52" y1="516" x2="288" y2="562" stroke="#c9c7c0" stroke-width="1.2"/>
+
+    <rect x="312" y="508" width="252" height="62" rx="7" fill="#ffffff" stroke="#c9c7c0" stroke-width="1"/>
+    <text x="326" y="528" font-size="11.5" fill="#888780">счётчик «объяснений осталось»</text>
+    <text x="326" y="546">75 → 12 → 3 → 1</text>
+    <text x="326" y="561">игра стала экзаменом</text>
+    <line x1="320" y1="516" x2="556" y2="562" stroke="#c9c7c0" stroke-width="1.2"/>
+
+    <rect x="580" y="508" width="276" height="62" rx="7" fill="#ffffff" stroke="#c9c7c0" stroke-width="1"/>
+    <text x="594" y="528" font-size="11.5" fill="#888780">две линзы как проверка ответа</text>
+    <text x="594" y="546">moment · scena · stol</text>
+    <text x="594" y="561">психология вылезла на поверхность</text>
+    <line x1="588" y1="516" x2="848" y2="562" stroke="#c9c7c0" stroke-width="1.2"/>
+  </g>
+
+  <!-- девиз -->
+  <text x="450" y="618" font-size="12.5" font-style="italic" fill="#5f5e5a" text-anchor="middle">модель души остаётся — но под капотом: игрок видит людей, вещи и обстоятельства, а не поля анкеты</text>
+  <text x="450" y="640" font-size="12.5" font-weight="600" fill="#A34C28" text-anchor="middle">ты не разгадываешь человека — ты им побыл, и потому знаешь</text>
+</svg>
