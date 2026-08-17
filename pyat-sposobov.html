@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Пять способов собрать ветвящуюся историю</title>
+<style>
+  :root{
+    --paper:#ffffff; --ink:#2c2c2a; --grey:#5f5e5a; --faint:#888780; --line:#d9d6cc;
+    --terra:#D85A30; --terra-deep:#993C1D; --terra-pale:#FAECE7;
+    --violet:#7F77DD; --violet-deep:#3C3489; --violet-pale:#EEEDFE;
+    --ochre:#ba7517; --ochre-pale:#FBF3E4;
+    --green:#5C8A55; --green-deep:#3F6438; --green-pale:#F2F7F1;
+    --beige:#f1efe8; --beige2:#f7f5ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:Helvetica,Arial,sans-serif;line-height:1.55;font-size:15px;
+    display:flex;justify-content:center;padding:34px 20px 100px}
+  main{width:100%;max-width:880px}
+  .top{font-size:12px;color:var(--faint);margin-bottom:20px}
+  h1{font-size:29px;margin:0 0 10px;letter-spacing:.3px;line-height:1.25}
+  h2{font-size:20px;margin:52px 0 6px;padding-top:16px;border-top:2px solid var(--line)}
+  h2 .n{color:var(--faint);font-weight:400;font-size:14px;margin-right:8px}
+  h3{font-size:15.5px;margin:26px 0 8px}
+  p{margin:0 0 13px}
+  .lede{font-size:16px;color:var(--grey);margin:0 0 8px}
+  .legend{font-size:12.5px;color:var(--faint);background:var(--beige2);
+    border:1px solid var(--line);border-radius:9px;padding:11px 15px;margin:16px 0 0}
+  .zachem{font-size:12.5px;color:var(--faint);font-style:italic;margin:0 0 16px}
+  .voice{font-family:Georgia,serif;font-size:16px}
+
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:14px 0 6px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  th{text-align:left;font-size:11.5px;letter-spacing:.9px;color:var(--faint);
+    font-weight:600;border-bottom:1.5px solid var(--line);padding:0 12px 7px 0;vertical-align:bottom}
+  td{border-bottom:1px solid var(--line);padding:10px 12px 10px 0;vertical-align:top}
+  td:first-child{font-weight:600;width:23%;min-width:150px}
+  tr:hover td{background:var(--beige2)}
+
+  .ok{color:var(--green-deep);font-weight:600}
+  .hz{color:var(--ochre);font-weight:600}
+  .src{color:var(--faint);font-size:.87em;white-space:nowrap}
+  q,blockquote{font-family:Georgia,serif}
+  .cite{font-family:Georgia,serif;font-style:italic;color:var(--grey)}
+
+  .cards{display:grid;gap:12px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:10px;padding:14px 18px;background:var(--beige2)}
+  .card h4{margin:0 0 8px;font-size:14.5px}
+  .card .r{font-size:13.5px;margin:5px 0}
+  .card .r b{font-size:11px;letter-spacing:1px;color:var(--faint);
+    display:inline-block;min-width:78px;font-weight:600}
+
+  ol.rules{padding-left:22px;margin:14px 0}
+  ol.rules li{margin:11px 0;font-size:14px}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);
+    border-radius:10px;overflow:hidden;margin:14px 0;font-size:13.5px}
+  .two .h{padding:8px 14px;font-size:11.5px;letter-spacing:1px;font-weight:600;
+    background:var(--beige);border-bottom:1px solid var(--line)}
+  .two .l{border-right:1px solid var(--line)}
+  .two .c{padding:11px 14px;border-bottom:1px solid var(--line)}
+  .two .risk{grid-column:1 / -1;padding:9px 14px;border-bottom:1px solid var(--line);
+    background:var(--ochre-pale);font-size:13px}
+  .two .num{grid-column:1 / -1;padding:10px 14px 3px;font-weight:600;font-size:13.5px}
+
+  figure{margin:22px 0}
+  figure svg{width:100%;height:auto;display:block}
+  figcaption{font-size:12.5px;color:var(--faint);margin-top:7px}
+
+  .note{background:var(--violet-pale);border:1px solid #C9C5F2;border-radius:10px;
+    padding:13px 17px;margin:16px 0;font-size:13.5px;color:var(--violet-deep)}
+  .warn{background:var(--terra-pale);border:1px solid #E9C6B7;border-radius:10px;
+    padding:13px 17px;margin:16px 0;font-size:13.5px}
+  .plus{background:var(--green-pale);border:1px solid #C9D8C4;border-radius:10px;
+    padding:13px 17px;margin:16px 0;font-size:13.5px}
+  .turn{border-left:3px solid var(--ochre);padding:4px 0 4px 16px;margin:18px 0;
+    font-size:14.5px;color:var(--grey)}
+  .srcs{font-size:12px;color:var(--faint);line-height:1.65}
+  ul.tight{padding-left:20px;margin:12px 0;font-size:13.5px}
+  ul.tight li{margin:6px 0}
+  @media(max-width:700px){
+    .two{grid-template-columns:1fr}
+    .two .l{border-right:none}
+    td:first-child{width:auto}
+  }
+</style>
+</head>
+<body>
+<main>
+
+<div class="top">пять способов · живите как хотите · 2026-08-16</div>
+<h1>Пять способов собрать<br>ветвящуюся историю.</h1>
+<p class="lede">Одна и та же сцена, построенная пятью разными аппаратами. Что каждый даёт, чем за него платишь, где он ломается — и почему для нашего размера подходит один.</p>
+
+<div class="legend"><b>Как читать.</b> <span class="ok">✅</span> — синтаксис или факт из живого источника (файлы игр, доклады, спецификации). <span class="hz">🔶</span> — обобщение или наша оценка. Примеры кода везде настоящие, кроме последнего раздела, где одна и та же выдуманная сцена нарочно записана пятью способами.</div>
+
+<h2><span class="n">1</span>Вопрос, который делит все пять</h2>
+<p class="zachem">Прежде чем выбирать инструмент, надо ответить на один вопрос — остальное следствие.</p>
+
+<p><b>Кто решает, какой кусок истории пойдёт следующим?</b> Вариантов ровно три: <b>автор</b> заранее, <b>игрок</b> из того, что сейчас доступно, или <b>машина</b> по правилам.</p>
+
+<figure>
+<svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Кто выбирает следующий кусок истории</title>
+  <desc>Три колонки. Слева автор решает заранее — это ветвление и граф шагов. В центре игрок выбирает из всего, что сейчас законно — это сторилеты. Справа машина выбирает самое подходящее — это правила с весом. Внизу подпись: чем правее, тем меньше композиции и больше живости.</desc>
+  <rect width="900" height="250" fill="#fff"/>
+  <g font-size="12">
+    <rect x="16" y="30" width="278" height="150" rx="10" fill="#FAECE7" stroke="#D85A30" stroke-width="1.5"/>
+    <rect x="310" y="30" width="278" height="150" rx="10" fill="#FBF3E4" stroke="#ba7517" stroke-width="1.5"/>
+    <rect x="604" y="30" width="280" height="150" rx="10" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.5"/>
+    <text x="155" y="58" font-size="14" font-weight="600" fill="#993C1D" text-anchor="middle">РЕШАЕТ АВТОР</text>
+    <text x="449" y="58" font-size="14" font-weight="600" fill="#ba7517" text-anchor="middle">РЕШАЕТ ИГРОК</text>
+    <text x="744" y="58" font-size="14" font-weight="600" fill="#3C3489" text-anchor="middle">РЕШАЕТ МАШИНА</text>
+    <g fill="#2c2c2a" text-anchor="middle">
+      <text x="155" y="86">заранее, при письме</text>
+      <text x="449" y="86">из всего, что сейчас законно</text>
+      <text x="744" y="86">самое подходящее к моменту</text>
+    </g>
+    <g fill="#5f5e5a" text-anchor="middle" font-size="11.5">
+      <text x="155" y="116">дерево ветвления</text>
+      <text x="155" y="134">граф шагов</text>
+      <text x="155" y="152">автомат с флагами</text>
+      <text x="449" y="116">сторилеты</text>
+      <text x="449" y="134">(quality-based)</text>
+      <text x="744" y="116">правила и вес</text>
+      <text x="744" y="134">(salience-based)</text>
+    </g>
+  </g>
+  <path d="M16 208 L884 208" stroke="#d9d6cc" stroke-width="1.4"/>
+  <text x="16" y="230" font-size="12" fill="#993C1D">← больше композиции, дороже объём</text>
+  <text x="884" y="230" font-size="12" fill="#3C3489" text-anchor="end">больше живости, слабее композиция →</text>
+</svg>
+<figcaption>Схема 1. Деление Эмили Шорт: ветвление · quality-based · salience-based · waypoint.</figcaption>
+</figure>
+
+<div class="note"><span class="ok">✅</span> Формулировка разницы между средним и правым — дословно у Эмили Шорт: <span class="cite">«Where QBN lets the player choose the best element to see next out of all the elements that are currently legal, the salience-based approach makes that decision itself»</span>. То есть сторилеты показывают игроку всё законное и дают выбрать; правиловый движок выбирает сам.</div>
+
+<h2><span class="n">2</span>Дерево ветвления</h2>
+
+<figure>
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Дерево ветвления — объём растёт степенью</title>
+  <desc>Из одного узла три ветки, из каждой ещё три, из каждой ещё три. На первом уровне три сцены, на втором девять, на третьем двадцать семь. Внизу подпись: четыре звена по три варианта — тридцать девять написанных сцен на одну цепь.</desc>
+  <defs><marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9c7c0"/></marker></defs>
+  <rect width="900" height="300" fill="#fff"/>
+  <circle cx="60" cy="150" r="13" fill="#FAECE7" stroke="#D85A30" stroke-width="1.6"/>
+  <text x="60" y="182" font-size="11" fill="#5f5e5a" text-anchor="middle">старт</text>
+  <g stroke="#c9c7c0" fill="none" marker-end="url(#t1)">
+    <path d="M74 150 L196 70"/><path d="M74 150 L196 150"/><path d="M74 150 L196 230"/>
+  </g>
+  <g fill="#FAECE7" stroke="#D85A30" stroke-width="1.3">
+    <circle cx="206" cy="70" r="10"/><circle cx="206" cy="150" r="10"/><circle cx="206" cy="230" r="10"/>
+  </g>
+  <text x="206" y="26" font-size="12" font-weight="600" fill="#993C1D" text-anchor="middle">3 сцены</text>
+  <g stroke="#dcdad3" fill="none">
+    <g><path d="M216 70 L376 40"/><path d="M216 70 L376 70"/><path d="M216 70 L376 100"/></g>
+    <g><path d="M216 150 L376 120"/><path d="M216 150 L376 150"/><path d="M216 150 L376 180"/></g>
+    <g><path d="M216 230 L376 200"/><path d="M216 230 L376 230"/><path d="M216 230 L376 260"/></g>
+  </g>
+  <g fill="#FBEAE1" stroke="#E3B8A4">
+    <circle cx="384" cy="40" r="7"/><circle cx="384" cy="70" r="7"/><circle cx="384" cy="100" r="7"/>
+    <circle cx="384" cy="120" r="7"/><circle cx="384" cy="150" r="7"/><circle cx="384" cy="180" r="7"/>
+    <circle cx="384" cy="200" r="7"/><circle cx="384" cy="230" r="7"/><circle cx="384" cy="260" r="7"/>
+  </g>
+  <text x="384" y="26" font-size="12" font-weight="600" fill="#993C1D" text-anchor="middle">9</text>
+  <g fill="#f4f4f2" stroke="#e6e4dd">
+    <g id="l3"></g>
+  </g>
+  <g fill="#efedE6" stroke="#e0ded6">
+    <circle cx="560" cy="34" r="4.5"/><circle cx="560" cy="50" r="4.5"/><circle cx="560" cy="66" r="4.5"/>
+    <circle cx="560" cy="82" r="4.5"/><circle cx="560" cy="98" r="4.5"/><circle cx="560" cy="114" r="4.5"/>
+    <circle cx="560" cy="130" r="4.5"/><circle cx="560" cy="146" r="4.5"/><circle cx="560" cy="162" r="4.5"/>
+    <circle cx="560" cy="178" r="4.5"/><circle cx="560" cy="194" r="4.5"/><circle cx="560" cy="210" r="4.5"/>
+    <circle cx="560" cy="226" r="4.5"/><circle cx="560" cy="242" r="4.5"/><circle cx="560" cy="258" r="4.5"/>
+    <circle cx="560" cy="274" r="4.5"/><circle cx="578" cy="42" r="4.5"/><circle cx="578" cy="58" r="4.5"/>
+    <circle cx="578" cy="74" r="4.5"/><circle cx="578" cy="90" r="4.5"/><circle cx="578" cy="106" r="4.5"/>
+    <circle cx="578" cy="122" r="4.5"/><circle cx="578" cy="138" r="4.5"/><circle cx="578" cy="154" r="4.5"/>
+    <circle cx="578" cy="170" r="4.5"/><circle cx="578" cy="186" r="4.5"/><circle cx="578" cy="202" r="4.5"/>
+  </g>
+  <g stroke="#e6e4dd" fill="none">
+    <path d="M391 40 L554 60"/><path d="M391 150 L554 150"/><path d="M391 260 L554 240"/>
+  </g>
+  <text x="569" y="26" font-size="12" font-weight="600" fill="#888780" text-anchor="middle">27</text>
+  <rect x="630" y="60" width="254" height="150" rx="9" fill="#FAECE7" stroke="#D85A30" stroke-width="1.4"/>
+  <text x="757" y="88" font-size="13" font-weight="600" fill="#993C1D" text-anchor="middle">3 + 9 + 27 = 39</text>
+  <text x="757" y="112" font-size="12" fill="#2c2c2a" text-anchor="middle">написанных сцен</text>
+  <text x="757" y="130" font-size="12" fill="#2c2c2a" text-anchor="middle">на ОДНУ цепь из четырёх звеньев</text>
+  <text x="757" y="160" font-size="11.5" fill="#5f5e5a" text-anchor="middle">у нас написано 4,</text>
+  <text x="757" y="177" font-size="11.5" fill="#5f5e5a" text-anchor="middle">разрыв закрыт перекраской:</text>
+  <text x="757" y="194" font-size="11.5" fill="#5f5e5a" text-anchor="middle">меняется эхо, а не ветка</text>
+</svg>
+<figcaption>Схема 2. Каждое новое звено умножает написанное, а не прибавляет к нему.</figcaption>
+</figure>
+
+<div class="two">
+  <div class="h l">ЧТО ДАЁТ</div><div class="h">ЧЕМ ПЛАТИШЬ</div>
+  <div class="c l">Полный контроль над каждой сценой. Всё видно глазами: открыл файл — вот вся история.</div>
+  <div class="c">Объём растёт степенью. Добавил вариант в первом звене — переписал всё, что ниже.</div>
+  <div class="risk"><b>Где ломается:</b> на третьем звене. Дальше автор перестаёт писать ветки и начинает их «перекрашивать» — одна и та же сцена с другой первой фразой. Игрок это чувствует как обман.</div>
+</div>
+
+<h2><span class="n">3</span>Сторилеты</h2>
+<p class="zachem">Кусок содержимого = текст + предусловие + эффекты. Движок показывает всё, что сейчас законно.</p>
+
+<figure>
+<svg viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Сторилеты — колода с условиями</title>
+  <desc>Слева колода карточек, у каждой условие. В центре фильтр читает состояние мира и пропускает только те карточки, чьи условия выполнены. Справа игрок выбирает из прошедших. Сыгранная карточка меняет состояние мира, и колода на следующем шаге фильтруется иначе. Новая карточка не обязывает переписывать остальные.</desc>
+  <defs><marker id="s1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ba7517"/></marker></defs>
+  <rect width="900" height="330" fill="#fff"/>
+  <text x="16" y="28" font-size="12.5" font-weight="600" fill="#ba7517">КОЛОДА — все написанные куски</text>
+  <g font-size="10.5">
+    <g fill="#fff" stroke="#c9c7c0">
+      <rect x="16" y="40" width="200" height="40" rx="6"/><rect x="16" y="88" width="200" height="40" rx="6"/>
+      <rect x="16" y="136" width="200" height="40" rx="6"/><rect x="16" y="184" width="200" height="40" rx="6"/>
+      <rect x="16" y="232" width="200" height="40" rx="6"/>
+    </g>
+    <g fill="#2c2c2a">
+      <text x="28" y="58">вдова на торгу</text><text x="28" y="72" fill="#888780">если: вдова здесь</text>
+      <text x="28" y="106">староста и бумага</text><text x="28" y="120" fill="#888780">если: приезжий требовал</text>
+      <text x="28" y="154">сын у пустого двора</text><text x="28" y="168" fill="#888780">если: мать взята</text>
+      <text x="28" y="202">поп и синодик</text><text x="28" y="216" fill="#888780">если: кого-то поминают</text>
+      <text x="28" y="250">пожар</text><text x="28" y="264" fill="#888780">если: год ≥ 1571</text>
+    </g>
+  </g>
+  <path d="M220 132 L262 132" stroke="#ba7517" stroke-width="1.5" fill="none" marker-end="url(#s1)"/>
+  <rect x="266" y="70" width="164" height="126" rx="9" fill="#FBF3E4" stroke="#ba7517" stroke-width="1.6"/>
+  <text x="347" y="96" font-size="12.5" font-weight="600" fill="#ba7517" text-anchor="middle">ФИЛЬТР</text>
+  <text x="347" y="120" font-size="11" fill="#2c2c2a" text-anchor="middle">читает состояние мира</text>
+  <text x="347" y="140" font-size="11" fill="#2c2c2a" text-anchor="middle">и пропускает только те,</text>
+  <text x="347" y="158" font-size="11" fill="#2c2c2a" text-anchor="middle">чьё условие выполнено</text>
+  <text x="348" y="182" font-size="10" fill="#888780" text-anchor="middle">остальных игрок не видит вовсе</text>
+  <path d="M434 132 L474 132" stroke="#ba7517" stroke-width="1.5" fill="none" marker-end="url(#s1)"/>
+  <g font-size="10.5">
+    <g fill="#FBF3E4" stroke="#ba7517" stroke-width="1.3">
+      <rect x="478" y="76" width="190" height="34" rx="6"/><rect x="478" y="118" width="190" height="34" rx="6"/>
+    </g>
+    <text x="573" y="97" fill="#2c2c2a" text-anchor="middle">вдова на торгу</text>
+    <text x="573" y="139" fill="#2c2c2a" text-anchor="middle">староста и бумага</text>
+    <text x="573" y="172" fill="#5f5e5a" text-anchor="middle" font-size="11">игрок выбирает из прошедших</text>
+  </g>
+  <path d="M672 118 C720 118 720 60 690 52" stroke="#5C8A55" stroke-width="1.5" fill="none" marker-end="url(#s1)"/>
+  <rect x="700" y="30" width="184" height="80" rx="9" fill="#F2F7F1" stroke="#5C8A55" stroke-width="1.5"/>
+  <text x="792" y="54" font-size="12.5" font-weight="600" fill="#3F6438" text-anchor="middle">СОСТОЯНИЕ МИРА</text>
+  <text x="792" y="76" font-size="11" fill="#2c2c2a" text-anchor="middle">сыгранный кусок его меняет</text>
+  <text x="792" y="94" font-size="11" fill="#2c2c2a" text-anchor="middle">— и колода фильтруется иначе</text>
+  <path d="M700 90 C640 90 380 40 348 66" stroke="#5C8A55" stroke-width="1.3" fill="none" stroke-dasharray="5 4" marker-end="url(#s1)"/>
+  <rect x="16" y="284" width="868" height="34" rx="8" fill="#F2F7F1" stroke="#C9D8C4"/>
+  <text x="34" y="306" font-size="12" fill="#3F6438">Главное свойство: новый кусок не обязывает переписывать остальные. Дописал карточку и одну строку условия — всё.</text>
+</svg>
+<figcaption>Схема 3. Сторилет: текст плюс условие плюс эффекты. Порядок собирается сам из состояния мира.</figcaption>
+</figure>
+
+<p><b>Так сделана коммерческая игра целиком.</b> <span class="ok">✅</span> Sunless Sea (Failbetter) описан таблицей в <code>entities/events.json</code>. У события обязательны три поля: <code>ChildBranches</code>, <code>QualitiesRequired</code>, <code>QualitiesAffected</code> — то есть ветки, требования и эффекты. Плюс необязательные <code>Autofire</code>, <code>LimitedToArea</code>, <code>Deck</code>, <code>Distribution</code>, <code>Ordering</code>, <code>Stickiness</code>, <code>Transient</code>.</p>
+
+<p><b>Есть отдельное поле ровно под «тихую отмену»</b> <span class="ok">✅</span> — то самое, что мы видели у Beholder как побочный эффект: <code>VisibleWhenRequirementFailed</code>. Флаг на каждом требовании: показывать ли игроку недоступный вариант или спрятать совсем. У Beholder такого поля нет, и потому там отмена всегда молчаливая.</p>
+
+<div class="warn"><b>Чистая таблица не выживает.</b> <span class="ok">✅</span> В том же Sunless Sea поля с суффиксом <code>Advanced</code> содержат строки-выражения: <code>[q:12345]</code> — текущее значение качества, <code>[qb:12345]</code> — базовое, <code>[d:6]</code> — бросок кубика. Внутри «просто данных» вырос мини-язык, который кто-то должен разбирать. Это цена, о которой не предупреждают.</div>
+
+<h2><span class="n">4</span>Правила и вес</h2>
+<p class="zachem">Мир никогда не молчит: на любую ситуацию побеждает самое специфичное подходящее правило.</p>
+
+<figure>
+<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Правила и вес — побеждает самое специфичное</title>
+  <desc>Слева контекст момента: набор фактов о мире. В центре стопка правил, каждое состоит из критериев. Счёт правила равен сумме весов совпавших критериев; критерий с пометкой required при несовпадении обнуляет правило целиком. Побеждает правило с наибольшим счётом, при равенстве более специфичное. Справа выбранная реплика. Внизу: правило может пометить себя одноразовым и дописать факт обратно в мир.</desc>
+  <defs><marker id="v1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7F77DD"/></marker></defs>
+  <rect width="900" height="320" fill="#fff"/>
+  <text x="16" y="28" font-size="12.5" font-weight="600" fill="#3C3489">КОНТЕКСТ МОМЕНТА</text>
+  <rect x="16" y="38" width="196" height="120" rx="9" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.4"/>
+  <g font-size="11" fill="#3C3489">
+    <text x="30" y="62">кто говорит: староста</text>
+    <text x="30" y="82">страх на посаде: высокий</text>
+    <text x="30" y="102">взяли сегодня: 1</text>
+    <text x="30" y="122">заступник есть: нет</text>
+    <text x="30" y="142">год: 1570</text>
+  </g>
+  <path d="M216 98 L262 98" stroke="#7F77DD" stroke-width="1.5" fill="none" marker-end="url(#v1)"/>
+  <text x="270" y="28" font-size="12.5" font-weight="600" fill="#3C3489">ПРАВИЛА — считаем счёт</text>
+  <g font-size="10.5">
+    <rect x="266" y="38" width="330" height="44" rx="7" fill="#fff" stroke="#c9c7c0"/>
+    <text x="280" y="56" fill="#2c2c2a">правило «общее»: кто угодно</text>
+    <text x="280" y="72" fill="#888780">1 критерий · счёт 1</text>
+    <rect x="266" y="90" width="330" height="44" rx="7" fill="#fff" stroke="#c9c7c0"/>
+    <text x="280" y="108" fill="#2c2c2a">правило «староста»: роль + страх высокий</text>
+    <text x="280" y="124" fill="#888780">2 критерия · счёт 2</text>
+    <rect x="266" y="142" width="330" height="52" rx="7" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.8"/>
+    <text x="280" y="160" fill="#3C3489" font-weight="600">правило «староста, некому вступиться»</text>
+    <text x="280" y="176" fill="#3C3489">роль + страх + нет заступника + год</text>
+    <text x="280" y="190" fill="#3C3489" font-weight="600">4 критерия · счёт 4 — ПОБЕДИЛО</text>
+    <rect x="266" y="202" width="330" height="44" rx="7" fill="#fff" stroke="#c9c7c0"/>
+    <text x="280" y="220" fill="#2c2c2a">правило «опричник»: роль не та</text>
+    <text x="280" y="236" fill="#993C1D">required не совпал → счёт обнулён</text>
+  </g>
+  <path d="M600 168 L646 168" stroke="#7F77DD" stroke-width="1.5" fill="none" marker-end="url(#v1)"/>
+  <rect x="650" y="140" width="234" height="56" rx="9" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.5"/>
+  <text x="767" y="164" font-size="12" font-weight="600" fill="#3C3489" text-anchor="middle">выбранная реплика</text>
+  <text x="767" y="182" font-size="11" fill="#5f5e5a" text-anchor="middle">самая точная из подходящих</text>
+  <rect x="16" y="264" width="868" height="44" rx="8" fill="#FBF3E4" stroke="#ba7517"/>
+  <text x="34" y="284" font-size="11.5" fill="#2c2c2a"><tspan font-weight="600">matchonce</tspan> — сработав один раз, правило выключается. <tspan font-weight="600">applyContext</tspan> — правило само дописывает факт обратно в мир.</text>
+  <text x="34" y="300" font-size="11" fill="#888780">То есть система умеет и одноразовость, и запись в состояние, не выходя из данных.</text>
+</svg>
+<figcaption>Схема 4. Счёт правила — сумма весов совпавших критериев; required при несовпадении обнуляет всё правило.</figcaption>
+</figure>
+
+<p><span class="ok">✅</span> Синтаксис настоящий, из шипнутого файла движка Source: <code>criterion "LowHealthContext" "playerhealthfrac" "&lt;0.25" required</code>, и правило <code>rule &lt;имя&gt; { criteria имя1 имя2 …; response &lt;группа&gt; }</code>. Значение может быть числом, строкой или диапазоном вида <code>"&gt;10,&lt;=50"</code>. Так сделаны реплики в Portal, Left 4 Dead, Team Fortress 2 и Dota.</p>
+
+<div class="note"><span class="ok">✅</span> <b>Не путать с «Режиссёром» из Left 4 Dead</b> — это другая система. Режиссёр считает интенсивность стресса каждого игрока и по ней расселяет зомби, проходя фазы нарастания, пика и спада. Правиловый движок отвечает на вопрос «что сказать», Режиссёр — на вопрос «когда давить».</div>
+
+<div class="two">
+  <div class="h l">ЧТО ДАЁТ</div><div class="h">ЧЕМ ПЛАТИШЬ</div>
+  <div class="c l">Мир никогда не молчит. Чем больше правил, тем точнее реакция — и она пишется без единого <code>if</code> в коде.</div>
+  <div class="c">Нужен большой корпус правил, иначе нечему выигрывать. Отладка «почему выбралось именно это» тяжёлая: причина размазана по весам.</div>
+  <div class="risk"><b>Где ломается:</b> на малом объёме. Четыре роли и одно место — запасному правилу не с чем соревноваться.</div>
+</div>
+
+<h2><span class="n">5</span>Граф шагов и автомат с флагами</h2>
+<p class="zachem">Два способа, которые проще всего начать и тяжелее всего вырастить.</p>
+
+<figure>
+<svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Helvetica, Arial, sans-serif">
+  <title>Граф шагов и автомат с флагами</title>
+  <desc>Слева граф шагов: узлы соединены стрелками, пройденный шаг закрывает часть графа, закрытая часть показана серой и перечёркнутой. Наглядно, но инструмент надо строить и поддерживать. Справа автомат с флагами: словарь булевых переменных и код с ветвлениями, который их читает. Дёшево на старте, но связи не видны никому, кроме автора кода.</desc>
+  <defs><marker id="g1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5C8A55"/></marker></defs>
+  <rect width="900" height="260" fill="#fff"/>
+  <line x1="450" y1="16" x2="450" y2="244" stroke="#d9d6cc"/>
+  <text x="16" y="30" font-size="12.5" font-weight="600" fill="#3F6438">ГРАФ ШАГОВ</text>
+  <g font-size="10.5">
+    <g fill="#F2F7F1" stroke="#5C8A55" stroke-width="1.3">
+      <rect x="16" y="46" width="96" height="30" rx="6"/><rect x="146" y="46" width="96" height="30" rx="6"/>
+      <rect x="146" y="100" width="96" height="30" rx="6"/><rect x="276" y="72" width="96" height="30" rx="6"/>
+    </g>
+    <g fill="#2c2c2a" text-anchor="middle">
+      <text x="64" y="65">шаг 1</text><text x="194" y="65">шаг 2а</text><text x="194" y="119">шаг 2б</text><text x="324" y="91">шаг 3</text>
+    </g>
+    <g stroke="#5C8A55" fill="none" marker-end="url(#g1)">
+      <path d="M112 58 L142 55"/><path d="M112 66 L142 106"/><path d="M242 58 L272 76"/>
+    </g>
+    <g fill="#f4f4f2" stroke="#c9c7c0" stroke-dasharray="4 3">
+      <rect x="146" y="154" width="96" height="30" rx="6"/><rect x="276" y="154" width="96" height="30" rx="6"/>
+    </g>
+    <g fill="#888780" text-anchor="middle"><text x="194" y="173">шаг 2в</text><text x="324" y="173">шаг 4</text></g>
+    <g stroke="#D85A30" stroke-width="1.6">
+      <path d="M182 160 L206 178"/><path d="M206 160 L182 178"/>
+      <path d="M312 160 L336 178"/><path d="M336 160 L312 178"/>
+    </g>
+    <text x="16" y="206" font-size="11" fill="#888780">пройденный шаг закрывает часть графа</text>
+    <text x="16" y="226" font-size="11" fill="#993C1D">цена: инструмент надо построить и поддерживать</text>
+  </g>
+  <text x="470" y="30" font-size="12.5" font-weight="600" fill="#993C1D">АВТОМАТ С ФЛАГАМИ</text>
+  <rect x="470" y="46" width="180" height="112" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="1.3"/>
+  <g font-size="11" fill="#993C1D">
+    <text x="484" y="68">bumaga_polozhena = да</text>
+    <text x="484" y="88">fekla_vzyata = нет</text>
+    <text x="484" y="108">starosta_nazval = «B»</text>
+    <text x="484" y="128">pozhar = нет</text>
+    <text x="484" y="148">tyazhest = 2</text>
+  </g>
+  <rect x="676" y="46" width="208" height="112" rx="8" fill="#f4f4f2" stroke="#c9c7c0"/>
+  <text x="690" y="68" font-size="11" fill="#5f5e5a">if (bumaga_polozhena &amp;&amp;</text>
+  <text x="690" y="86" font-size="11" fill="#5f5e5a">    !fekla_vzyata) { … }</text>
+  <text x="690" y="110" font-size="11" fill="#5f5e5a">else if (starosta_nazval</text>
+  <text x="690" y="128" font-size="11" fill="#5f5e5a">    == "B") { … }</text>
+  <text x="690" y="150" font-size="11" fill="#888780">связи живут только здесь</text>
+  <text x="470" y="206" font-size="11" fill="#888780">дёшево и быстро на старте, ничего лишнего</text>
+  <text x="470" y="226" font-size="11" fill="#993C1D">цена: правки только через программиста; карту связей не видит никто</text>
+</svg>
+<figcaption>Схема 5. Слева наглядно и дорого в инструменте; справа дёшево и непрозрачно.</figcaption>
+</figure>
+
+<p>По всем признакам <span class="hz">🔶</span> Beholder сделан именно правым способом: файлов данных снаружи нет, наружу вынесены только строки текста по номерам, отмена сделана не флагом ветки, а проверкой состояния мира.</p>
+
+<h2><span class="n">6</span>Одна сцена, записанная пятью способами</h2>
+<p class="zachem">Сцена выдумана нарочно простая: староста должен назвать имя. Смотри не на текст, а на форму записи.</p>
+
+<div class="cards">
+  <div class="card">
+    <h4>Дерево</h4>
+    <div class="r"><code>звено2_после_A</code> · <code>звено2_после_B</code> · <code>звено2_после_C</code> — три отдельных написанных сцены. Ниже них девять. Текст дублируется почти целиком, различаясь абзацем.</div>
+    <div class="r"><b>ЧТО ПИШЕТ АВТОР</b> Каждую сцену целиком, столько раз, сколько путей в неё ведёт.</div>
+  </div>
+  <div class="card">
+    <h4>Сторилет</h4>
+    <div class="r"><code>{ id:'starosta-bumaga', esli:{ zdes:['sila'], bylo:{'priezd':'B'} }, текст…, sled:{ lyudi:{fekla:'vzyata'} } }</code></div>
+    <div class="r"><b>ЧТО ПИШЕТ АВТОР</b> Одну карточку. Чтобы появилась вторая версия сцены — вторую карточку с другим условием. Ничего из написанного не переписывается.</div>
+  </div>
+  <div class="card">
+    <h4>Правила и вес</h4>
+    <div class="r"><code>criterion "rol" "kto" "starosta" required</code> · <code>criterion "strah" "uroven" "&gt;0.6"</code> · <code>rule nazvat_sirotu { criteria rol strah net_zastupnika; response …&nbsp;}</code></div>
+    <div class="r"><b>ЧТО ПИШЕТ АВТОР</b> Не сцену, а условия её уместности. Сцену выбирает движок, и автор не знает заранее, какая выиграет.</div>
+  </div>
+  <div class="card">
+    <h4>Граф шагов</h4>
+    <div class="r">Узел «приезд» → рёбра в узлы «староста назвал вдову» / «назвал богатого» / «назвал себя». Каждое ребро несёт условие, пройденный узел гасит соседние.</div>
+    <div class="r"><b>ЧТО ПИШЕТ АВТОР</b> Рисует, а не пишет. Но сперва кто-то должен построить рисовалку.</div>
+  </div>
+  <div class="card">
+    <h4>Автомат с флагами</h4>
+    <div class="r"><code>if (priezd == "B" &amp;&amp; !fekla_vzyata) { pokazat(scena12) }</code> — прямо в коде движка, рядом с отрисовкой.</div>
+    <div class="r"><b>ЧТО ПИШЕТ АВТОР</b> Ничего: пишет программист. Автор диктует, и через месяц никто не помнит, почему сцена не появилась.</div>
+  </div>
+</div>
+
+<h2><span class="n">7</span>Наш выбор и почему</h2>
+
+<div class="plus">
+<b>Сторилет плюс одно состояние посада.</b> Порядок ролей держит место, конкретное звено внутри роли выбирает условие.
+<ol class="rules" style="margin-top:8px">
+<li><b>Дерево уже наказывает.</b> Четыре звена по три варианта — это 39 сцен на цепь. Написано 4, разрыв закрыт перекраской через эхо. На вторую эпоху не масштабируется.</li>
+<li><b>Сторилет — единственная форма, где новое звено не обязывает писать ещё три.</b> Ты дописываешь один объект в файл эпохи и одну строку условия.</li>
+<li><b>Ты правишь текст, а не код.</b> Условие остаётся объектом: <code>esli:{ zdes:['fekla'] }</code>. Никаких строк-выражений и никакого разбора — вместо «или» пишется второе звено с другим условием. Это и есть выход, который держит данные чистыми и не даёт вырасти мини-языку, как в Sunless Sea.</li>
+<li><b>Правиловый движок не подходит по размеру.</b> Он решает задачу «мир не должен молчать при тысяче правил». У нас четыре роли и одно место.</li>
+<li><b>Узловой редактор и готовые языки — мимо.</b> Ink, Yarn и articy принесут свой синтаксис, свой рантайм и свою сборку ради шести проверок.</li>
+</ol>
+</div>
+
+<div class="note"><b>Что берём у Beholder помимо формы.</b> Одна честная проверка состояния мира заменяет сотню ручных флагов «ветка закрыта»: у него 42 задания из 80 гаснут по причине «нужного человека больше нет», а прямых взаимоисключений — ровно одно на всю игру. И единица памяти там — пара «что произошло плюс каким способом», а не булев флаг «сделано».</div>
+
+<h2><span class="n">8</span>Источники</h2>
+<p class="srcs">
+Эмили Шорт: «Beyond Branching: Quality-Based, Salience-Based, and Waypoint Narrative Structures» и «Storylets: You Want Them» — деление на семейства и определение сторилета.<br>
+Sunless Sea (Failbetter): схема <code>entities/events.json</code> по разбору рабочего парсера, написанного на живых файлах игры — классы Event, Branch, Outcome и их обязательные и необязательные поля.<br>
+Valve Response System: синтаксис критериев и правил из шипнутого файла движка Source (<code>scripts/talker/</code>); доклад Элана Раскина на GDC 2012 о нечётком сопоставлении контекста.<br>
+Beholder: соседние разборы <code>dekonstruktsiya-beholder.html</code> и <code>kak-sdelan-beholder.html</code>, все числа оттуда.<br>
+Наш код: <code>tsep.html</code>, <code>mesta/posad.js</code>, <code>epohi/moskva-1570.js</code>.
+</p>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Наезд — одна ночь, один человек</title>
+<style>
+  :root{
+    --paper:#ffffff; --ink:#2c2c2a; --grey:#5f5e5a; --faint:#888780; --line:#d9d6cc;
+    --terra:#D85A30; --terra-deep:#993C1D; --terra-pale:#FAECE7;
+    --violet:#7F77DD; --violet-deep:#3C3489;
+    --ochre:#ba7517; --ochre-pale:#FBF3E4;
+    --beige:#f1efe8; --beige2:#f7f5ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:Helvetica,Arial,sans-serif;line-height:1.5;
+    display:flex;justify-content:center;padding:34px 20px 90px}
+  main{width:100%;max-width:640px}
+  .top{font-size:12px;color:var(--faint);margin-bottom:22px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:.5px}
+  h2{font-size:21px;margin:0 0 14px}
+  .sub{color:var(--faint);font-size:13px;margin:0 0 24px}
+  .voice{font-family:Georgia,serif;font-size:17px;color:var(--ink);margin:0 0 16px}
+  .voice.em{color:var(--terra-deep)}
+  /* «как это было на самом деле» — сухая врезка с настоящим фактом эпохи */
+  .real{border-left:2px solid var(--line);padding:2px 0 2px 15px;margin:20px 0 4px}
+  .real .lab{font-size:10.5px;font-weight:600;letter-spacing:1.3px;color:var(--faint);
+    margin-bottom:5px}
+  .real .txt{font-size:13.5px;color:var(--grey);line-height:1.5}
+  .real .ist{font-size:11.5px;color:var(--faint);margin-top:5px;font-style:italic}
+
+  .lens-note{font-size:13.5px;color:var(--ochre);font-style:italic;margin:16px 0 20px;
+    border-left:3px solid var(--ochre);background:var(--ochre-pale);
+    border-radius:0 8px 8px 0;padding:9px 14px}
+  .lens-note::before{content:"ТЫ ПОМНИШЬ ЭТО С ДРУГОЙ СТОРОНЫ";display:block;
+    font-size:10.5px;letter-spacing:1.2px;font-style:normal;font-weight:600;
+    color:var(--ochre);margin-bottom:4px;opacity:.75}
+  .q{font-weight:600;font-size:15px;margin:22px 0 12px}
+
+  /* нить — где мы в цепи */
+  .thread{display:flex;gap:6px;align-items:center;margin:0 0 20px;flex-wrap:wrap}
+  .link{font-size:11px;letter-spacing:.6px;color:var(--faint);
+    border:1px solid var(--line);border-radius:14px;padding:4px 10px;white-space:nowrap}
+  .link.done{color:var(--ochre);border-color:var(--ochre);background:var(--ochre-pale)}
+  .link.now{color:#fff;background:var(--terra);border-color:var(--terra);font-weight:600}
+  .thread .dash{color:var(--line);font-size:12px}
+
+  .chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;
+    letter-spacing:1px;color:var(--ochre);border:1px solid var(--ochre);
+    border-radius:20px;padding:5px 13px;margin-bottom:18px}
+  .chip .eye{width:16px;height:10px;border:1.6px solid var(--ochre);border-radius:50%;
+    position:relative;background:transparent}
+  .chip .eye::after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;
+    background:var(--ochre);left:5px;top:2px}
+  .chip.time{color:var(--faint);border-color:var(--line);letter-spacing:1.5px}
+
+  /* эхо — что дошло сюда о твоём прошлом поступке */
+  .echo{background:var(--terra-pale);border:1px solid #E9C6B7;border-radius:10px;
+    padding:14px 18px;margin:0 0 18px}
+  .echo .lab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--terra-deep);
+    margin-bottom:7px}
+  .echo .txt{font-family:Georgia,serif;font-size:15.5px;color:var(--ink);font-style:italic}
+
+  .flab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--violet-deep);
+    margin:22px 0 2px}
+  .fsub{font-size:12.5px;color:var(--faint);font-style:italic;margin:0 0 8px}
+  .forces{border-left:3px solid var(--violet);padding:2px 0 2px 16px;margin:0 0 8px}
+  .forces div{font-size:14px;color:var(--grey);margin:9px 0}
+  .forces b{color:var(--violet-deep);font-weight:600}
+
+  /* слой автора — по умолчанию скрыт, включается кнопкой внизу */
+  .scar{display:none}
+  body.dev .scar{display:block;background:var(--beige);border:1px dashed var(--faint);
+    border-radius:8px;padding:11px 14px;color:var(--grey);font-weight:400;font-size:13.5px}
+  body.dev .scar::before{content:"СЛОЙ АВТОРА · игроку не показывается";display:block;
+    font-size:10.5px;letter-spacing:1.2px;color:var(--faint);font-weight:600;margin-bottom:5px}
+  .devbtn{position:fixed;right:14px;bottom:14px;font-size:11px;letter-spacing:.5px;
+    background:var(--paper);color:var(--faint);border:1px solid var(--line);
+    border-radius:14px;padding:5px 12px;cursor:pointer;font-family:inherit}
+  .devbtn:hover{color:var(--ink);border-color:var(--faint)}
+
+  .choice{display:block;width:100%;text-align:left;background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:10px 0;
+    cursor:pointer;font-family:inherit;transition:.15s}
+  .choice:hover{background:var(--beige);border-color:var(--faint)}
+  .choice .t{font-size:15px;color:var(--ink)}
+  .choice .c{display:block;font-size:12.5px;color:var(--faint);margin-top:5px}
+
+  /* переход: что было на деле → как ушло в мир */
+  .deed{background:var(--beige2);border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin:0 0 12px}
+  .deed .lab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--faint);
+    margin-bottom:7px}
+  .deed .txt{font-family:Georgia,serif;font-size:16px}
+  .arrow{text-align:center;color:var(--terra);font-size:19px;margin:2px 0 12px;line-height:1}
+  .scar{color:var(--terra-deep);font-size:13.5px;font-weight:600;margin:2px 0 22px}
+  .behind{font-family:Georgia,serif;font-size:15px;font-style:italic;color:var(--grey);
+    border-left:3px solid var(--line);padding-left:15px;margin:0 0 16px}
+  .mystery{font-size:13.5px;font-weight:600;color:var(--terra-deep);margin:0 0 24px}
+  .honest{background:var(--beige);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;font-size:13.5px;color:var(--grey);margin:22px 0}
+  .honest b{color:var(--ink)}
+  .go{background:var(--terra);color:#fff;border:none;border-radius:8px;
+    padding:12px 22px;font-size:15px;font-family:inherit;cursor:pointer;margin-top:8px}
+  .go:hover{background:var(--terra-deep)}
+  .go.ghost{background:transparent;color:var(--terra-deep);border:1px solid var(--terra)}
+  .hidden{display:none}
+
+  /* свод — вся цепь одним взглядом */
+  .roll{border:1px solid var(--line);border-radius:10px;padding:6px 20px 14px;margin:0 0 20px}
+  .roll .row{border-left:3px solid var(--ochre);padding:2px 0 2px 15px;margin:16px 0}
+  .roll .who{font-size:11.5px;font-weight:600;letter-spacing:1px;color:var(--ochre);margin-bottom:3px}
+  .roll .did{font-size:14.5px;color:var(--ink)}
+  .roll .went{font-size:13px;color:var(--faint);font-style:italic;margin-top:3px}
+
+  .journal{border-top:2px solid var(--ochre);margin-top:30px;padding-top:20px}
+  .jhead{font-size:12px;font-weight:600;letter-spacing:1.5px;color:var(--ochre);margin-bottom:6px}
+  .jnote{font-size:13px;color:var(--faint);font-style:italic;margin:0 0 14px}
+  #insight{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+    font-family:Georgia,serif;font-size:15px;color:var(--ink);resize:vertical;background:var(--paper)}
+  #insight:focus{outline:none;border-color:var(--ochre)}
+  #entries{margin-top:18px}
+  .entry{border-left:3px solid var(--ochre);padding:2px 0 2px 15px;margin:14px 0}
+  .entry .meta{font-size:11.5px;color:var(--faint);margin-bottom:4px}
+  .entry .text{font-family:Georgia,serif;font-size:15px;color:var(--ink)}
+  .jempty{font-size:13px;color:var(--faint);font-style:italic}
+</style>
+<style>
+  .kogda{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--faint);margin:0 0 14px}
+  .doshlo{background:var(--terra-pale);border:1px solid #E9C6B7;border-radius:10px;
+    padding:14px 18px;margin:0 0 18px}
+  .doshlo .lab{font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--terra-deep);margin-bottom:7px}
+  .doshlo .txt{font-family:Georgia,serif;font-size:15.5px;color:var(--ink)}
+  .udar{background:#1c1b19;border-radius:12px;padding:26px 28px;margin:22px 0}
+  .udar .chip{color:#e0a866;border-color:#e0a866}
+  .udar .chip .eye{border-color:#e0a866}
+  .udar .chip .eye::after{background:#e0a866}
+  .udar p{font-family:Georgia,serif;font-size:17px;color:#efece6;margin:0 0 16px;line-height:1.55}
+  .udar p.tiho{color:#a9a49b;font-size:15px}
+
+  /* ---- такт-работа: ночь ---- */
+  .schet{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+  .schet .box{border:1px solid var(--line);border-radius:9px;padding:9px 14px;min-width:132px}
+  .schet .lab{font-size:10.5px;letter-spacing:1.2px;color:var(--faint);font-weight:600}
+  .schet .val{font-size:22px;font-weight:600;color:var(--ink);margin-top:2px}
+  .schet .box.hot .val{color:var(--terra-deep)}
+  .schet .box.strah .val{color:var(--violet-deep)}
+  .lyudi{display:grid;gap:8px;margin:0 0 16px}
+  .chel{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+    background:var(--paper);border:1px solid var(--line);border-radius:10px;
+    padding:12px 15px;cursor:pointer;font-family:inherit;transition:.15s}
+  .chel:hover{background:var(--beige);border-color:var(--faint)}
+  .chel.sel{border-color:var(--terra);background:var(--terra-pale)}
+  .chel.dal{opacity:.55;cursor:default;border-style:dashed}
+  .chel.dal:hover{background:var(--paper)}
+  .chel .nm{font-size:15px;font-weight:600}
+  .chel .rl{font-size:12.5px;color:var(--faint);margin-top:2px}
+  .chel .st{font-size:12.5px;color:var(--grey);margin-top:5px;font-style:italic}
+  .chel .mark{margin-left:auto;font-size:11px;letter-spacing:1px;font-weight:600;
+    color:var(--green-deep);white-space:nowrap}
+  .hody{display:grid;gap:7px;margin:0 0 14px}
+  .hod{display:block;width:100%;text-align:left;background:var(--paper);
+    border:1px solid var(--line);border-radius:9px;padding:10px 14px;cursor:pointer;font-family:inherit}
+  .hod:hover{background:var(--beige)}
+  .hod .t{font-size:14.5px}
+  .hod .c{display:block;font-size:12px;color:var(--faint);margin-top:3px}
+  .hod .cena{float:right;font-size:11.5px;color:var(--terra-deep);font-weight:600}
+  .hod.net{opacity:.45;cursor:not-allowed;border-style:dashed}
+  .hod.net:hover{background:var(--paper)}
+  .hod .pochemu{display:block;font-size:12px;color:var(--terra-deep);margin-top:3px}
+  .log{border-left:3px solid var(--line);padding:2px 0 2px 15px;margin:16px 0 0}
+  .log div{font-size:13.5px;color:var(--grey);margin:7px 0}
+  .log div.now{color:var(--ink)}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">наезд · одна ночь, один человек · живите как хотите · 2026-08-16</div>
+  <div id="thread" class="thread hidden"></div>
+
+  <section id="s0">
+    <h1>Наезд</h1>
+    <p class="sub" id="podpis"></p>
+    <div id="zastavka"></div>
+    <div class="honest" style="margin:20px 0"><b>Чем это отличается от «Цепи».</b> Там ты по очереди становился каждым, до кого дошёл твой поступок. Здесь ты <b>остаёшься одним человеком</b> с начала до конца. Что стало с теми, кого ты тронул, приходит к тебе слухом — искажённым, — и переменами на посаде. Как было на деле, ты не узнаешь.</div>
+    <button class="go" onclick="start()">Войти →</button>
+  </section>
+
+  <section id="sTakt" class="hidden">
+    <div class="kogda" id="kogda"></div>
+    <div class="chip"><span class="eye"></span> <span id="chipWho"></span></div>
+    <div class="doshlo hidden" id="doshloBox">
+      <div class="lab">ЧТО ДОШЛО ДО ТЕБЯ</div>
+      <div class="txt" id="doshloTxt"></div>
+    </div>
+    <p class="voice" id="scene"></p>
+    <p class="voice em hidden" id="sceneEm"></p>
+    <div class="flab">ЧТО НА ТЕБЯ ДАВИТ</div>
+    <p class="fsub">Три силы этого часа. Не характер — положение.</p>
+    <div class="forces" id="forces"></div>
+    <div class="real hidden" id="realBox">
+      <div class="lab">КАК ЭТО БЫЛО НА САМОМ ДЕЛЕ</div>
+      <div class="txt" id="realTxt"></div>
+      <div class="ist" id="realIst"></div>
+    </div>
+    <p class="q" id="question"></p>
+    <div id="choices"></div>
+  </section>
+
+
+  <section id="sWork" class="hidden">
+    <div class="kogda" id="wKogda"></div>
+    <div class="chip"><span class="eye"></span> <span id="wWho"></span></div>
+    <div class="doshlo" id="wDoshlo"><div class="lab">ЧТО ДОШЛО ДО ТЕБЯ</div><div class="txt" id="wDoshloTxt"></div></div>
+    <p class="voice" id="wScene"></p>
+
+    <div class="schet">
+      <div class="box hot"><div class="lab">РУК ПОД БУМАГОЙ</div><div class="val" id="wRuki"></div></div>
+      <div class="box"><div class="lab">ХОДОВ ДО РАССВЕТА</div><div class="val" id="wHodov"></div></div>
+      <div class="box strah"><div class="lab">СТРАХ НА ПОСАДЕ</div><div class="val" id="wStrah"></div></div>
+    </div>
+
+    <div class="flab">ЧТО НА ТЕБЯ ДАВИТ</div>
+    <p class="fsub">Три силы этой ночи. Они не описание — они открывают и закрывают ходы.</p>
+    <div class="forces" id="wForces"></div>
+    <div class="real" id="wReal"><div class="lab">КАК ЭТО БЫЛО НА САМОМ ДЕЛЕ</div>
+      <div class="txt" id="wRealTxt"></div><div class="ist" id="wRealIst"></div></div>
+
+    <p class="q" id="wQ">К кому пойдёшь?</p>
+    <div class="lyudi" id="wLyudi"></div>
+    <div id="wHody"></div>
+    <div class="log" id="wLog"></div>
+  </section>
+
+  <section id="sPass" class="hidden">
+    <div class="deed"><div class="lab">ЧТО ТЫ СДЕЛАЛ НА ДЕЛЕ</div><div class="txt" id="deedTxt"></div></div>
+    <div class="arrow">↓</div>
+    <div class="deed" style="background:var(--terra-pale);border-color:#E9C6B7">
+      <div class="lab" style="color:var(--terra-deep)">КАК ЭТО УШЛО В МИР</div>
+      <div class="txt" id="molvaTxt"></div>
+    </div>
+    <button class="go" id="passBtn"></button>
+  </section>
+
+  <section id="sLenta" class="hidden">
+    <div class="chip time">⟶ ДВЕНАДЦАТЬ ЛЕТ СПУСТЯ</div>
+    <p class="voice" id="outcome"></p>
+    <p class="behind" id="behind"></p>
+    <button class="go" onclick="toUdar()" id="udarBtn"></button>
+  </section>
+
+  <section id="sUdar" class="hidden">
+    <div class="udar">
+      <div class="chip"><span class="eye"></span> <span id="udarWho"></span></div>
+      <p id="udarText"></p>
+      <p id="udarPosle"></p>
+      <p class="tiho" id="udarItog"></p>
+    </div>
+    <button class="go" onclick="toEnd()">Свести ночь →</button>
+  </section>
+
+  <section id="sEnd" class="hidden">
+    <h2>Одна ночь</h2>
+    <div class="roll" id="roll"></div>
+    <p class="mystery">Ты был здесь одну ночь. Всё остальное случилось без тебя — и дошло не так, как было.</p>
+    <div class="honest"><b>Честно про слои:</b> искажения молвы и перемены посада держит движок по одному правилу — молва усиливает страх на шаг и стирает имя того, кто решал. Сцены пока написаны руками. Ноль LLM.</div>
+    <div class="journal">
+      <div class="jhead">ЖУРНАЛ ОСМЫСЛЕНИЙ · второй слой</div>
+      <p class="jnote">Движок молчит и не оценивает тебя.</p>
+      <textarea id="insight" rows="3" placeholder="Что ты понял, прожив эту ночь?"></textarea>
+      <button class="go" onclick="saveInsight()">Записать в журнал</button>
+      <div id="entries"></div>
+    </div>
+    <button class="go ghost" style="margin-top:26px" onclick="restart()">Прожить заново, иначе ↺</button>
+  </section>
+</main>
+
+<script src="mesta/posad.js"></script>
+<script src="epohi/moskva-1570-naezd.js"></script>
+<script>
+/* Движок наезда. Отличие от цепи: тело одно, такты идут по времени,
+   а не по передаче хода. Число тактов задаётся данными эпохи. */
+
+var S = { deeds: [], tyazhest: 0 };
+var T = NAEZD.takty;
+var THREAD = T.map(function(t){ return t.kogda.toLowerCase(); });
+var stage = 0;
+
+function el(id){ return document.getElementById(id); }
+function show(id){
+  document.querySelectorAll('section').forEach(function(s){ s.classList.add('hidden'); });
+  el(id).classList.remove('hidden'); window.scrollTo(0,0);
+}
+function drawThread(now){
+  var box=el('thread'); box.classList.remove('hidden'); box.innerHTML='';
+  THREAD.forEach(function(name,i){
+    if(i){ var d=document.createElement('span'); d.className='dash'; d.textContent='—'; box.appendChild(d); }
+    var s=document.createElement('span');
+    s.className='link'+(i<now?' done':(i===now?' now':''));
+    s.textContent=name; box.appendChild(s);
+  });
+}
+function renderZastavka(){
+  el('podpis').textContent = NAEZD.podpis;
+  var b=el('zastavka'); b.innerHTML='';
+  NAEZD.zastavka.forEach(function(t){
+    var p=document.createElement('p'); p.className='voice'; p.textContent=t; b.appendChild(p);
+  });
+}
+function start(){ stage=0; renderTakt(); }
+
+
+/* ============ ТАКТ-РАБОТА: НОЧЬ ============
+   Ходов меньше, чем людей. У каждого скрытый упор.
+   Ни один ход не спрашивает про мораль — все про работу. */
+var W = null;
+
+function startWork(t){
+  W = { t:t, ruki:0, hodov:t.hodov, strah:0, sel:null, log:[], obyazan:false,
+        lyudi: t.lyudi.map(function(l){ return {d:l, upor:l.upor, dal:false, uличён:false, obojden:false}; }) };
+  el('wKogda').textContent = t.kogda;
+  el('wWho').textContent = NAEZD.kto;
+  var key = S.deeds.length ? S.deeds[S.deeds.length-1].k : 'A';
+  el('wDoshloTxt').textContent = t.doshlo[key];
+  el('wScene').textContent = t.scene;
+  var f=el('wForces'); f.innerHTML='';
+  t.forces.forEach(function(p){ var d=document.createElement('div'); var b=document.createElement('b');
+    b.textContent=p[0]; d.appendChild(b); d.appendChild(document.createTextNode(' — '+p[1])); f.appendChild(d); });
+  el('wRealTxt').textContent = t.real.txt; el('wRealIst').textContent = t.real.ist;
+  drawThread(stage);
+  logW('Ночь началась. Нужно ' + t.nado + ' руки под бумагой.');
+  renderWork(); show('sWork');
+}
+
+function logW(s, now){ W.log.push({s:s, now:!!now}); }
+
+function renderWork(){
+  el('wRuki').textContent = W.ruki + ' из ' + W.t.nado;
+  el('wHodov').textContent = (W.hodov % 1 ? W.hodov.toFixed(1) : W.hodov);
+  el('wStrah').textContent = W.strah === 0 ? 'тихо' : (W.strah === 1 ? 'слышно' : 'громко');
+
+  var box = el('wLyudi'); box.innerHTML='';
+  W.lyudi.forEach(function(p, i){
+    var b = document.createElement(p.dal ? 'div' : 'button');
+    b.className = 'chel' + (p.dal ? ' dal' : '') + (W.sel === i ? ' sel' : '');
+    var left = document.createElement('div');
+    var nm = document.createElement('div'); nm.className='nm'; nm.textContent = p.d.imya;
+    var rl = document.createElement('div'); rl.className='rl'; rl.textContent = p.d.rol;
+    left.appendChild(nm); left.appendChild(rl);
+    if(p.dal){ var st=document.createElement('div'); st.className='st'; st.textContent='рука под бумагой'; left.appendChild(st); }
+    else if(p.obojden){ var s2=document.createElement('div'); s2.className='st'; s2.textContent='ты знаешь: ' + p.d.ulika; left.appendChild(s2); }
+    else { var s3=document.createElement('div'); s3.className='st'; s3.textContent=p.d.vran; left.appendChild(s3); }
+    b.appendChild(left);
+    if(p.dal){ var m=document.createElement('div'); m.className='mark'; m.textContent='ДАЛ'; b.appendChild(m); }
+    if(!p.dal) b.onclick = function(){ W.sel = (W.sel===i ? null : i); renderWork(); };
+    box.appendChild(b);
+  });
+
+  var hb = el('wHody'); hb.innerHTML='';
+  if(W.sel !== null){
+    var p = W.lyudi[W.sel];
+    W.t.hody.forEach(function(h){
+      var net = null;
+      if(h.cena > W.hodov) net = 'ходов не хватит';
+      if(h.gasit === 'страх' && W.strah >= 2) net = 'на посаде тебя уже боятся — прямое слово теперь читается как угроза';
+      if(h.trebuet && !W.lyudi.some(function(x){ return x.d.id === h.trebuet && x.dal; })) net = 'староста ещё не дал руки — некого посылать';
+      if(h.id === 'obojti' && p.obojden) net = 'двор уже обойдён';
+      var b = document.createElement('button');
+      b.className = 'hod' + (net ? ' net' : '');
+      var c = document.createElement('span'); c.className='cena';
+      c.textContent = (h.cena === 0.5 ? 'полхода' : h.cena + ' ход');
+      var t = document.createElement('span'); t.className='t'; t.textContent = h.imya;
+      var d = document.createElement('span'); d.className='c'; d.textContent = h.opis;
+      b.appendChild(c); b.appendChild(t); b.appendChild(d);
+      if(net){ var w=document.createElement('span'); w.className='pochemu'; w.textContent='нельзя: '+net; b.appendChild(w); }
+      else b.onclick = function(){ doHod(h, W.sel); };
+      hb.appendChild(b);
+    });
+  }
+
+  var lg = el('wLog'); lg.innerHTML='';
+  W.log.slice(-6).forEach(function(e,i,a){
+    var d=document.createElement('div'); if(i===a.length-1) d.className='now';
+    d.textContent = e.s; lg.appendChild(d);
+  });
+}
+
+function doHod(h, idx){
+  var p = W.lyudi[idx];
+  W.hodov -= h.cena;
+
+  if(h.id === 'obojti'){
+    p.obojden = true; p.upor -= 1;
+    logW('Обошёл двор: ' + p.d.imya + '. ' + kap(p.d.ulika) + '.', true);
+  } else if(h.id === 'nadavit'){
+    p.upor -= 1; W.strah = Math.min(2, W.strah + 1);
+    logW('Надавил на ' + p.d.kogo + '. По соседним дворам стало тише.', true);
+  } else if(h.id === 'sulit'){
+    p.upor -= 2; W.obyazan = true;
+    W.lyudi.forEach(function(x){ if(!x.dal && x !== p) x.upor += 1; });
+    logW('Посулил ' + p.d.komu + '. К утру на посаде знают: с ним сговорились — и остальные ждут своего.', true);
+  } else if(h.id === 'poslat'){
+    var n = 0;
+    W.lyudi.forEach(function(x){ if(!x.dal && x.d.id !== 'sila' && n < 2){ x.upor -= 1; n++; } });
+    logW('Послал старосту. Он ходил сам, и к двоим ты не подходил вовсе.', true);
+  } else if(h.id === 'pryamo'){
+    p.upor -= 2;
+    logW('Сказал прямо, зачем приехал. ' + p.d.imya + ' выслушал молча.', true);
+  }
+
+  W.lyudi.forEach(function(x){
+    if(!x.dal && x.upor <= 0){ x.dal = true; W.ruki++;
+      logW(x.d.imya + ' — рука под бумагой.'); }
+  });
+
+  W.sel = null;
+  if(W.ruki >= W.t.nado || W.hodov < 0.5) return endWork();
+  renderWork();
+}
+
+function kap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function endWork(){
+  var hvatilo = W.ruki >= W.t.nado;
+  var kto = W.lyudi.filter(function(x){ return x.dal; }).map(function(x){ return x.d.imya; });
+  el('deedTxt').textContent = hvatilo
+    ? W.t.itog.hvatilo + ' Руки дали: ' + kto.join(', ') + '.'
+    : W.t.itog.malo + (kto.length ? ' Успели дать руку: ' + kto.join(', ') + '.' : '');
+  el('molvaTxt').textContent = hvatilo
+    ? (W.strah >= 2 ? 'На посаде к утру: «Он ходил по дворам всю ночь». Прибавили: «И будет ходить».'
+                    : 'На посаде к утру: «Собрал за ночь и уехал. Значит, знал, к кому идти».')
+    : 'На посаде к утру: «Приезжал, да не сладил». Через день говорили иначе: «Взял с них и уехал».';
+  S.deeds.push({ takt:W.t.kogda, k: hvatilo ? 'A' : 'C',
+    deed: el('deedTxt').textContent, molva: el('molvaTxt').textContent });
+  if(!hvatilo) S.tyazhest++;
+  el('passBtn').textContent = 'Дальше: рассвет →';
+  el('passBtn').onclick = function(){ stage++; renderTakt(); };
+  show('sPass');
+}
+
+function renderTakt(){
+  var t=T[stage];
+  if(t.rabota) return startWork(t);
+  drawThread(stage);
+  el('kogda').textContent = t.kogda;
+  el('chipWho').textContent = NAEZD.kto;
+
+  if(t.doshlo && S.deeds.length){
+    el('doshloTxt').textContent = t.doshlo[S.deeds[S.deeds.length-1].k];
+    el('doshloBox').classList.remove('hidden');
+  } else el('doshloBox').classList.add('hidden');
+
+  el('scene').textContent = t.scene;
+  if(t.em){ el('sceneEm').textContent=t.em; el('sceneEm').classList.remove('hidden'); }
+  else el('sceneEm').classList.add('hidden');
+
+  var f=el('forces'); f.innerHTML='';
+  t.forces.forEach(function(p){
+    var d=document.createElement('div'); var b=document.createElement('b');
+    b.textContent=p[0]; d.appendChild(b);
+    d.appendChild(document.createTextNode(' — '+p[1])); f.appendChild(d);
+  });
+
+  if(t.real){ el('realTxt').textContent=t.real.txt; el('realIst').textContent=t.real.ist;
+    el('realBox').classList.remove('hidden'); }
+  else el('realBox').classList.add('hidden');
+
+  el('question').textContent = t.q;
+  var c=el('choices'); c.innerHTML='';
+  t.choices.forEach(function(ch){
+    var b=document.createElement('button'); b.className='choice';
+    var x=document.createElement('span'); x.className='t'; x.textContent=ch.t;
+    var y=document.createElement('span'); y.className='c'; y.textContent=ch.c;
+    b.appendChild(x); b.appendChild(y);
+    b.onclick=function(){ choose(ch); };
+    c.appendChild(b);
+  });
+  show('sTakt');
+}
+
+function choose(ch){
+  S.deeds.push({ takt:T[stage].kogda, k:ch.k, deed:ch.deed, molva:ch.molva });
+  if(ch.otdal) S.tyazhest++;
+  el('deedTxt').textContent = ch.deed;
+  el('molvaTxt').textContent = ch.molva;
+  if(stage < T.length-1){
+    el('passBtn').textContent = 'Дальше: ' + T[stage+1].kogda.toLowerCase() + ' →';
+    el('passBtn').onclick = function(){ stage++; renderTakt(); };
+  } else {
+    el('passBtn').textContent = 'Двенадцать лет спустя →';
+    el('passBtn').onclick = toLenta;
+  }
+  show('sPass');
+}
+
+function toLenta(){
+  var l = NAEZD.lenta[Math.min(S.tyazhest, 2)];
+  el('outcome').textContent = l.out;
+  el('behind').textContent = l.behind;
+  el('udarBtn').textContent = NAEZD.udar.zov;
+  drawThread(T.length);
+  show('sLenta');
+}
+
+function toUdar(){
+  var u = NAEZD.udar;
+  el('udarWho').textContent = u.kto;
+  el('udarText').textContent = u.text[S.deeds[S.deeds.length-1].k];
+  el('udarPosle').textContent = u.posle;
+  el('udarItog').textContent = u.itog;
+  show('sUdar');
+}
+
+function toEnd(){
+  var r=el('roll'); r.innerHTML='';
+  S.deeds.forEach(function(d){
+    var row=document.createElement('div'); row.className='row';
+    var w=document.createElement('div'); w.className='who'; w.textContent=d.takt;
+    var t=document.createElement('div'); t.className='did'; t.textContent=d.deed;
+    var g=document.createElement('div'); g.className='went'; g.textContent='дошло: '+d.molva;
+    row.appendChild(w); row.appendChild(t); row.appendChild(g); r.appendChild(row);
+  });
+  show('sEnd'); renderJournal();
+}
+
+function loadJournal(){ try{ return JSON.parse(localStorage.getItem('naezd-journal')||'[]'); }catch(e){ return []; } }
+function saveInsight(){
+  var e=el('insight'), text=(e.value||'').trim(); if(!text) return;
+  var arr=loadJournal();
+  arr.push({ when:new Date().toLocaleString('ru-RU'),
+    put:S.deeds.map(function(d){ return d.takt+':'+d.k; }).join(' · '),
+    otdal:S.tyazhest, text:text });
+  localStorage.setItem('naezd-journal', JSON.stringify(arr));
+  e.value=''; renderJournal();
+}
+function renderJournal(){
+  var box=el('entries'); box.innerHTML='';
+  var arr=loadJournal();
+  if(!arr.length){ var p=document.createElement('p'); p.className='jempty';
+    p.textContent='Журнал пуст.'; box.appendChild(p); return; }
+  arr.slice().reverse().forEach(function(it,i){
+    var n=arr.length-i;
+    var w=document.createElement('div'); w.className='entry';
+    var m=document.createElement('div'); m.className='meta';
+    m.textContent='№'+n+' · '+it.when+' · прожил: '+it.put+' · отдал другого раз: '+it.otdal;
+    var t=document.createElement('div'); t.className='text'; t.textContent=it.text;
+    w.appendChild(m); w.appendChild(t); box.appendChild(w);
+  });
+}
+function restart(){ S={deeds:[],tyazhest:0}; stage=0; el('thread').classList.add('hidden'); show('s0'); }
+
+renderZastavka();
+</script>
+</body>
+</html>
