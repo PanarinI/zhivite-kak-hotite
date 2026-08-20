@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Разруб — один вечер</title>
+<style>
+  :root{
+    --bg:#e8e1d3; --paper:#f4efe4; --ink:#221c14; --dim:#6b5f4c;
+    --line:#c9bda6; --red:#8c2b1e; --grey:#7d7466; --accent:#3d5a3a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.5 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+  .wrap{max-width:1020px;margin:0 auto;padding:18px 16px 60px}
+  h1{font-size:20px;margin:0 0 2px;letter-spacing:.02em}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:14px}
+
+  .top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .card{background:var(--paper);border:1px solid var(--line);padding:9px 12px;flex:1;min-width:150px}
+  .card .lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+  .card .val{font-size:19px;margin-top:2px}
+  .val.bad{color:var(--red)}
+  .val.ok{color:var(--accent)}
+
+  table{width:100%;border-collapse:collapse;background:var(--paper);
+    border:1px solid var(--line);font-size:14px}
+  th{text-align:left;font-weight:normal;font-size:11px;text-transform:uppercase;
+    letter-spacing:.07em;color:var(--dim);padding:7px 8px;border-bottom:1px solid var(--line)}
+  td{padding:7px 8px;border-bottom:1px solid #e0d7c3;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.mine td{background:#efe7d2}
+  tr.lit td{box-shadow:inset 3px 0 0 var(--red)}
+  .nm{font-weight:600}
+  .note{font-size:12px;color:var(--dim);margin-top:2px}
+  .po{color:var(--dim);font-variant-numeric:tabular-nums}
+  .share{font-variant-numeric:tabular-nums;font-size:16px;min-width:44px;display:inline-block;text-align:right}
+  .share.over{color:var(--red)}
+  button{font:inherit;background:#ded4bd;border:1px solid var(--line);color:var(--ink);
+    padding:2px 8px;cursor:pointer;line-height:1.3}
+  button:hover{background:#d2c6aa}
+  button:disabled{opacity:.35;cursor:default}
+  .mini{font-size:12px;padding:1px 6px}
+  .tag{display:inline-block;font-size:11px;border:1px solid var(--line);padding:1px 6px;
+    margin-right:4px;background:#ded4bd;cursor:pointer;white-space:nowrap}
+  .tag.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .tag.no{opacity:.35;cursor:default}
+
+  .visitor{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--ink);
+    padding:13px 15px;margin:14px 0}
+  .who{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:5px}
+  .speech{font-size:16px}
+  .speech p{margin:0 0 8px}
+  .acts{margin-top:11px;display:flex;gap:8px;flex-wrap:wrap}
+
+  .vrezka{background:#efe7d2;border:1px dashed var(--line);padding:10px 13px;margin:12px 0;font-size:13px}
+  .vrezka .h{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:4px}
+  .m{font-size:11px;padding:0 3px;border:1px solid var(--line);border-radius:2px}
+
+  .end{background:var(--paper);border:1px solid var(--line);padding:16px 18px;margin-top:16px}
+  .end h2{font-size:17px;margin:0 0 10px}
+  .end .line{padding:6px 0;border-bottom:1px solid #e0d7c3;font-size:14px}
+  .end .line:last-of-type{border-bottom:none}
+  .end .line b{font-weight:600}
+  .scribe{margin-top:14px;padding:12px 14px;background:#e3dac4;border-left:3px solid var(--red);
+    font-size:15px;font-style:italic}
+  .quiet{color:var(--dim);font-size:13px;margin-top:12px}
+  textarea{width:100%;min-height:76px;font:inherit;background:#fbf8f0;
+    border:1px solid var(--line);padding:8px;margin-top:6px}
+  .foot{color:var(--dim);font-size:12px;margin-top:22px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Разруб</h1>
+  <div class="sub">Кожевницкая слобода за рекой · зима 7078 (январь 1570) · один вечер<br>
+    В слободе пятьдесят дворов. Сорок два разложили окладчики по старому окладу — «по животам и
+    промыслам», как в позапрошлом годе. Твоя книга — восемь дворов Кожевницкого конца, тех, что
+    окладчики отдали старосте: спорные, тонкие и твой собственный.</div>
+
+  <div class="top">
+    <div class="card"><div class="lab">Оклад на слободу</div><div class="val" id="oklad">—</div></div>
+    <div class="card"><div class="lab">Разложено</div><div class="val" id="done">—</div></div>
+    <div class="card"><div class="lab">Осталось разложить</div><div class="val" id="left">—</div></div>
+    <div class="card"><div class="lab">Посылка живыми</div><div class="val" id="quota">—</div></div>
+  </div>
+
+  <table id="book">
+    <thead><tr>
+      <th style="width:38%">Двор</th><th style="width:12%">По животам</th>
+      <th style="width:26%">Твоя доля</th><th style="width:24%">В посылку</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="stage"></div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+/* ============ ДВОРЫ ============
+   Устройство — из органа ISTOCHNIKI.md. Имена, состав и числа оклада — допущение автора:
+   окладов московских заречных слобод за 1570 год не сохранилось.                         */
+const OKLAD = 1800;            // денег (рубль = 200 денег, алтын = 6)
+const NEED_MEN = 2, NEED_CART = 3;
+
+const dvors = [
+ {id:'sila', nm:'Силин двор', mine:true, pr:'кожевник — твой двор',
+  note:'жена Оксинья; сын Гриша, 15 лет — в тягло ещё не писан. Лошадь одна.',
+  po:250, cap:600, carts:1, men:['Гриша, 15 лет'],
+  pay:['деньгами с кож','заложишь клеть','продашь чан — и промысла нет']},
+ {id:'gav', nm:'Гаврила Онтонов', pr:'кожевник, два чана, работники',
+  note:'лучший двор слободы. Его слово в мирском приговоре весит больше твоего.',
+  po:500, cap:900, carts:2, men:['работник Куземка','работник Обросим'],
+  pay:['деньгами, не считая','возьмёт с работников','придержит чаны — но заплатит']},
+ {id:'ivn', nm:'Иван Сапожник', pr:'сапожник',
+  note:'двор средний, лошадь одна, сын Первушка на возрасте.',
+  po:300, cap:400, carts:1, men:['сын Первушка, 19 лет'],
+  pay:['деньгами с колодки','продаст лошадь','отдаст сына в наймы']},
+ {id:'tre', nm:'Третьяк Микитин', pr:'мясник',
+  note:'брат его — в государевых людях, на дворе за Неглинною.',
+  po:280, cap:350, carts:1, men:['сам, 30 лет'],
+  pay:['деньгами с мяса','возьмёт в долг у брата','пойдёт к брату жаловаться']},
+ {id:'fyo', nm:'Фёкла, Овдокимова вдова', pr:'полулавка в Ременном ряду',
+  note:'муж стоял на правеже за чужой долг и с правежа не встал. Двор тяглый — её.',
+  po:180, cap:120, carts:0, men:[],
+  pay:['деньгами с полулавки','заложит серьги матери','отдаст место в ряду — и пойдёт в чёрную работу']},
+ {id:'ort', nm:'Ортюха Свищ', pr:'промысел неясен',
+  note:'пришлый, пятый год в слободе. Мир его не жалует.',
+  po:120, cap:60, carts:0, men:['сам, 27 лет'],
+  pay:['чем придётся','нечем','уйдёт со двора ночью']},
+ {id:'oni', nm:'Онисим Хромой', pr:'сермяжник',
+  note:'изба курная, четверо детей. Сам хром — в посылку не годен.',
+  po:100, cap:80, carts:0, men:[],
+  pay:['грошами и сермягами','заложит последнее','отдаст детей в наймы']},
+ {id:'mar', nm:'Марфа с Кузьмою', pr:'кормятся щепетинным торгом',
+  note:'стары. Сын ушёл на низ, третий год вестей нет.',
+  po:70, cap:50, carts:0, men:[],
+  pay:['грошами со щепетинья','нечем','двор станет пуст']},
+];
+const D = {}; dvors.forEach(d=>{ d.share=d.po; d.men_sent=0; d.carts_sent=0; D[d.id]=d; });
+
+/* ============ ВЕЧЕР ============ */
+const evening = [
+ {who:'С Земского двора', speech:`
+   <p>Целовальник с Земского двора принёс память: с Кожевницкой слободы девять рублёв к сроку,
+   да сверх того <b>два человека посошных и три подводы с лошадьми</b> — под наряд, что идёт
+   за государем к Новугороду.</p>
+   <p>«Разруб твой, староста. Книгу привезёшь к Сретенью. Недоберёшь — станешь у приказа сам».</p>`,
+  vrez:{t:'Как это было на самом деле',
+   b:`Тягло кладут <b>на двор</b>, а не на человека; сумму на слободу мир сам разверстывал
+      «по животам и промыслам». Раскладка — <b>разруб</b> (размет), ведут выборные: староста
+      или сотский с окладчиками и целовальниками, по разметным книгам. <span class="m">✅</span>
+      С сохи брали не только деньги: посошные люди и подводы разверстывались тем же разрубом.
+      <span class="m">✅</span> Сумма оклада и состав дворов здесь выдуманы — окладов московских
+      заречных слобод за 1570 год не сохранилось. <span class="m">✍️</span>`}},
+
+ {who:'Гаврила Онтонов, кожевник', lit:'gav', speech:`
+   <p>Пришёл первым, принёс полоть мяса — «к мясоеду, тебе да Оксинье». Сел не спросясь.</p>
+   <p>«Ты меня по новым чанам не пиши. Чаны в долг ставлены, я ими ещё не корыстовался.
+   Пиши по старому окладу, как в позапрошлом годе. А что не сойдётся — на слободе люди есть».</p>
+   <p class="note">Он не сказал, кто эти люди. Он и не должен: книга у тебя.</p>`},
+
+ {who:'Фёкла, Овдокимова вдова', lit:'fyo', speech:`
+   <p>Стояла у воротни, не заходя, пока не позвал. Поклонилась в землю.</p>
+   <p>«Батюшка Сила Иванов, сними с меня. Мужа моего за Копылова долг ставили у приказу,
+   он с того и слёг. Мне нечем. Место в ряду возьми в заклад, только двора не рушь —
+   мне с него в тягле стоять».</p>`,
+  vrez:{t:'Правёж',
+   b:`Взыскание присуждённого долга, не наказание и не способ добыть показания. Должника ставили
+      у приказов и каждое утро били батогом по икрам, <b>кроме праздников</b>. Указ 1555 года:
+      месяц правежа за сто рублей долга, дальше пропорционально. Не заплатил после срока —
+      выдача истцу головою до искупа. На правёж ставили всех, включая поручителей за чужой долг.
+      <span class="m">✅</span>`}},
+
+ {who:'Онисим Хромой, сермяжник', lit:'oni', speech:`
+   <p>Просить не умеет. Стоял, вертел шапку, наконец сказал в пол:</p>
+   <p>«Не бери с меня деньгами. Возьми работой. Я сермяги ошью хоть на всю посылку,
+      хоть на стрельцов. Деньгами не могу, у меня четверо».</p>
+   <p class="note">Работой оклад не платится. Оклад платится деньгами.</p>`},
+
+ {who:'Третьяк Микитин, мясник', lit:'tre', speech:`
+   <p>Не просил. Постоял у порога, поговорил про мясоед и про то, что мясо к празднику вздорожало.
+      Уходя, у самой двери:</p>
+   <p>«Брат мой на той неделе спрашивал — как в слободе к нему. Я сказал: хорошо, как к своему.
+      Ты ведь тоже хорошо, Сила Иванов?»</p>
+   <p class="note">Угрозы не было. Была справка о том, чей он брат.</p>`},
+
+ {who:'Иван Сапожник', lit:'ivn', speech:`
+   <p>Пришёл с сыном, сына оставил во дворе.</p>
+   <p>«Первушку не пиши в посошные. Отдам лошадь под подводу, отдам две, коли надо, —
+      только его не пиши. Он у меня один остался, других Бог не дал».</p>
+   <p class="note">Лошадей у него одна. Вторую он собирается где-то взять.</p>`},
+
+ {who:'Ортюха Свищ', lit:'ort', speech:`
+   <p>Пришёл пьян, ничего не просил. Сел на лавку, говорил про Новгород — будто оттуда идут вести,
+      что там сделали, и будто государь тем и живёт.</p>
+   <p>Сказал ещё одно слово, которого повторять не надо. У воротни стояли Куземка да двое соседей —
+      слышали все.</p>`,
+  vrez:{t:'Что можно и чего нельзя с этим сделать',
+   b:`Правовой обязанности доноса в 1570 году <b>нет</b>: формула «слово и дело государево»
+      появляется в первой половине XVII века, а обязанностью подданного донос делает Соборное
+      уложение 1649 года. <span class="m">✅</span> Круговая порука посада — податная и губная,
+      <b>не сыскная</b>: за татьбу и разбой мир отвечает и обязан выдавать лихих людей, а
+      государево изменное дело общине не поручали. <span class="m">✅</span>
+      То есть ты ничем не обязан. Всё, что ты с этим сделаешь, — твоё.`}},
+
+ {who:'Марфа с Кузьмою', lit:'mar', speech:`
+   <p>Пришли вдвоём, держась друг за друга. Кузьма не говорил — говорила Марфа.</p>
+   <p>«Отпиши двор в слободу, батюшка. Нам его не сдержать, а в тягле стоять надо.
+      Возьми двор, а нас в подклет к кому пусти Христа ради».</p>
+   <p class="note">Двор из тягла не вынешь — оклад останется тот же, а платить его будет меньше дворов.</p>`},
+
+ {who:'Оксинья, твоя жена', speech:`
+   <p>Дождалась, пока все ушли. Не села.</p>
+   <p>«Ты Гришу в книгу писал?»</p>`},
+];
+
+/* ============ РЕНДЕР ============ */
+let step = 0, hodataystvo = null, askedGolova = false, oklad = OKLAD;
+const el = id => document.getElementById(id);
+const sum = () => dvors.reduce((s,d)=>s+d.share,0);
+const menSent = () => dvors.reduce((s,d)=>s+d.men_sent,0);
+const cartSent = () => dvors.reduce((s,d)=>s+d.carts_sent,0);
+const den = n => n + ' ден.';
+
+function rub(n){ const r=Math.floor(n/200), d=n%200, a=Math.floor(d/6), dd=d%6;
+  let s=''; if(r) s+=r+' руб. '; if(a) s+=a+' алт. '; if(dd||!s) s+=dd+' ден.'; return s.trim(); }
+
+function drawTop(){
+  el('oklad').textContent = rub(oklad);
+  el('done').textContent = rub(sum());
+  const L = oklad - sum();
+  const lv = el('left');
+  lv.textContent = L===0 ? 'сошлось' : (L>0? rub(L)+' не разложено' : 'перебор '+rub(-L));
+  lv.className = 'val ' + (L===0?'ok':'bad');
+  const q = el('quota');
+  const okq = menSent()===NEED_MEN && cartSent()===NEED_CART;
+  q.textContent = `люди ${menSent()}/${NEED_MEN} · подводы ${cartSent()}/${NEED_CART}`;
+  q.className = 'val ' + (okq?'ok':'bad');
+}
+
+/* чем двор возьмёт эту долю — ты староста, ты этих людей знаешь.
+   Прятать цену незачем: тяжесть не в незнании, а в том, что выбирать всё равно тебе. */
+function payLine(d){
+  if(!d.pay) return '';
+  const i = d.share > d.cap ? 2 : (d.share > Math.floor(d.cap*0.6) ? 1 : 0);
+  return (i===2?'не устоит: ':'') + d.pay[i];
+}
+
+function drawBook(){
+  const tb = el('book').querySelector('tbody');
+  tb.innerHTML = '';
+  const lit = evening[step] && evening[step].lit;
+  dvors.forEach(d=>{
+    const tr = document.createElement('tr');
+    tr.className = (d.mine?'mine ':'') + (lit===d.id?'lit':'');
+    const menTags = d.men.map((m,i)=>{
+      const on = d.men_sent>i;
+      return `<span class="tag ${on?'on':''}" data-men="${d.id}" data-i="${i}">${m}</span>`;
+    }).join('');
+    const cartTags = Array.from({length:d.carts}, (_,i)=>{
+      const on = d.carts_sent>i;
+      return `<span class="tag ${on?'on':''}" data-cart="${d.id}" data-i="${i}">подвода</span>`;
+    }).join('');
+    const noMen = (!d.men.length && !d.carts) ? '<span class="tag no">некого и нечего</span>' : '';
+    tr.innerHTML = `
+      <td><div class="nm">${d.nm}</div><div class="note">${d.pr}. ${d.note}</div></td>
+      <td class="po">${d.po}</td>
+      <td>
+        <button class="mini" data-sub="${d.id}" data-n="50">−50</button>
+        <button class="mini" data-sub="${d.id}" data-n="10">−10</button>
+        <span class="share ${d.share>d.cap?'over':''}">${d.share}</span>
+        <button class="mini" data-add="${d.id}" data-n="10">+10</button>
+        <button class="mini" data-add="${d.id}" data-n="50">+50</button>
+        <div class="note" style="${d.share>d.cap?'color:var(--red)':''}">${payLine(d)}</div>
+      </td>
+      <td>${menTags}${cartTags}${noMen}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function drawStage(){
+  const st = el('stage');
+  if(step >= evening.length){ drawDawn(); return; }
+  const v = evening[step];
+  let html = `<div class="visitor"><div class="who">${v.who}</div>
+    <div class="speech">${v.speech}</div><div class="acts">
+    <button id="next">Проводить</button>`;
+  if(!askedGolova && step>=4)
+    html += `<button id="golova">Пойти к голове просить отсрочку</button>`;
+  html += `</div></div>`;
+  if(v.vrez) html += `<div class="vrezka"><div class="h">${v.vrez.t}</div>${v.vrez.b}</div>`;
+  st.innerHTML = html;
+  el('next').onclick = ()=>{ step++; draw(); };
+  const g = el('golova');
+  if(g) g.onclick = goGolova;
+}
+
+function goGolova(){
+  askedGolova = true;
+  const gav = D.gav;
+  const favour = gav.share <= gav.po;   // не наложил на Гаврилу больше «по животам»
+  let html = `<div class="visitor"><div class="who">Земский двор, у головы</div><div class="speech">`;
+  if(favour){
+    html += `<p>Один бы ты не дошёл — до головы не доходят одни. Ты позвал Гаврилу Онтонова,
+      и Гаврила пошёл: у него на Земском дворе своё знакомство и своя надобность.</p>
+      <p>Голова слушал Гаврилу, а не тебя. «Ну, коли Онтонов за слободу стоит — <b>отсрочу
+      триста денег до Пасхи</b>. Остальное к Сретенью, и посылку не задерживай».</p>
+      <p class="note">Право тут не при чём. Отсрочку дали ходатаю.</p>`;
+    oklad -= 300;
+  } else {
+    html += `<p>Ты пошёл один. Гаврилу звать было не с чем — ты положил на него больше,
+      чем по животам, и он сказал, что нынче занят.</p>
+      <p>Голова поклон принял, память перечёл и сказал: «Оклад положен. Разруб твой».
+      <b>Поклон стоил сто денег</b>, и они пошли из твоей доли.</p>
+      <p class="note">Просить надо не по праву, а в поклон. И одному просить не с чем.</p>`;
+    D.sila.share += 100;
+  }
+  html += `</div><div class="acts"><button id="next2">Вернуться к книге</button></div></div>
+    <div class="vrezka"><div class="h">Заступничество</div>
+    Печалование не исчезло и после указа 1565 года: за князя Мстиславского, публично признавшего,
+    что «навёл» хана на Русь, вступились митрополит и духовный собор — дело закрыли поручной
+    записью. <span class="m">✅</span> Тем же рынком покупалась и опала: соловецкому игумену
+    обещали кафедру за показания против митрополита. <span class="m">✅</span></div>`;
+  el('stage').innerHTML = html;
+  el('next2').onclick = ()=>{ step++; draw(); };
+  drawTop(); drawBook();
+}
+
+/* ============ РАССВЕТ И ВЕСНА ============ */
+function drawDawn(){
+  // недостача ложится на старосту — сумма и число заперты
+  let forced = [], debt = 0;
+  const L = oklad - sum();
+  if(L > 0){ D.sila.share += L; forced.push(`Недостачу ${rub(L)} доложил из своего.`); }
+  while(menSent() < NEED_MEN){
+    if(D.sila.men_sent < D.sila.men.length){ D.sila.men_sent++; forced.push('Недостающего человека взяли с твоего двора — Гришу.'); }
+    else { const k = NEED_MEN - menSent(); debt += k*300;
+      forced.push(`Ещё ${k===1?'одного человека':k+' человек'} взять было негде: недостачу зачли деньгами на тебя.`); break; }
+  }
+  while(cartSent() < NEED_CART){
+    if(D.sila.carts_sent < D.sila.carts){ D.sila.carts_sent++; forced.push('Недостающую подводу взяли твою.'); }
+    else { const k = NEED_CART - cartSent(); debt += k*150;
+      forced.push(`Подвод недостало ${k} — недостачу зачли деньгами на тебя.`); break; }
+  }
+  if(debt){ D.sila.share += debt; forced.push(`Итого доложено с твоего двора ещё ${rub(debt)}.`); }
+  const over = sum() - oklad;
+
+  // детерминированный жребий: правда держится движком, не случайностью
+  const seed = dvors.reduce((s,d,i)=>s + d.share*(i+3) + d.men_sent*17 + d.carts_sent*7, 0);
+  const lot = k => (seed*7 + k*13) % 3;
+
+  const lines = [];
+  dvors.forEach((d,i)=>{
+    const hard = d.share > d.cap, easy = d.share < Math.floor(d.po*0.8);
+    const selfGone = d.men_sent>0 && /^сам/.test(d.men[0]||'');
+    const fate = ['вернулся к осени','не вернулся','вернулся хром'][lot(i)];
+    let t = '';
+    if(d.mine){
+      const grishaFate = d.men_sent ? ['вернулся к осени','не вернулся','вернулся хром'][lot(i)] : null;
+      if(grishaFate) t = `Гриша ушёл с нарядом к Новугороду и ${grishaFate}. `;
+      if(grishaFate === 'не вернулся'){
+        t += `Весной в тягло с твоего двора писать <b>некого</b>. Двор стоит, и стоять ему до тебя.`;
+      } else if(hard){
+        t += `Ты доложил больше, чем двор носит: клеть заложена, чан продан. Весной
+              <b>Гриша в тягло не писан</b> — не с чего.`;
+      } else {
+        t += `Двор стоит, книга сошлась. Весной <b>Гриша писан в тягло с твоего двора</b> —
+              ты дожил срок «на вере».`;
+      }
+      if(d.carts_sent) t += ` Лошадь ${lot(i+1)===1?'не вернулась':'вернулась, надорвана'}.`;
+    } else if(d.id==='gav'){
+      t = hard ? `Заплатил всё, ничего не сказал. На мирском приговоре в мае старостой выбрали не тебя,
+                  а Обросима, и недоимку прошлого разруба положили на твой двор.`
+               : `Заплатил в срок. Чаны его к весне пошли в дело, работников стало четверо.`;
+    } else if(d.id==='ivn'){
+      t = d.men_sent ? `Первушка ушёл с нарядом и ${fate}. Иван с тобой с тех пор не говорит.`
+        : (hard ? `Продал лошадь, чтобы заплатить. Сапоги шьёт, кожу возит на себе.`
+                : `Заплатил. Первушка при нём.`);
+    } else if(d.id==='ort' && selfGone){
+      t = `Свищ ушёл с нарядом — его и записали, спорить было некому. ${fate==='не вернулся'
+        ? `С Новугорода не вернулся. Двор его весной записан пустым, и <b>долю его доберут со всех</b>.`
+        : `${fate[0].toUpperCase()+fate.slice(1)}. Вернувшись, стоял у твоей воротни и смотрел, ничего не сказав.`}`;
+    } else if(d.id==='tre' && selfGone){
+      t = `Ты записал в посылку его самого. ${fate==='не вернулся'
+        ? `Он не вернулся. В мае на твой двор приезжали с государева двора за Неглинною —
+           спрашивали, кто в слободе кого писал в наряд, и по чьему разруб.`
+        : `${fate[0].toUpperCase()+fate.slice(1)}. Брат его о том знает.`}`;
+    } else if(d.id==='gav' && d.men_sent){
+      t = `Работников его взяли ${d.men_sent===2?'обоих':'одного'}: чаны стояли до Пасхи.
+        Заплатил всё, а на мирском приговоре в мае сказал про тебя одно слово — и хватило.`;
+    } else if(d.id==='tre'){
+      t = hard ? `Заплатил молча. В феврале на твой двор приезжали с государева двора за Неглинною —
+                  спрашивали, кто в слободе к государевым людям <i>нехорош</i>. Уехали ни с чем.
+                  Пока ни с чем.`
+               : `Заплатил. Мясо к посту сбыл в Ременный ряд, брат его на масленице был у него в гостях.`;
+    } else if(d.id==='fyo'){
+      t = hard ? `Место в Ременном ряду отдала за долг. Двор за ней остался, а кормится чёрной работой —
+                  нити, холсты, стирка. Серьги матери снесла в заклад в Кожевники.`
+               : `Устояла. Место при ней, к Пасхе торговала опять.`;
+    } else if(d.id==='ort'){
+      t = hard ? `Свищ ушёл со двора до Сретенья, и куда — не сказал никто. Двор стоит пуст,
+                  а <b>его долю весной доберут со всех</b> — так стоит порука.`
+               : `Пропил половину, вторую отдал. Живёт.`;
+    } else if(d.id==='oni'){
+      t = hard ? `Двух детей отдал в наймы к Гавриле на чаны. Сермяги шьёт по-прежнему.`
+               : `Заплатил, чем смог, остальное ошил сермягами — их взяли на посылку. Дети при нём.`;
+    } else if(d.id==='mar'){
+      t = hard ? `Кузьма умер на Крещенье, Марфа ушла из слободы к сестре под Коломну.
+                  Двор в дозоре записан пустым.`
+               : `Дожили. На Пасху Марфа поставила свечу за сына, о котором вестей так и нет.`;
+    }
+    if(easy && !d.mine && !hard) t += ` <span class="note">(Ты положил меньше, чем по животам — это заметили.)</span>`;
+    lines.push(`<div class="line"><b>${d.nm}</b> — ${d.share} ден.${d.men_sent?', человек взят':''}${d.carts_sent?', подвода взята':''}. ${t}</div>`);
+  });
+
+  const failed = D.sila.share > D.sila.cap;
+  let html = `<div class="end"><h2>Рассвет. Книга ушла на Земский двор</h2>`;
+  if(forced.length) html += `<div class="quiet">${forced.join(' ')}</div>`;
+  if(over>0) html += `<div class="quiet">Перебор ${rub(over)} — мир припомнит на приговоре
+     <span class="m">🔶</span> (смещение за перебор документировано для дьяка, не для старосты).</div>`;
+  html += `<h2 style="margin-top:14px">Что стало к весне</h2>${lines.join('')}`;
+
+  if(failed){
+    html += `<div class="scribe">А про твой двор писец, приехав в дозор, написал в двух словах —
+      как писали про все дворы, которых больше нет:<br><br>
+      «…опритчиные на правежи замучили, дети с голоду примерли».<br><br>
+      <span style="font-style:normal;font-size:13px;color:var(--dim)">
+      Строка настоящая: так дозорные книги объясняли пустые дворы. Причину смерти писали в два-три
+      слова, имени чаще не писали вовсе. <span class="m">✅</span> (по вторичным публикациям)
+      Мы прожили этот двор до конца — а в бумаге от него осталась одна строка.</span></div>`;
+  } else {
+    html += `<div class="scribe" style="border-left-color:var(--accent)">
+      Про твой двор писец не написал ничего. В дозорной книге он просто есть —
+      строкой «двор Силки Иванова, кожевника», без обстоятельств.<br><br>
+      <span style="font-style:normal;font-size:13px;color:var(--dim)">
+      Это и есть здешнее счастье: попасть в бумагу без объяснения, отчего тебя нет.</span></div>`;
+  }
+
+  html += `<div class="quiet" style="margin-top:16px">24 мая 1571 года хан Девлет-Гирей сжёг Москву,
+    посады выгорели <span class="m">✅</span>. Дворы поставили заново там, где остались руки.</div>`;
+
+  html += `<h2 style="margin-top:18px">Журнал осмыслений</h2>
+    <div class="quiet">Движок не ставит вердикта и не считает очков. Что было выбором, а что
+    обстоятельством — решаешь ты.</div>
+    <textarea placeholder="Что ты понял за этот вечер"></textarea>
+    <div class="acts" style="margin-top:12px"><button onclick="location.reload()">Ещё раз</button></div>
+    </div>`;
+  el('stage').innerHTML = html;
+  drawTop(); drawBook();
+}
+
+/* ============ КЛИКИ ============ */
+document.addEventListener('click', e=>{
+  const t = e.target;
+  const add=t.dataset&&t.dataset.add, sub=t.dataset&&t.dataset.sub;
+  const men=t.dataset&&t.dataset.men, cart=t.dataset&&t.dataset.cart;
+  if(add){ D[add].share += +t.dataset.n; drawTop(); drawBook(); }
+  else if(sub){ D[sub].share = Math.max(0, D[sub].share - (+t.dataset.n)); drawTop(); drawBook(); }
+  else if(men){ const d=D[men], i=+t.dataset.i;
+    d.men_sent = (d.men_sent>i) ? i : i+1; drawTop(); drawBook(); }
+  else if(cart){ const d=D[cart], i=+t.dataset.i;
+    d.carts_sent = (d.carts_sent>i) ? i : i+1; drawTop(); drawBook(); }
+});
+
+function draw(){ drawTop(); drawBook(); drawStage(); }
+el('foot').innerHTML = `<b>Подвода</b> — лошадь с санями и возчиком со двора, под кладь и наряд;
+  идёт туда и обратно. <b>Посошный человек</b> — работник, взятый на всю посылку: копать, возить,
+  тянуть наряд, и когда вернётся — не сказано. Двор без лошади теряет промысел, двор без человека
+  теряет руки. <span class="m">✅</span> повинности · <span class="m">🔶</span> сроки и порядок
+  возврата для Москвы 1570 не расписаны.<br><br>
+  Сумма заперта: что снял с одного двора, ложится на другой.
+  Недостачу деньгами, людьми или подводами добирают с твоего двора — так стоит должность.
+  Отказать можно всегда и всякому; плата берётся всегда. Вердикта нет.<br>
+  Метки: <span class="m">✅</span> документ или сходятся изложения ·
+  <span class="m">🔶</span> реконструкция или спорное ·
+  <span class="m">✍️</span> осознанное допущение автора.`;
+draw();
+</script>
+</body>
+</html>
