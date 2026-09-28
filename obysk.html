@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Обыск — февраль 7078</title>
+<style>
+  :root{--bg:#e8e1d3;--paper:#f4efe4;--ink:#221c14;--dim:#6b5f4c;
+        --line:#c9bda6;--red:#8c2b1e;--accent:#3d5a3a;--pale:#d9cfb8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+  .wrap{max-width:900px;margin:0 auto;padding:18px 16px 70px}
+  h1{font-size:20px;margin:0 0 2px}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:12px}
+  .phases{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;font-size:12px}
+  .ph{padding:3px 9px;border:1px solid var(--line);background:var(--paper);color:var(--dim)}
+  .ph.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .ph.done{background:#ded4bd;color:var(--ink)}
+  .panel{background:var(--paper);border:1px solid var(--line);padding:14px 16px;margin-bottom:14px}
+  .panel.thr{border-left:3px solid var(--ink)}
+  .panel.me{border-left:3px solid var(--red)}
+  .who{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:6px}
+  .panel p{margin:0 0 9px}
+  .panel p:last-child{margin-bottom:0}
+  .acts{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .acts.col{flex-direction:column;align-items:stretch}
+  button{font:inherit;background:#ded4bd;border:1px solid var(--line);color:var(--ink);
+    padding:6px 12px;cursor:pointer;text-align:left}
+  button:hover{background:#d2c6aa}
+  button.go{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  button.go:hover{background:#3a3024}
+  .vrez{background:#efe7d2;border:1px dashed var(--line);padding:10px 13px;margin-bottom:14px;font-size:13px}
+  .vrez .h{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:4px}
+  .m{font-size:11px;padding:0 3px;border:1px solid var(--line);border-radius:2px;white-space:nowrap}
+
+  /* счёт рук */
+  .schet{background:var(--paper);border:1px solid var(--line);padding:10px 14px;margin-bottom:14px}
+  .schet .lab{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);margin-bottom:6px}
+  .row{display:flex;align-items:center;gap:3px;flex-wrap:nowrap}       /* двадцать рук — всегда в одну строку */
+  .cell{flex:1 1 0;min-width:8px;max-width:22px;height:26px;border:1px solid var(--line);background:#ece4d1;position:relative}
+  .cell.lih{background:var(--ink);border-color:var(--ink)}
+  .cell.porog{margin-left:10px}
+  .cell.porog::before{content:"";position:absolute;left:-8px;top:-4px;bottom:-4px;border-left:2px solid var(--red)}
+  .tot{margin-top:8px;font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
+  .tot b{font-variant-numeric:tabular-nums}
+  .porogtxt{color:var(--red)}
+
+  /* слышанное */
+  .heard{columns:2 280px;column-gap:20px;font-size:14px;margin:0;padding:0;list-style:none}
+  .heard li{break-inside:avoid;padding:3px 0;border-bottom:1px solid #e0d7c3}
+  .w{font-size:12px;padding:0 5px;border:1px solid var(--line);margin-left:4px;white-space:nowrap}
+  .w.lih{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .w.dob{background:#dfe7d6;border-color:#b9c7ab}
+  .w.nev{background:transparent;color:var(--dim)}
+
+  .rech{font-size:17px;margin:4px 0 0;min-height:4.7em}   /* кнопка «дальше» стоит на одном месте */
+  .znaesh{font-size:14px;color:var(--ink)}
+  .znaesh .hot{color:var(--red)}
+  input[type=range]{width:100%;max-width:420px;accent-color:var(--ink)}
+  .big{font-size:28px;font-variant-numeric:tabular-nums;margin:4px 0}
+
+  /* бумага */
+  .stolbec{background:#f7f1e3;border:1px solid var(--line);padding:16px 20px;margin-bottom:14px;
+    font-size:15px;line-height:1.6;box-shadow:0 1px 0 #d8ccb2}
+  .stolbec .zag{text-align:center;font-size:13px;color:var(--dim);margin-bottom:10px;letter-spacing:.04em}
+  .stolbec p{margin:0 0 6px}
+  .stolbec .ruka{color:var(--dim);font-style:italic}
+  .stolbec .moe{background:#efe2c9;padding:2px 4px;margin:0 -4px}
+
+  table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);font-size:14px}
+  th{text-align:left;font-weight:normal;font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+     color:var(--dim);padding:7px 8px;border-bottom:1px solid var(--line)}
+  td{padding:7px 8px;border-bottom:1px solid #e0d7c3;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.mine td{background:#efe7d2}
+  .quiet{color:var(--dim);font-size:13px;margin-top:10px}
+  details.klyuch{background:#efe7d2;border:1px solid var(--line);padding:10px 14px;margin-top:14px;font-size:14px}
+  details.klyuch summary{cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+  details.klyuch ul{margin:8px 0 0;padding-left:20px}
+  .log{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#fbf8f0;border:1px solid var(--line);padding:6px 8px;margin-top:6px;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Обыск</h1>
+  <div class="sub">Кожевницкая слобода за рекой · февраль 7078 (1570) · ты — Сила Иванов, кожевник, староста «на вере»</div>
+  <div class="phases" id="phases"></div>
+  <div id="stage"></div>
+</div>
+<script>
+/* ═══════════════ ДЕЛО ═══════════════
+   Правду держит движок: у каждого, кто целует крест, есть слово и то, отчего он его сказал.
+   Модели здесь нет вовсе — всё решает счёт рук.
+   Метки как везде: ✅ документ · 🔶 реконструкция · ✍️ допущение. Имена и сцена — ✍️. */
+
+const POROG = 15;          // рук «лихой» из двадцати — порог по счёту чёрных людей (см. врезку, 🔶)
+const VSEGO = 20;
+
+// слово: lih — «лихой», dob — «добрый», nev — «не ведаю»
+// motiv: отчего сказал — для последнего листа «На деле»
+const DUSHI = [
+ {id:'gav', imya:'Гаврила Онтонов', kto:'кожевник, два чана', bum:'Гаврилко Онтонов сын, кожевник', gram:1,
+  slovo:'lih', rech:'Лихой. На Покров у меня из клети ушло шесть сырых кож — ночью, и собаки не лаяли. Своих не виню. Чужой у нас один.',
+  delo:'Шесть кож у него и правда ушли — к тебе в чан. Гаврила этого не знает: он думает на пришлого и угадал. У него лучший двор на слободе, а за укрытого лихого платит слобода вся — и он больше всех.',
+  motiv:'podozr'},
+ {id:'tre', imya:'Третьяк Микитин', kto:'мясник', bum:'Третьячко Микитин сын, мясник',
+  slovo:'lih', rech:'Лихой. Пьёт на что-то. А на что — никто не видел.',
+  delo:'Двор Третьяка через плетень от Ортюхина. Брат его в государевых людях за Неглинною — Третьяку стоять за того, кого берут, нельзя.',
+  motiv:'nuzhda'},
+ {id:'nek', imya:'Некрас Шубин', kto:'скорняк', bum:'Некраско Шубин, скорняк',
+  slovo:'lih', rech:'Лихой. Укроем — нам же и отвечать. Мне за чужого на правеже не стоять.',
+  delo:'В позапрошлый срок Некрас стоял на правеже поручником за чужую недоимку. Ортюху он почти не знает.',
+  motiv:'mir'},
+ {id:'tom', imya:'Томило Рогов', kto:'целовальник при разрубе', bum:'Томилко Рогов, целовальник', gram:1,
+  slovo:'lih', rech:'Лихой. Тягла тянет на грош, а доля его на всех ложится.',
+  delo:'Томило ведёт разметную книгу вместе с тобой. Ортюхин двор недоплачивает, разницу добирают со всех. Недобор ляжет на целовальника.',
+  motiv:'mir'},
+ {id:'sad', imya:'Пятеро из Садовников', kto:'соседняя слобода', bum:'Садовницкой слободы Нечайко, Лучка, Жданко, Богдашко да Прокошка', n:5,
+  slovo:'lih', rech:'Сказали разом: «Ведаем его мало. Слух про него худ. Лихой».',
+  delo:'Живут через улицу. В лицо Ортюху знают двое. Сказали, как сказали до них.',
+  motiv:'sluh'},
+ {id:'kuz', imya:'Кузьма', kto:'Марфин муж, щепетинник', bum:'Кузёмка, щепетинник',
+  slovo:'dob', rech:'Добрый. Марфа моя на льду упала — он её до избы довёл и воды наносил. Лихой так не станет.',
+  delo:'Сын Кузьмы ушёл на низ и не пишет третий год. Ортюха ему ровесник.',
+  motiv:'opyt'},
+ {id:'ist', imya:'Истома Лукин', kto:'бочар', bum:'Истомка Лукин сын, бочар',
+  slovo:'lih', rech:'Лихой. На Святках обручи у меня брал, а денег не отдал.',
+  delo:'Десять денег. Больше Истома про Ортюху не знает ничего.',
+  motiv:'obida'},
+ {id:'oni', imya:'Онисим Хромой', kto:'сермяжник', bum:'Онисимко Хромой, сермяжник',
+  slovo:'nev', rech:'Не ведаю, люди добрые. Он мне на Крещенье дров принёс, когда дети мёрзли. А больше не ведаю.',
+  delo:'У Онисима четверо и курная изба. В прошлый разруб его чуть не записали худым двором. Он знает, как это легко.',
+  motiv:'strah'},
+ {id:'per', imya:'Первуша Козлов', kto:'кожевник', bum:'Первушка Козлов, кожевник',
+  slovo:'lih', rech:'Как люди говорят. Лихой.',
+  delo:'Первуша работает на Гаврилиных чанах. На сходе он говорит после Гаврилы и то же.',
+  motiv:'bolsh'},
+ {id:'and', imya:'Андрей Ковригин', kto:'калачник', bum:'Ондрюшка Ковригин, калачник',
+  slovo:'dob', rech:'Добрый. Хлеб брал в долг и отдавал. Мне он худа не делал.',
+  delo:'Отца Андрея в голодный год облиховали в Твери соседи. Андрей был мал и помнит, как это было.',
+  motiv:'pamyat'},
+ {id:'efi', imya:'Ефим Сухой', kto:'подёнщик у чанов', bum:'Ефимко Сухой, подёнщик',
+  slovo:'lih', rech:'Лихой. Работать не любит, а деньги у него бывают.',
+  delo:'Подёнщины на слободе мало. Уйдёт Ортюха — его место у чанов свободно. Ефим и сам пришлый, с Кадашей.',
+  motiv:'nuzhda'},
+ {id:'iva', imya:'Иван Сапожник', kto:'шьёт сапоги, живёт у оврага', bum:'Ивашко, сапожник',
+  slovo:'lih', rech:'Лихой. На Покров видел его ночью с ношей. Шёл он к оврагу. Куда потом — не разглядел.',
+  delo:'Иван сказал ровно то, что видел. Что было в ноше, он не знает.',
+  motiv:'videl', zhar:1},
+ {id:'sem', imya:'Семейка Толмачёв', kto:'с того конца слободы', bum:'Семейка Толмачёв',
+  slovo:'nev', rech:'Не ведаю. Живу на другом конце, его в лицо не упомню.',
+  delo:'Так и есть.',
+  motiv:'neznaet'},
+ {id:'shes', imya:'Шестак', kto:'держит мыльню', bum:'Шестачко, мыльник',
+  slovo:'lih', rech:'Лихой. У меня в мыльне кафтан пропал, а он в тот день мылся.',
+  delo:'Кафтан был отцов. В тот день мылись одиннадцать человек.',
+  motiv:'podozr'},
+ {id:'ere', imya:'Ерёма Гусь', kto:'извозчик', bum:'Ерёмка Гусь, извозчик',
+  slovo:'nev', rech:'Не ведаю. Мне с ним детей не крестить.',
+  delo:'Ерёме всё равно. Это тоже ответ.',
+  motiv:'vsyo'},
+];
+
+const MOTIV = {
+  znal:'знал сам',
+  videl:'видел, но не знал, что видел',
+  podozr:'подозрение',
+  sluh:'по слуху',
+  bolsh:'за большинством',
+  nuzhda:'свой расчёт',
+  mir:'чтобы мир не отвечал',
+  obida:'обида',
+  opyt:'своё добро от него',
+  pamyat:'помнит, как облиховали отца',
+  strah:'страх',
+  neznaet:'не знает',
+  vsyo:'всё равно',
+  solgal:'сказал неправду',
+  umolchal:'знал и промолчал'
+};
+
+// твоё слово — единственный выбор под крестом
+const SLOVO_MOE = [
+  {id:'lih', t:'«Лихой».', slovo:'lih', motiv:'znal',
+   bum:'сказал: лихой человек.'},
+  {id:'pravda', t:'«Лихой. И скажу, что ведаю: на Покров он продал мне шесть сырых кож. Чьи — я не спросил».', slovo:'lih', motiv:'znal',
+   bum:'сказал: лихой человек; да сказал: на Покров продал ему Ортюшка шесть кож сырых, а чьи — не ведал.'},
+  {id:'nev', t:'«Не ведаю за ним лиха».', slovo:'nev', motiv:'umolchal',
+   bum:'сказал: лиха за ним не ведает.'},
+  {id:'dob', t:'«Добрый человек».', slovo:'dob', motiv:'solgal',
+   bum:'сказал: добрый человек.'},
+];
+
+/* ═══════════════ ХОД ═══════════════ */
+const PH = ['Повод','Прикидка','Обыск','Твоё слово','Счёт','Бумага','На деле'];
+let ph = 0, idx = 0, belief = 10, moe = null, poruka = null;
+const el = id => document.getElementById(id);
+const hands = d => d.n || 1;
+
+function heardUpTo(k){ return DUSHI.slice(0, k); }
+function count(list, s){ return list.filter(d => d.slovo === s).reduce((a, d) => a + hands(d), 0); }
+function lihDo(){ return count(DUSHI, 'lih'); }                 // рук «лихой» до тебя
+function lihItog(){ return lihDo() + (moe && moe.slovo === 'lih' ? 1 : 0); }
+const nazvanLihim = () => lihItog() >= POROG;
+
+function drawPhases(){
+  el('phases').innerHTML = PH.map((p, i) =>
+    `<div class="ph ${i === ph ? 'on' : (i < ph ? 'done' : '')}">${i + 1}. ${p}</div>`).join('');
+}
+
+function schetHTML(list, withMe){
+  const lih = count(list, 'lih') + (withMe && moe && moe.slovo === 'lih' ? 1 : 0);
+  const dob = count(list, 'dob') + (withMe && moe && moe.slovo === 'dob' ? 1 : 0);
+  const nev = count(list, 'nev') + (withMe && moe && moe.slovo === 'nev' ? 1 : 0);
+  const said = list.reduce((a, d) => a + hands(d), 0) + (withMe && moe ? 1 : 0);
+  let cells = '';
+  for (let i = 0; i < VSEGO; i++)
+    cells += `<div class="cell ${i < lih ? 'lih' : ''} ${i === POROG - 1 ? 'porog' : ''}" title="${i + 1}"></div>`;
+  return `<div class="schet"><div class="lab">Руки «лихой» · красная черта — пятнадцатая</div>
+    <div class="row">${cells}</div>
+    <div class="tot"><span>лихой: <b>${lih}</b></span><span>добрый: <b>${dob}</b></span>
+    <span>не ведаю: <b>${nev}</b></span><span>сказали: <b>${said}</b> из ${VSEGO}</span></div></div>`;
+}
+
+function wTag(s){ return `<span class="w ${s}">${s === 'lih' ? 'лихой' : s === 'dob' ? 'добрый' : 'не ведаю'}</span>`; }
+
+function heardHTML(list){
+  if (!list.length) return '';
+  return `<div class="panel"><div class="who">Уже сказали</div><ul class="heard">${
+    list.map(d => `<li>${d.imya} ${wTag(d.slovo)}</li>`).join('')}</ul></div>`;
+}
+
+function znaeshHTML(){
+  const ivanSkazal = idx >= DUSHI.findIndex(d => d.zhar);   // жар — с той минуты, как он заговорил
+  const gavSkazal = true;                                   // Гаврила говорит первым
+  return `<div class="panel me"><div class="who">Что знаешь ты один</div>
+    <p class="znaesh">На Покров Ортюха принёс тебе шесть сырых кож — за полцены. Ты не спросил, чьи.
+    Все шесть лежат в твоём чане: кожа в чане лежит неделями.</p>
+    ${gavSkazal ? '<p class="znaesh hot">У Гаврилы на Покров ушло из клети шесть сырых кож.</p>' : ''}
+    ${ivanSkazal ? '<p class="znaesh hot">За оврагом один двор — твой.</p>' : ''}</div>`;
+}
+
+/* ── 1. ПОВОД ── */
+function scPovod(){
+  return `<div class="panel thr"><div class="who">Повод</div>
+    <p>Третьего дня на Торгу, в Ременном ряду, взяли Ортюху Свища с поличным: три кожи торгового
+    человека Семёна Жукова. Взяли впервые.</p>
+    <p>Ортюха пришлый, пятый год на слободе. Промысел у него неясен: носит, подносит, стоит подёнщиной
+    у чужих чанов.</p>
+    <p>С Земского двора приехал недельщик и велел собрать окрестных людей к церкви: целовать крест и
+    сказать, каков человек Ортюха. Собрали двадцать. Тебя писали последним.</p>
+    <div class="acts"><button class="go" onclick="next()">Идти к церкви</button></div></div>
+    <div class="vrez"><div class="h">Как это было</div>
+    Обыск — не осмотр двора. Обыскать человека значило собрать окрестных людей, привести к крестному
+    целованью и спросить, что он за человек <span class="m">✅</span>. Кого привели с поличным впервые,
+    того по Судебнику 1550 года велено судить и «послати про него обыскати» <span class="m">✅</span>.</div>`;
+}
+
+/* ── 2. ПРИКИДКА ── */
+function scPrikidka(){
+  return `<div class="panel thr"><div class="who">Пока не начали</div>
+    <p>До тебя скажут девятнадцать. Как думаешь, сколько из них скажут «лихой»?</p>
+    <div class="big" id="bv">${belief}</div>
+    <input type="range" min="0" max="19" value="${belief}" oninput="belief=+this.value;el('bv').textContent=this.value">
+    <div class="acts"><button class="go" onclick="next()">Начали</button></div></div>`;
+}
+
+/* ── 3. ОБЫСК ── */
+function scObysk(){
+  const heard = heardUpTo(idx);
+  const d = DUSHI[idx];
+  const vSchete = heardUpTo(idx + 1);                        // рука говорящего ложится, пока он говорит
+  let top = '';
+  if (d){
+    top = `<div class="panel thr"><div class="who">${d.imya} · ${d.kto}</div>
+      <p class="rech">${d.rech}</p>
+      <div class="acts"><button class="go" onclick="slyshal()">Писец записал. Дальше</button></div></div>`;
+  } else {
+    top = `<div class="panel thr"><div class="who">Недельщик</div>
+      <p>«Сила Иванов сын, староста. Целуй крест. Каков человек Ортюха Свищ?»</p>
+      <div class="acts"><button class="go" onclick="next()">Поцеловать крест</button></div></div>`;
+  }
+  const vrezRuka = idx >= 5 ? `<div class="vrez"><div class="h">Как это было</div>
+    Рука — подпись. Под обыскными речами прикладывали руки: грамотный сам, за неграмотного другой
+    «по его велению» <span class="m">✅</span>. Счёт рук и есть счёт людей.</div>` : '';
+  return top + schetHTML(vSchete, false) + znaeshHTML() + heardHTML(heard) + vrezRuka;
+}
+function slyshal(){ idx++; render(); }
+
+/* ── 4. ТВОЁ СЛОВО ── */
+function scSlovo(){
+  return `<div class="panel me"><div class="who">Ты целуешь крест</div>
+    <p>Девятнадцать сказали. Рук «лихой» — ${lihDo()}. Недельщик ждёт, писец обмакнул перо.</p>
+    <div class="acts col">${SLOVO_MOE.map(s =>
+      `<button onclick="skazat('${s.id}')">${s.t}</button>`).join('')}</div></div>`
+    + schetHTML(DUSHI, false) + znaeshHTML();
+}
+function skazat(id){ moe = SLOVO_MOE.find(s => s.id === id); next(); }
+
+/* ── 5. СЧЁТ ── */
+function scSchet(){
+  const n = lihItog();
+  let out = schetHTML(DUSHI, true);
+  if (nazvanLihim()){
+    out += `<div class="panel thr"><div class="who">Счёт</div>
+      <p>Рук «лихой» — ${n}. Ортюху назвали в обыске лихим человеком.</p>
+      <p>Недельщик свернул столбец: «Пытать». Ортюху увели.
+      ${moe.id === 'pravda' ? 'Уходя, он один раз посмотрел на тебя.' : 'Он ни на кого не посмотрел.'}</p>
+      ${moe.id === 'pravda' ? `<p>«А кожи — где?» — «В чане». Гаврила пошёл с целовальником к тебе на двор и
+      вынул из чана шесть своих кож. Ничего не сказал. Недельщик записал и тебя.</p>` : ''}
+      <div class="acts"><button class="go" onclick="next()">К бумаге</button></div></div>
+      <div class="vrez"><div class="h">Как это было</div>
+      Назовут в обыске лихим — пытать; скажет на себя сам — казнить смертью; не скажет — в тюрьму до
+      смерти, а иск платить из его статка. Скажут, что он добрый человек, — вершить дело по суду
+      (Судебник 1550 года) <span class="m">✅</span>.</div>`;
+  } else if (poruka === null){
+    out += `<div class="panel thr"><div class="who">Счёт</div>
+      <p>Рук «лихой» — ${n}. До пятнадцати не хватило. Лихим Ортюху не назвали: дело вершить по суду.</p>
+      <p>Недельщик: «По суду бить его кнутом на Торгу, иск доправить, а самого дать на крепкую поруку.
+      Кто по нём порука?»</p><p>Тихо. Гаврила смотрит в сторону.</p>
+      <div class="acts"><button onclick="poruchit(true)">«Я поручусь»</button>
+      <button onclick="poruchit(false)">Промолчать</button></div></div>
+      <div class="vrez"><div class="h">Как это было</div>
+      Вора, взятого впервые, били кнутом на торгу, иск доправляли, а самого давали на крепкую поруку;
+      не будет поруки — в тюрьму, доколе порука по нём будет <span class="m">✅</span>. Поручник платит,
+      если тот не станет: «а не станет — на нас пеня» <span class="m">✅</span>.</div>`;
+  } else {
+    out += `<div class="panel thr"><div class="who">Счёт</div>
+      <p>Рук «лихой» — ${n}. Лихим Ортюху не назвали.</p>
+      ${poruka
+        ? '<p>Писец пишет поручную запись на твоё имя. Ортюху бьют кнутом на Торгу и отпускают домой на твою поруку.</p>'
+        : '<p>Никто не вышел. Ортюху бьют кнутом на Торгу и сажают в тюрьму, доколе порука по нём будет.</p>'}
+      <div class="acts"><button class="go" onclick="next()">К бумаге</button></div></div>`;
+  }
+  return out;
+}
+function poruchit(v){ poruka = v; render(); }
+const vPoryadke = () => nazvanLihim() || poruka !== null;
+
+/* ── 6. БУМАГА ── */
+function scBumaga(){
+  const vse = DUSHI.map(d => {
+    const skaz = d.slovo === 'lih' ? 'лихой человек' : d.slovo === 'dob' ? 'добрый человек' : 'лиха за ним не ведает';
+    return `<p>${d.bum}, ${d.n ? 'сказали' : 'сказал'}: ${d.n ? skaz.replace('ведает', 'ведают') : skaz}.</p>`;
+  }).join('');
+  const mine = `<p class="moe">Силка Иванов сын, кожевник, староста, ${moe.bum}</p>`;
+  const CHISLO = {13:'тринадцать', 14:'четырнадцать', 15:'пятнадцать', 16:'шестнадцать'};
+  const n = CHISLO[lihItog()] || lihItog();
+  const itog = nazvanLihim()
+    ? `<p><b>И по обыску Ортюшка Свищ лихой человек: сказали на него ${n} человек.</b></p>`
+    : `<p><b>А лихим его в обыске не назвали: сказали на него ${n} человек.</b></p>`;
+  const ruki = `<p class="ruka">К сим обыскным речам Гаврилко Онтонов, Томилко Рогов да Силка Иванов руки приложили,
+    а в достальных место, что грамоте не умеют, руку приложил поп Василей по их велению.</p>`;
+  const por = poruka ? `<div class="stolbec"><div class="zag">Поручная запись</div>
+    <p>Се яз Силка Иванов сын, кожевник, поручился по Ортюшке Свище: а не станет Ортюшка, на мне пеня.</p>
+    <p class="ruka">Руку приложил.</p></div>` : '';
+  return `<div class="stolbec"><div class="zag">Обыскные речи Кожевницкой слободы · лета 7078 февраля</div>
+    ${vse}${mine}${itog}${ruki}</div>${por}
+    <div class="panel"><p>Твоё имя в этой бумаге — навсегда.</p>
+    <div class="acts"><button class="go" onclick="next()">Что было на деле</button></div></div>`;
+}
+
+/* ── 7. НА ДЕЛЕ ── */
+function scNaDele(){
+  const rows = DUSHI.map(d => `<tr><td class="nm">${d.imya}</td>
+    <td>${wTag(d.slovo)}</td><td>${d.delo}</td><td>${MOTIV[d.motiv]}</td></tr>`).join('');
+  const myDelo = {
+    lih:'Ты знал про осенние кожи и не сказал про них. Твоя рука — единственная, что легла по знанию.',
+    pravda:'Ты знал и сказал всё, вместе с тем, что это стоило тебе.',
+    nev:'Ты знал про осенние кожи и сказал, что не ведаешь.',
+    dob:'Ты знал про осенние кожи, целовал крест и сказал «добрый».'
+  }[moe.id];
+  const myRow = `<tr class="mine"><td class="nm">Ты, Сила</td><td>${wTag(moe.slovo)}</td><td>${myDelo}</td><td>${MOTIV[moe.motiv]}</td></tr>`;
+
+  // счёт по тому, отчего легли руки «лихой»
+  const poMotivu = {};
+  DUSHI.filter(d => d.slovo === 'lih').forEach(d => { poMotivu[d.motiv] = (poMotivu[d.motiv] || 0) + hands(d); });
+  if (moe.slovo === 'lih') poMotivu.znal = (poMotivu.znal || 0) + 1;
+  const razbor = Object.entries(poMotivu).sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `${MOTIV[k]} — ${v}`).join(' · ');
+
+  const drift = belief - lihDo();
+  zapisatProgon(drift);
+  const poZnaniyu = moe.slovo === 'lih'
+    ? 'По знанию из них легла одна — твоя.'
+    : 'По знанию не легло ни одной.';
+
+  return `<div class="panel thr"><div class="who">Что было на деле</div>
+    <p>Ортюха крал и прежде: шесть кож из Гавриловой клети на Покров — его. Знал это только ты.</p>
+    <p>Руки «лихой» легли так: ${razbor}. ${poZnaniyu}</p></div>
+    <table><tr><th>кто</th><th>слово</th><th>на деле</th><th>отчего</th></tr>${rows}${myRow}</table>
+    <div class="panel" style="margin-top:14px"><div class="who">Прикидка и счёт</div>
+    <p>Ты ждал, что из девятнадцати «лихой» скажут <b>${belief}</b>. Сказали <b>${lihDo()}</b>.
+    Разница: <b>${znak(drift)}</b>.</p>
+    <div class="log" id="logline">${logLine(drift)}</div>
+    ${proshlyeHTML()}
+    <div class="acts"><button onclick="snova()">Ещё раз</button></div></div>
+    <details class="klyuch"><summary>Оборот листа · для учителя</summary>
+    <ul>
+      <li>Порог: пятнадцать рук «лихой» из двадцати. В статье о взятом с поличным число не названо;
+        его даёт соседняя статья того же Судебника — «черных людей человек пятнадцать или дватцать» <span class="m">🔶</span>.</li>
+      <li>Три исхода: назван лихим — пытка, дальше казнь или тюрьма до смерти · не назван, порука есть — кнут на торгу, иск, домой под порукой ·
+        не назван, поруки нет — кнут, тюрьма, пока порука не найдётся <span class="m">✅</span>.</li>
+      <li>До показаний спросить класс: сколько из девятнадцати скажут «лихой»? Записать число. После — сравнить со счётом (в этом деле до старосты — ${lihDo()}).</li>
+      <li>Сцена и имена — допущение <span class="m">✍️</span>. Устройство обыска и исходы — по Судебнику 1550 года.</li>
+    </ul></details>`;
+}
+
+/* ── журнал прогонов: прикидка, счёт, разница, слово, исход ── */
+const znak = n => n > 0 ? '+' + n : n < 0 ? '−' + (-n) : '0';
+const SLOVO_RU = {lih:'«лихой»', pravda:'«лихой» и про кожи', nev:'«не ведаю»', dob:'«добрый»'};
+function iskhod(){ return nazvanLihim() ? 'лихой' : (poruka ? 'по суду, порука' : 'по суду, тюрьма'); }
+function logLine(drift){
+  return `обыск-7078 · прикидка ${belief} · счёт до тебя ${lihDo()} · разница ${znak(drift)} · твоё слово ${SLOVO_RU[moe.id]} · рук «лихой» ${lihItog()} из ${VSEGO} · исход: ${iskhod()}`;
+}
+let zapisano = false;
+function zapisatProgon(drift){
+  if (zapisano) return; zapisano = true;
+  try {
+    const all = JSON.parse(localStorage.getItem('obysk-progony') || '[]');
+    all.push({t: new Date().toISOString().slice(0, 16), belief, schet: lihDo(), drift, slovo: moe.id, itog: lihItog(), iskhod: iskhod()});
+    localStorage.setItem('obysk-progony', JSON.stringify(all.slice(-30)));
+  } catch (e) {}
+}
+function proshlyeHTML(){
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem('obysk-progony') || '[]'); } catch (e) {}
+  if (all.length < 2) return '';
+  return `<p class="quiet">Твои прогоны: ${all.map(r => `прикидка ${r.belief} → ${r.schet}, слово ${SLOVO_RU[r.slovo] || r.slovo}, ${r.iskhod}`).join(' · ')}</p>`;
+}
+function snova(){ ph = 0; idx = 0; belief = 10; moe = null; poruka = null; zapisano = false; render(); window.scrollTo(0, 0); }
+
+/* ── движение по фазам ── */
+function next(){
+  if (ph === 2 && idx < DUSHI.length) return;          // пока все не сказали — дальше не идём
+  if (ph === 4 && !vPoryadke()) return;
+  ph = Math.min(ph + 1, PH.length - 1);
+  render(); window.scrollTo(0, 0);
+}
+function render(){
+  drawPhases();
+  el('stage').innerHTML = [scPovod, scPrikidka, scObysk, scSlovo, scSchet, scBumaga, scNaDele][ph]();
+}
+// кадры для журнала дизайна: obysk.html#kadr=obysk | schet | bumaga | nadele
+(function kadr(){
+  const k = (location.hash.match(/kadr=(\w+)/) || [])[1];
+  if (!k) return;
+  if (k === 'obysk'){ ph = 2; idx = DUSHI.findIndex(d => d.zhar); }
+  if (k === 'schet'){ ph = 4; idx = DUSHI.length; moe = SLOVO_MOE[1]; }
+  if (k === 'bumaga'){ ph = 5; idx = DUSHI.length; moe = SLOVO_MOE[1]; }
+  if (k === 'nadele'){ ph = 6; idx = DUSHI.length; moe = SLOVO_MOE[2]; poruka = true; zapisano = true; }
+})();
+render();
+</script>
+</body>
+</html>
